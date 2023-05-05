@@ -111,17 +111,16 @@ Tab:AddToggle({
 	end    
 })
 
-Tab:AddToggle({
+Tab:AddButton({
 	Name = "Infinite Jump",
-	Default = false,
-	Callback = function(Value)
-		local InfiniteJumpEnabled = Value
-			game:GetService("UserInputService").JumpRequest:connect(function()
-				if InfiniteJumpEnabled then
-					game:GetService"Players".LocalPlayer.Character:FindFirstChildOfClass'Humanoid':ChangeState("Jumping")
-				end
-			end)
-	end    
+	Callback = function()
+	local InfiniteJumpEnabled = Value
+	game:GetService("UserInputService").JumpRequest:connect(function()
+		if InfiniteJumpEnabled then
+			game:GetService"Players".LocalPlayer.Character:FindFirstChildOfClass'Humanoid':ChangeState("Jumping")
+		end
+	end)
+  	end    
 })
 
 
@@ -133,6 +132,28 @@ Tab:AddToggle({
 while _G.walls == true do
 -- Name
 local Part = "Wall"
+ 
+-- Script
+local femboy = game:GetDescendants()
+for i = 1, #femboy do local v = femboy[i]
+if v.Name == Part then
+v:Destroy()
+end
+end
+
+-- Name
+local Part = "Barrier"
+ 
+-- Script
+local femboy = game:GetDescendants()
+for i = 1, #femboy do local v = femboy[i]
+if v.Name == Part then
+v:Destroy()
+end
+end
+
+-- Name
+local Part = "Structure"
  
 -- Script
 local femboy = game:GetDescendants()
@@ -171,7 +192,7 @@ end
 })
 
 Tab1:AddButton({
-	Name = "Bypass Dark Rooms [kinda works]",
+	Name = "Bypass Dark Rooms [buggy]",
 	Callback = function()
       		-- Name
 		local Part = "InDarkRoom"
@@ -209,7 +230,7 @@ end
 })
 
 Tab1:AddToggle({
-	Name = "Bypass Broken Lamps",
+	Name = "Anti Broken Lamps",
 	Default = false,
 	Callback = function(Value)
 		_G.lemp = Value
@@ -225,7 +246,7 @@ end
 })
 
 local Section = Tab2:AddSection({
-	Name = "Warning: Annoying Sounds [still in beta]"
+	Name = "Still in beta so don't expect it to work properly"
 })
 
 Tab2:AddToggle({
@@ -261,7 +282,7 @@ end
 })
 
 Tab2:AddToggle({
-	Name = "Auto Collect Vitamins",
+	Name = "Auto Collect Vitamins [wip]",
 	Default = false,
 	Callback = function(Value)
 		_G.vitamin = Value
@@ -277,7 +298,7 @@ end
 })
 
 Tab2:AddToggle({
-	Name = "Auto Collect Bandages [broken]",
+	Name = "Auto Collect Bandages [wip]",
 	Default = false,
 	Callback = function(Value)
 		_G.band = Value
@@ -293,7 +314,7 @@ end
 })
 
 Tab2:AddToggle({
-	Name = "Auto Collect Lockpicks",
+	Name = "Auto Collect Lockpicks [wip]",
 	Default = false,
 	Callback = function(Value)
 		_G.lock = Value
@@ -309,13 +330,29 @@ end
 })
 
 Tab2:AddToggle({
-	Name = "Auto Collect Mysterious Key's",
+	Name = "Auto Collect Mysterious Key's [wip]",
 	Default = false,
 	Callback = function(Value)
 		_G.suskey = Value
 while _G.suskey == true do
 for i, v in pairs(game.workspace:GetDescendants()) do
         if v.Name == "Mysterious Key" then
+            fireproximityprompt(v.ProximityPrompt)
+        end
+    end
+wait(0.1)
+end
+	end    
+})
+
+Tab2:AddToggle({
+	Name = "Auto Collect Crucifix [wip]",
+	Default = false,
+	Callback = function(Value)
+		_G.suskey = Value
+while _G.suskey == true do
+for i, v in pairs(game.workspace:GetDescendants()) do
+        if v.Name == "Crucifix" then
             fireproximityprompt(v.ProximityPrompt)
         end
     end
