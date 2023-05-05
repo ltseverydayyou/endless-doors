@@ -75,16 +75,6 @@ Tab:AddButton({
 })
 
 Tab:AddButton({
-	Name = "Instant Interact",
-	Callback = function()
-      		lua
-game:GetService("ProximityPromptService").PromptButtonHoldBegan:Connect(function(prompt)
-            fireproximityprompt(prompt)
-        end)
-  	end    
-})
-
-Tab:AddButton({
 	Name = "Anti FallDamage",
 	Callback = function()
       		-- Name
