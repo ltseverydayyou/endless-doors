@@ -1,0 +1,334 @@
+local OrionLib = loadstring(game:HttpGet(('https://raw.githubusercontent.com/shlexware/Orion/main/source')))()
+
+local Window = OrionLib:MakeWindow({Name = "Cringe Hub: Endless Doors", HidePremium = false, IntroText = "Cringe Hub", SaveConfig = false, ConfigFolder = "OrionTest"})
+
+
+local Tab = Window:MakeTab({
+	Name = "Main",
+	Icon = "rbxassetid://4483345998",
+	PremiumOnly = false
+})
+
+local Tab1 = Window:MakeTab({
+	Name = "Bypass",
+	Icon = "rbxassetid://4483345998",
+	PremiumOnly = false
+})
+
+local Tab2 = Window:MakeTab({
+	Name = "Auto",
+	Icon = "rbxassetid://4483345998",
+	PremiumOnly = false
+})
+
+local Tab3 = Window:MakeTab({
+	Name = "Trash",
+	Icon = "rbxassetid://4483345998",
+	PremiumOnly = false
+})
+
+Tab:AddButton({
+	Name = "Infinite Flashlight",
+	Callback = function()
+      		local ohBoolean1 = false
+		local ohNumber2 = 99999999
+		
+		game:GetService("ReplicatedStorage").Remotes.FLASHLIGHT_TOGGLE:FireServer(ohBoolean1, ohNumber2)
+  	end    
+})
+
+Tab:AddButton({
+	Name = "Better Flashlight",
+	Callback = function()
+      		game.Players.LocalPlayer.Character.Flashlight.Attachment.SpotLight.Range = 9999
+            game.Players.LocalPlayer.Character.Flashlight.Attachment2.SpotLight.Range = 9999
+  	end    
+})
+
+Tab:AddButton({
+	Name = "SetUp",
+	Callback = function()
+      		game:GetService("Players").LocalPlayer.DevEnableMouseLock = false
+			game:GetService("Players").LocalPlayer.CameraMaxZoomDistance = 9999999
+			game:GetService("Players").LocalPlayer.CameraMinZoomDistance = 0
+			game:GetService("Players").LocalPlayer.CameraMode = "Classic"
+			
+			local function callback(Text)
+			 if Text == "Button1 text" then
+			  print ("Answer")
+			elseif Text == ("Button2 text") then
+			 print ("Answer2")
+			 end
+			end
+			
+			local NotificationBindable = Instance.new("BindableFunction")
+			NotificationBindable.OnInvoke = callback
+			--
+			game.StarterGui:SetCore("SendNotification",  {
+			 Title = "Hi";
+			 Text = "This Sets up your FirstPersonLock zooming and such usefull to use";
+			 Icon = "";
+			 Duration = 5;
+			 Callback = NotificationBindable;
+			})
+  	end    
+})
+
+Tab:AddButton({
+	Name = "Anti FallDamage",
+	Callback = function()
+      		-- Name
+		local Part = "FDMG"
+		 
+		-- Script
+		local femboy = game:GetDescendants()
+		for i = 1, #femboy do local v = femboy[i]
+		if v.Name == Part then
+		v:Destroy()
+		end
+		end
+  	end    
+})
+
+Tab:AddToggle({
+	Name = "Delete Battery's",
+	Default = false,
+	Callback = function(Value)
+		_G.battery = Value
+		while _G.battery == true do
+		-- Name
+		local Part = "Battery"
+		 
+		-- Script
+		local femboy = game:GetDescendants()
+		for i = 1, #femboy do local v = femboy[i]
+		if v.Name == Part then
+		v:Destroy()
+		end
+		end
+		wait(2)
+		end
+	end    
+})
+
+Tab:AddToggle({
+	Name = "Infinite Jump",
+	Default = false,
+	Callback = function(Value)
+		local InfiniteJumpEnabled = Value
+			game:GetService("UserInputService").JumpRequest:connect(function()
+				if InfiniteJumpEnabled then
+					game:GetService"Players".LocalPlayer.Character:FindFirstChildOfClass'Humanoid':ChangeState("Jumping")
+				end
+			end)
+	end    
+})
+
+
+Tab:AddToggle({
+	Name = "Delete Walls [wip]",
+	Default = false,
+	Callback = function(Value)
+		_G.walls = Value
+while _G.walls == true do
+-- Name
+local Part = "Wall"
+ 
+-- Script
+local femboy = game:GetDescendants()
+for i = 1, #femboy do local v = femboy[i]
+if v.Name == Part then
+v:Destroy()
+end
+end
+
+
+-- Name
+local Part = "Brick"
+ 
+-- Script
+local femboy = game:GetDescendants()
+for i = 1, #femboy do local v = femboy[i]
+if v.Name == Part then
+v:Destroy()
+end
+end
+
+
+-- Name
+local Part = "Fire"
+ 
+-- Script
+local femboy = game:GetDescendants()
+for i = 1, #femboy do local v = femboy[i]
+if v.Name == Part then
+v:Destroy()
+end
+end
+wait(5)
+end
+	end    
+})
+
+Tab1:AddButton({
+	Name = "Bypass Dark Rooms [kinda works]",
+	Callback = function()
+      		-- Name
+		local Part = "InDarkRoom"
+		 
+		-- Script
+		local femboy = game:GetDescendants()
+		for i = 1, #femboy do local v = femboy[i]
+		if v.Name == Part then
+		v:Destroy()
+		end
+		end
+  	end    
+})
+
+
+Tab1:AddToggle({
+	Name = "Bypass Overseer",
+	Default = false,
+	Callback = function(Value)
+		_G.monster = Value
+while _G.monster == true do
+-- Name
+local Part = "Overseer"
+ 
+-- Script
+local femboy = game:GetDescendants()
+for i = 1, #femboy do local v = femboy[i]
+if v.Name == Part then
+v:Destroy()
+end
+end
+wait(1)
+end
+	end    
+})
+
+Tab1:AddToggle({
+	Name = "Bypass Broken Lamps",
+	Default = false,
+	Callback = function(Value)
+		_G.lemp = Value
+while _G.lemp == true do
+for i, v in pairs(game.workspace:GetDescendants()) do
+        if v.Name == "BrokenLamp" then
+            v:Destroy()
+        end
+    end
+wait(0.1)
+end
+	end    
+})
+
+local Section = Tab2:AddSection({
+	Name = "Warning: Annoying Sounds [still in beta]"
+})
+
+Tab2:AddToggle({
+	Name = "Bit AutoFarm",
+	Default = false,
+	Callback = function(Value)
+		_G.bits = Value
+while _G.bits == true do
+for i, v in pairs(game.workspace:GetDescendants()) do
+        if v.Name == "Bit" then
+            fireproximityprompt(v.ProximityPrompt)
+        end
+    end
+wait(0.1)
+end
+	end    
+})
+
+Tab2:AddToggle({
+	Name = "Key AutoFarm",
+	Default = false,
+	Callback = function(Value)
+		_G.Key = Value
+while _G.Key == true do
+for i, v in pairs(game.workspace:GetDescendants()) do
+        if v.Name == "RoomKey" then
+            fireproximityprompt(v.ProximityPrompt)
+        end
+    end
+wait(0.1)
+end
+	end    
+})
+
+Tab2:AddToggle({
+	Name = "Auto Collect Vitamins",
+	Default = false,
+	Callback = function(Value)
+		_G.vitamin = Value
+while _G.vitamin == true do
+for i, v in pairs(game.workspace:GetDescendants()) do
+        if v.Name == "Vitamins" then
+            fireproximityprompt(v.ProximityPrompt)
+        end
+    end
+wait(0.1)
+end
+	end    
+})
+
+Tab2:AddToggle({
+	Name = "Auto Collect Bandages [broken]",
+	Default = false,
+	Callback = function(Value)
+		_G.band = Value
+while _G.band == true do
+for i, v in pairs(game.workspace:GetDescendants()) do
+        if v.Name == "Bandage" then
+            fireproximityprompt(v.ProximityPrompt)
+        end
+    end
+wait(0.1)
+end
+	end    
+})
+
+Tab2:AddToggle({
+	Name = "Auto Collect Lockpicks",
+	Default = false,
+	Callback = function(Value)
+		_G.lock = Value
+while _G.lock == true do
+for i, v in pairs(game.workspace:GetDescendants()) do
+        if v.Name == "Lockpick" then
+            fireproximityprompt(v.ProximityPrompt)
+        end
+    end
+wait(0.1)
+end
+	end    
+})
+
+Tab2:AddToggle({
+	Name = "Auto Collect Mysterious Key's",
+	Default = false,
+	Callback = function(Value)
+		_G.suskey = Value
+while _G.suskey == true do
+for i, v in pairs(game.workspace:GetDescendants()) do
+        if v.Name == "Mysterious Key" then
+            fireproximityprompt(v.ProximityPrompt)
+        end
+    end
+wait(0.1)
+end
+	end    
+})
+
+Tab3:AddButton({
+	Name = "End Gui",
+	Callback = function()
+      		OrionLib:Destroy()
+  	end    
+})
+
+OrionLib:Init()
