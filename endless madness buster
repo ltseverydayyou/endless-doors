@@ -1,6 +1,9 @@
 local OrionLib = loadstring(game:HttpGet(('https://raw.githubusercontent.com/shlexware/Orion/main/source')))()
 
-local Window = OrionLib:MakeWindow({Name = "Cringe Hub: Endless Doors", HidePremium = false, IntroText = "Cringe Hub", SaveConfig = false, ConfigFolder = "OrionTest"})
+local Window = OrionLib:MakeWindow({Name = "Cringe Hub: Endless Doors", HidePremium = false, IntroText = "Cringe Hub", SaveConfig = true, ConfigFolder = "Endless Buster"})
+
+getgenv().speed = nil
+getgenv().jump = nil
 
 
 local Tab = Window:MakeTab({
@@ -22,6 +25,13 @@ local Tab2 = Window:MakeTab({
 })
 
 local Tab3 = Window:MakeTab({
+	Name = "Player",
+	Icon = "rbxassetid://4483345998",
+	PremiumOnly = false
+})
+
+
+local Tab4 = Window:MakeTab({
 	Name = "Trash",
 	Icon = "rbxassetid://4483345998",
 	PremiumOnly = false
@@ -111,18 +121,6 @@ Tab:AddToggle({
 	end    
 })
 
-Tab:AddButton({
-	Name = "Infinite Jump",
-	Callback = function()
-	local InfiniteJumpEnabled = Value
-	game:GetService("UserInputService").JumpRequest:connect(function()
-		if InfiniteJumpEnabled then
-			game:GetService"Players".LocalPlayer.Character:FindFirstChildOfClass'Humanoid':ChangeState("Jumping")
-		end
-	end)
-  	end    
-})
-
 
 Tab:AddToggle({
 	Name = "Delete Walls [wip]",
@@ -153,7 +151,7 @@ end
 end
 
 -- Name
-local Part = "Structure"
+local Part = "Barricade"
  
 -- Script
 local femboy = game:GetDescendants()
@@ -282,86 +280,154 @@ end
 })
 
 Tab2:AddToggle({
-	Name = "Auto Collect Vitamins [wip]",
+	Name = "Auto Collect Vitamins",
 	Default = false,
 	Callback = function(Value)
-		_G.vitamin = Value
-while _G.vitamin == true do
-for i, v in pairs(game.workspace:GetDescendants()) do
+		getgenv().Vita = Value;
+
+                while getgenv().Vita and wait(0.1) do
+                        pcall(function()
+                               for i, v in pairs(game.workspace:GetDescendants()) do
         if v.Name == "Vitamins" then
             fireproximityprompt(v.ProximityPrompt)
         end
     end
-wait(0.1)
-end
+                        end)
+                end
 	end    
 })
 
 Tab2:AddToggle({
-	Name = "Auto Collect Bandages [wip]",
+	Name = "Auto Collect Bandages",
 	Default = false,
 	Callback = function(Value)
-		_G.band = Value
-while _G.band == true do
-for i, v in pairs(game.workspace:GetDescendants()) do
+		getgenv().Band = Value;
+
+                while getgenv().Band and wait(0.1) do
+                        pcall(function()
+                               for i, v in pairs(game.workspace:GetDescendants()) do
         if v.Name == "Bandage" then
             fireproximityprompt(v.ProximityPrompt)
         end
     end
-wait(0.1)
-end
+                        end)
+                end
 	end    
 })
 
 Tab2:AddToggle({
-	Name = "Auto Collect Lockpicks [wip]",
+	Name = "Auto Collect Lockpicks",
 	Default = false,
 	Callback = function(Value)
-		_G.lock = Value
-while _G.lock == true do
-for i, v in pairs(game.workspace:GetDescendants()) do
+		getgenv().LockPick = Value;
+
+                while getgenv().LockPick and wait(0.1) do
+                        pcall(function()
+                               for i, v in pairs(game.workspace:GetDescendants()) do
         if v.Name == "Lockpick" then
             fireproximityprompt(v.ProximityPrompt)
         end
     end
-wait(0.1)
-end
+                        end)
+                end
 	end    
 })
 
 Tab2:AddToggle({
-	Name = "Auto Collect Mysterious Key's [wip]",
+	Name = "Auto Collect Mysterious Key's",
 	Default = false,
 	Callback = function(Value)
-		_G.suskey = Value
-while _G.suskey == true do
-for i, v in pairs(game.workspace:GetDescendants()) do
+		getgenv().SusKey = Value;
+
+                while getgenv().SusKey and wait(0.1) do
+                        pcall(function()
+                               for i, v in pairs(game.workspace:GetDescendants()) do
         if v.Name == "Mysterious Key" then
             fireproximityprompt(v.ProximityPrompt)
         end
     end
-wait(0.1)
-end
+                        end)
+                end
 	end    
 })
 
 Tab2:AddToggle({
-	Name = "Auto Collect Crucifix [wip]",
+	Name = "Auto Collect Crucifix",
 	Default = false,
 	Callback = function(Value)
-		_G.suskey = Value
-while _G.suskey == true do
-for i, v in pairs(game.workspace:GetDescendants()) do
+		getgenv().Crucifix = Value;
+
+                while getgenv().Crucifix and wait(0.1) do
+                        pcall(function()
+                               for i, v in pairs(game.workspace:GetDescendants()) do
         if v.Name == "Crucifix" then
             fireproximityprompt(v.ProximityPrompt)
         end
     end
-wait(0.1)
-end
+                        end)
+                end
+	end    
+})
+
+Tab3:AddTextbox({
+	Name = "Set WalkSpeed",
+	Default = "16",
+	TextDisappear = false,
+	Callback = function(Value)
+		getgenv().speed = Value
+	end	  
+})
+
+Tab3:AddToggle({
+	Name = "Toggle WalkSpeed",
+	Default = false,
+	Callback = function(Value)
+		getgenv().sped = Value;
+
+                while getgenv().sped and wait(0) do
+                        pcall(function()
+                               game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = getgenv().speed
+                        end)
+                end
+	end    
+})
+
+Tab3:AddTextbox({
+	Name = "Set JumpPower",
+	Default = "50",
+	TextDisappear = false,
+	Callback = function(Value)
+		getgenv().jump = Value
+	end	  
+})
+
+Tab3:AddToggle({
+	Name = "Toggle JumpPower",
+	Default = false,
+	Callback = function(Value)
+		getgenv().jumpy = Value;
+
+                while getgenv().jumpy and wait(0) do
+                        pcall(function()
+                               game.Players.LocalPlayer.Character.Humanoid.JumpPower = getgenv().jump
+                        end)
+                end
 	end    
 })
 
 Tab3:AddButton({
+	Name = "Infinite Jump",
+	Callback = function()
+      		local InfiniteJumpEnabled = true
+			game:GetService("UserInputService").JumpRequest:connect(function()
+				if InfiniteJumpEnabled then
+					game:GetService"Players".LocalPlayer.Character:FindFirstChildOfClass'Humanoid':ChangeState("Jumping")
+				end
+			end)
+  	end    
+})
+
+Tab4:AddButton({
 	Name = "End Gui",
 	Callback = function()
       		OrionLib:Destroy()
