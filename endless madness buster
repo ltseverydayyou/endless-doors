@@ -1,6 +1,12 @@
+game:GetService("ProximityPromptService").PromptButtonHoldBegan:Connect(function(prompt)
+            fireproximityprompt(prompt)
+        end)
+
+wait(0.3)
+
 local OrionLib = loadstring(game:HttpGet(('https://raw.githubusercontent.com/shlexware/Orion/main/source')))()
 
-local Window = OrionLib:MakeWindow({Name = "Cringe Hub: Endless Doors", HidePremium = false, IntroText = "Cringe Hub", SaveConfig = true, ConfigFolder = "Endless Buster"})
+local Window = OrionLib:MakeWindow({Name = "Cringe Hub: Endless Doors", HidePremium = false, IntroText = "Cringe Hub", SaveConfig = false, IntroIcon = "rbxassetid://13361894613", ConfigFolder = "Endless"})
 
 getgenv().speed = nil
 getgenv().jump = nil
@@ -8,32 +14,32 @@ getgenv().jump = nil
 
 local Tab = Window:MakeTab({
 	Name = "Main",
-	Icon = "rbxassetid://4483345998",
+	Icon = "rbxassetid://13361894613",
 	PremiumOnly = false
 })
 
 local Tab1 = Window:MakeTab({
 	Name = "Bypass",
-	Icon = "rbxassetid://4483345998",
+	Icon = "rbxassetid://12981291804",
 	PremiumOnly = false
 })
 
 local Tab2 = Window:MakeTab({
 	Name = "Auto",
-	Icon = "rbxassetid://4483345998",
+	Icon = "rbxassetid://69395121",
 	PremiumOnly = false
 })
 
 local Tab3 = Window:MakeTab({
 	Name = "Player",
-	Icon = "rbxassetid://4483345998",
+	Icon = "rbxassetid://470645116",
 	PremiumOnly = false
 })
 
 
 local Tab4 = Window:MakeTab({
 	Name = "Trash",
-	Icon = "rbxassetid://4483345998",
+	Icon = "rbxassetid://145360650",
 	PremiumOnly = false
 })
 
@@ -103,6 +109,7 @@ Tab:AddButton({
 Tab:AddToggle({
 	Name = "Delete Battery's",
 	Default = false,
+	Save = true,
 	Callback = function(Value)
 		_G.battery = Value
 		while _G.battery == true do
@@ -116,7 +123,7 @@ Tab:AddToggle({
 		v:Destroy()
 		end
 		end
-		wait(2)
+		wait(0.6)
 		end
 	end    
 })
@@ -125,69 +132,60 @@ Tab:AddToggle({
 Tab:AddToggle({
 	Name = "Delete Walls [wip]",
 	Default = false,
+	Save = true,
 	Callback = function(Value)
-		_G.walls = Value
-while _G.walls == true do
--- Name
-local Part = "Wall"
- 
--- Script
-local femboy = game:GetDescendants()
-for i = 1, #femboy do local v = femboy[i]
-if v.Name == Part then
-v:Destroy()
-end
-end
+	_G.walls = Value
+	while _G.walls == true do
+	-- Name
+	local Part = "Wall"
+	 
+	-- Script
+	local femboy = game:GetDescendants()
+	for i = 1, #femboy do local v = femboy[i]
+	if v.Name == Part then
+	v:Destroy()
+	end
+	end
+	
+	-- Name
+	local Part = "Barrier"
+	 
+	-- Script
+	local femboy = game:GetDescendants()
+	for i = 1, #femboy do local v = femboy[i]
+	if v.Name == Part then
+	v:Destroy()
+	end
+	end
+	
+	wait(0.5)
 
--- Name
-local Part = "Barrier"
- 
--- Script
-local femboy = game:GetDescendants()
-for i = 1, #femboy do local v = femboy[i]
-if v.Name == Part then
-v:Destroy()
-end
-end
-
--- Name
-local Part = "Barricade"
- 
--- Script
-local femboy = game:GetDescendants()
-for i = 1, #femboy do local v = femboy[i]
-if v.Name == Part then
-v:Destroy()
-end
-end
-
-
--- Name
-local Part = "Brick"
- 
--- Script
-local femboy = game:GetDescendants()
-for i = 1, #femboy do local v = femboy[i]
-if v.Name == Part then
-v:Destroy()
-end
-end
-
-
--- Name
-local Part = "Fire"
- 
--- Script
-local femboy = game:GetDescendants()
-for i = 1, #femboy do local v = femboy[i]
-if v.Name == Part then
-v:Destroy()
-end
-end
-wait(5)
-end
-	end    
-})
+	-- Name
+	local Part = "Barricade"
+	 
+	-- Script
+	local femboy = game:GetDescendants()
+	for i = 1, #femboy do local v = femboy[i]
+	if v.Name == Part then
+	v:Destroy()
+	end
+	end
+	
+	
+	-- Name
+	local Part = "Brick"
+	 
+	-- Script
+	local femboy = game:GetDescendants()
+	for i = 1, #femboy do local v = femboy[i]
+	if v.Name == Part then
+	v:Destroy()
+	end
+	end
+	wait(3)
+	end
+		end    
+	})
 
 Tab1:AddButton({
 	Name = "Bypass Dark Rooms [buggy]",
@@ -205,10 +203,30 @@ Tab1:AddButton({
   	end    
 })
 
+Tab1:AddToggle({
+	Name = "Disable Abyss [if ur dumb and fall into one]",
+	Default = false,
+	Callback = function(Value)
+	getgenv().deathlol = Value;
+
+	while getgenv().deathlol and wait(0.5) do
+			pcall(function()
+			for i, v in pairs(game.workspace:GetDescendants()) do
+			if v.Name == "AbyssKill" then
+				v:Destroy()
+			end
+		end
+			end)
+	end 
+
+	end    
+})
+
 
 Tab1:AddToggle({
 	Name = "Bypass Overseer",
 	Default = false,
+	Save = true,
 	Callback = function(Value)
 		_G.monster = Value
 while _G.monster == true do
@@ -222,7 +240,7 @@ if v.Name == Part then
 v:Destroy()
 end
 end
-wait(1)
+wait(0.3)
 end
 	end    
 })
@@ -230,6 +248,7 @@ end
 Tab1:AddToggle({
 	Name = "Anti Broken Lamps",
 	Default = false,
+	Save = true,
 	Callback = function(Value)
 		_G.lemp = Value
 while _G.lemp == true do
@@ -248,8 +267,9 @@ local Section = Tab2:AddSection({
 })
 
 Tab2:AddToggle({
-	Name = "Bit AutoFarm",
+	Name = "Bit Aura",
 	Default = false,
+	Save = true,
 	Callback = function(Value)
 		_G.bits = Value
 while _G.bits == true do
@@ -264,8 +284,9 @@ end
 })
 
 Tab2:AddToggle({
-	Name = "Key AutoFarm",
+	Name = "Key Aura",
 	Default = false,
+	Save = true,
 	Callback = function(Value)
 		_G.Key = Value
 while _G.Key == true do
@@ -280,8 +301,9 @@ end
 })
 
 Tab2:AddToggle({
-	Name = "Auto Collect Vitamins",
+	Name = "Vitamin Aura",
 	Default = false,
+	Save = true,
 	Callback = function(Value)
 		getgenv().Vita = Value;
 
@@ -298,8 +320,9 @@ Tab2:AddToggle({
 })
 
 Tab2:AddToggle({
-	Name = "Auto Collect Bandages",
+	Name = "Bandage Aura",
 	Default = false,
+	Save = true,
 	Callback = function(Value)
 		getgenv().Band = Value;
 
@@ -316,8 +339,9 @@ Tab2:AddToggle({
 })
 
 Tab2:AddToggle({
-	Name = "Auto Collect Lockpicks",
+	Name = "Lockpick Aura",
 	Default = false,
+	Save = true,
 	Callback = function(Value)
 		getgenv().LockPick = Value;
 
@@ -334,8 +358,9 @@ Tab2:AddToggle({
 })
 
 Tab2:AddToggle({
-	Name = "Auto Collect Mysterious Key's",
+	Name = "Mysterious Key Aura",
 	Default = false,
+	Save = true,
 	Callback = function(Value)
 		getgenv().SusKey = Value;
 
@@ -352,8 +377,9 @@ Tab2:AddToggle({
 })
 
 Tab2:AddToggle({
-	Name = "Auto Collect Crucifix",
+	Name = "Crucifix Aura",
 	Default = false,
+	Save = true,
 	Callback = function(Value)
 		getgenv().Crucifix = Value;
 
@@ -371,7 +397,7 @@ Tab2:AddToggle({
 
 Tab3:AddTextbox({
 	Name = "Set WalkSpeed",
-	Default = "16",
+	Default = "",
 	TextDisappear = false,
 	Callback = function(Value)
 		getgenv().speed = Value
@@ -394,7 +420,7 @@ Tab3:AddToggle({
 
 Tab3:AddTextbox({
 	Name = "Set JumpPower",
-	Default = "50",
+	Default = "",
 	TextDisappear = false,
 	Callback = function(Value)
 		getgenv().jump = Value
