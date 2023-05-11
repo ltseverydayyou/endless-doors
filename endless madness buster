@@ -2,11 +2,13 @@ game:GetService("ProximityPromptService").PromptButtonHoldBegan:Connect(function
             fireproximityprompt(prompt)
         end)
 
+game.Players.LocalPlayer.Character.Humanoid.AutoJumpEnabled = false
+
 wait(0.3)
 
 local OrionLib = loadstring(game:HttpGet(('https://raw.githubusercontent.com/shlexware/Orion/main/source')))()
 
-local Window = OrionLib:MakeWindow({Name = "Cringe Hub: Endless Doors", HidePremium = false, IntroText = "Cringe Hub", SaveConfig = false, IntroIcon = "rbxassetid://13361894613", ConfigFolder = "Endless"})
+local Window = OrionLib:MakeWindow({Name = "Cringe Hub: Endless Doors", HidePremium = false, IntroText = "Endless Doors", SaveConfig = false, IntroIcon = "rbxassetid://13361894613", ConfigFolder = "Endless"})
 
 getgenv().speed = nil
 getgenv().jump = nil
@@ -36,8 +38,14 @@ local Tab3 = Window:MakeTab({
 	PremiumOnly = false
 })
 
-
 local Tab4 = Window:MakeTab({
+	Name = "Credits",
+	Icon = "rbxassetid://4483345998",
+	PremiumOnly = false
+})
+
+
+local Tab5 = Window:MakeTab({
 	Name = "Trash",
 	Icon = "rbxassetid://145360650",
 	PremiumOnly = false
@@ -453,7 +461,15 @@ Tab3:AddButton({
   	end    
 })
 
-Tab4:AddButton({
+local Section = Tab4:AddSection({
+	Name = "Cringe#0438 | Scripter (did mostly everything)"
+})
+
+local Section = Tab4:AddSection({
+	Name = "mixalispantidos12#7016 | Tester, Helper (helped with bypass section)"
+})
+
+Tab5:AddButton({
 	Name = "End Gui",
 	Callback = function()
       		OrionLib:Destroy()
