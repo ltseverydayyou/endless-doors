@@ -467,7 +467,7 @@ Tab2:AddToggle({
 	Callback = function(Value)
 		getgenv().chaos = Value;
 
-                while getgenv().chaos and wait() do
+                while getgenv().chaos and wait(0.1) do
                         pcall(function()
                                for i,v in pairs(game:GetService("Workspace"):GetDescendants()) do
     if v:IsA("ProximityPrompt") and v.Name == "ProximityPrompt" then
