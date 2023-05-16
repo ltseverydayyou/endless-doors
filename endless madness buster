@@ -45,7 +45,7 @@ local Tab4 = Window:MakeTab({
 })
 
 local Tab5 = Window:MakeTab({
-	Name = "Remote",
+	Name = "random stuff",
 	Icon = "rbxassetid://4483345998",
 	PremiumOnly = false
 })
@@ -409,6 +409,78 @@ Tab2:AddToggle({
 	end    
 })
 
+local Section = Tab2:AddSection({
+	Name = ""
+})
+local Section = Tab2:AddSection({
+	Name = ""
+})
+local Section = Tab2:AddSection({
+	Name = ""
+})
+local Section = Tab2:AddSection({
+	Name = ""
+})
+local Section = Tab2:AddSection({
+	Name = ""
+})
+local Section = Tab2:AddSection({
+	Name = ""
+})
+local Section = Tab2:AddSection({
+	Name = ""
+})
+local Section = Tab2:AddSection({
+	Name = ""
+})
+local Section = Tab2:AddSection({
+	Name = ""
+})
+local Section = Tab2:AddSection({
+	Name = ""
+})
+local Section = Tab2:AddSection({
+	Name = ""
+})
+local Section = Tab2:AddSection({
+	Name = ""
+})
+local Section = Tab2:AddSection({
+	Name = ""
+})
+local Section = Tab2:AddSection({
+	Name = ""
+})
+local Section = Tab2:AddSection({
+	Name = ""
+})
+local Section = Tab2:AddSection({
+	Name = ""
+})
+local Section = Tab2:AddSection({
+	Name = ""
+})
+
+Tab2:AddToggle({
+	Name = "Trigger Everything [excluding wardrobes]",
+	Default = false,
+	Callback = function(Value)
+		getgenv().chaos = Value;
+
+                while getgenv().chaos and wait() do
+                        pcall(function()
+                               for i,v in pairs(game:GetService("Workspace"):GetDescendants()) do
+    if v:IsA("ProximityPrompt") and v.Name == "ProximityPrompt" then
+        fireproximityprompt(v, 0)
+end
+end
+                        end)
+                end
+	end    
+})
+
+
+
 Tab3:AddTextbox({
 	Name = "Set WalkSpeed",
 	Default = "",
@@ -475,13 +547,9 @@ local Section = Tab4:AddSection({
 	Name = "mixalispantidos12#7016 | Tester, Helper (helped with bypass section)"
 })
 
-local Section = Tab5:AddSection({
-	Name = "use if understand"
-})
-
 
 Tab5:AddToggle({
-	Name = "hide",
+	Name = "hide value",
 	Default = false,
 	Callback = function(Value)
 		game:GetService("Players").LocalPlayer.Character.Hiding.Value = Value
