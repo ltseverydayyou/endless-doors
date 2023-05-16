@@ -44,8 +44,14 @@ local Tab4 = Window:MakeTab({
 	PremiumOnly = false
 })
 
-
 local Tab5 = Window:MakeTab({
+	Name = "Remote",
+	Icon = "rbxassetid://4483345998",
+	PremiumOnly = false
+})
+
+
+local Tab6 = Window:MakeTab({
 	Name = "Trash",
 	Icon = "rbxassetid://145360650",
 	PremiumOnly = false
@@ -470,6 +476,27 @@ local Section = Tab4:AddSection({
 })
 
 Tab5:AddButton({
+	Name = "Copy Hide Remote",
+	Callback = function()
+      		setclipboard("local args = {
+    [1] = workspace:WaitForChild("Game"):WaitForChild("Rooms"):WaitForChild("Room0"):WaitForChild("Models"):WaitForChild("Wardrobe"),
+    [2] = false,
+    [3] = false
+}
+
+game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("HIDE"):FireServer(unpack(args))")
+  	end    
+})
+
+Tab5:AddToggle({
+	Name = "hide/unhide value",
+	Default = false,
+	Callback = function(Value)
+		game:GetService("Players").LocalPlayer.Character.Hiding.Value = Value
+	end    
+})
+
+Tab6:AddButton({
 	Name = "End Gui",
 	Callback = function()
       		OrionLib:Destroy()
