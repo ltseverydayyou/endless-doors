@@ -82,25 +82,6 @@ Tab:AddButton({
 			game:GetService("Players").LocalPlayer.CameraMaxZoomDistance = 9999999
 			game:GetService("Players").LocalPlayer.CameraMinZoomDistance = 0
 			game:GetService("Players").LocalPlayer.CameraMode = "Classic"
-			
-			local function callback(Text)
-			 if Text == "Button1 text" then
-			  print ("Answer")
-			elseif Text == ("Button2 text") then
-			 print ("Answer2")
-			 end
-			end
-			
-			local NotificationBindable = Instance.new("BindableFunction")
-			NotificationBindable.OnInvoke = callback
-			--
-			game.StarterGui:SetCore("SendNotification",  {
-			 Title = "Hi";
-			 Text = "This Sets up your FirstPersonLock zooming and such usefull to use";
-			 Icon = "";
-			 Duration = 5;
-			 Callback = NotificationBindable;
-			})
   	end    
 })
 
@@ -211,6 +192,7 @@ Tab1:AddButton({
 		local femboy = game:GetDescendants()
 		for i = 1, #femboy do local v = femboy[i]
 		if v.Name == Part then
+                v.Value = false
 		v:Destroy()
 		end
 		end
@@ -254,7 +236,7 @@ if v.Name == Part then
 v:Destroy()
 end
 end
-wait(0.3)
+wait(0.1)
 end
 	end    
 })
@@ -271,7 +253,7 @@ for i, v in pairs(game.workspace:GetDescendants()) do
             v:Destroy()
         end
     end
-wait(0.1)
+task.wait()
 end
 	end    
 })
@@ -286,13 +268,20 @@ Tab2:AddToggle({
 	Save = true,
 	Callback = function(Value)
 		_G.bits = Value
-while _G.bits == true do
-for i, v in pairs(game.workspace:GetDescendants()) do
-        if v.Name == "Bit" then
-            fireproximityprompt(v.ProximityPrompt)
+
+while _G.bits do
+    for i, v in pairs(game.Workspace:GetDescendants()) do
+        if v.Name == "Bit" and v:IsA("BasePart") then
+            local proximityPrompt = v:FindFirstChildOfClass("ProximityPrompt")
+            if proximityPrompt then
+                local maxDistance = proximityPrompt.MaxActivationDistance
+                if (v.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude <= maxDistance then
+                    proximityPrompt:InputHoldBegin()
+                end
+            end
         end
     end
-wait(0.1)
+    wait(0.1)
 end
 	end    
 })
@@ -303,13 +292,20 @@ Tab2:AddToggle({
 	Save = true,
 	Callback = function(Value)
 		_G.Key = Value
-while _G.Key == true do
-for i, v in pairs(game.workspace:GetDescendants()) do
-        if v.Name == "RoomKey" then
-            fireproximityprompt(v.ProximityPrompt)
+
+while _G.Key do
+    for i, v in pairs(game.Workspace:GetDescendants()) do
+        if v.Name == "RoomKey" and v:IsA("BasePart") then
+            local proximityPrompt = v:FindFirstChildOfClass("ProximityPrompt")
+            if proximityPrompt then
+                local maxDistance = proximityPrompt.MaxActivationDistance
+                if (v.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude <= maxDistance then
+                    proximityPrompt:InputHoldBegin()
+                end
+            end
         end
     end
-wait(0.1)
+    wait(0.1)
 end
 	end    
 })
@@ -319,17 +315,24 @@ Tab2:AddToggle({
 	Default = false,
 	Save = true,
 	Callback = function(Value)
-		getgenv().Vita = Value;
+		getgenv().Vita = Value
 
-                while getgenv().Vita and wait(0.1) do
-                        pcall(function()
-                               for i, v in pairs(game.workspace:GetDescendants()) do
-        if v.Name == "Vitamins" then
-            fireproximityprompt(v.ProximityPrompt)
-        end
-    end
-                        end)
+while getgenv().Vita do
+    pcall(function()
+        for i, v in pairs(game.Workspace:GetDescendants()) do
+            if v.Name == "Vitamins" and v:IsA("BasePart") then
+                local proximityPrompt = v:FindFirstChildOfClass("ProximityPrompt")
+                if proximityPrompt then
+                    local maxDistance = proximityPrompt.MaxActivationDistance
+                    if (v.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude <= maxDistance then
+                        proximityPrompt:InputHoldBegin()
+                    end
                 end
+            end
+        end
+    end)
+    wait(0.1)
+end
 	end    
 })
 
@@ -338,17 +341,24 @@ Tab2:AddToggle({
 	Default = false,
 	Save = true,
 	Callback = function(Value)
-		getgenv().Band = Value;
+		getgenv().Band = Value
 
-                while getgenv().Band and wait(0.1) do
-                        pcall(function()
-                               for i, v in pairs(game.workspace:GetDescendants()) do
-        if v.Name == "Bandage" then
-            fireproximityprompt(v.ProximityPrompt)
-        end
-    end
-                        end)
+while getgenv().Band do
+    pcall(function()
+        for i, v in pairs(game.Workspace:GetDescendants()) do
+            if v.Name == "Bandage" and v:IsA("BasePart") then
+                local proximityPrompt = v:FindFirstChildOfClass("ProximityPrompt")
+                if proximityPrompt then
+                    local maxDistance = proximityPrompt.MaxActivationDistance
+                    if (v.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude <= maxDistance then
+                        proximityPrompt:InputHoldBegin()
+                    end
                 end
+            end
+        end
+    end)
+    wait(0.1)
+end
 	end    
 })
 
@@ -357,17 +367,24 @@ Tab2:AddToggle({
 	Default = false,
 	Save = true,
 	Callback = function(Value)
-		getgenv().LockPick = Value;
+		getgenv().LockPick = Value
 
-                while getgenv().LockPick and wait(0.1) do
-                        pcall(function()
-                               for i, v in pairs(game.workspace:GetDescendants()) do
-        if v.Name == "Lockpick" then
-            fireproximityprompt(v.ProximityPrompt)
-        end
-    end
-                        end)
+while getgenv().LockPick do
+    pcall(function()
+        for i, v in pairs(game.Workspace:GetDescendants()) do
+            if v.Name == "Lockpick" and v:IsA("BasePart") then
+                local proximityPrompt = v:FindFirstChildOfClass("ProximityPrompt")
+                if proximityPrompt then
+                    local maxDistance = proximityPrompt.MaxActivationDistance
+                    if (v.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude <= maxDistance then
+                        proximityPrompt:InputHoldBegin()
+                    end
                 end
+            end
+        end
+    end)
+    wait(0.1)
+end
 	end    
 })
 
@@ -376,17 +393,24 @@ Tab2:AddToggle({
 	Default = false,
 	Save = true,
 	Callback = function(Value)
-		getgenv().SusKey = Value;
+		getgenv().SusKey = Value
 
-                while getgenv().SusKey and wait(0.1) do
-                        pcall(function()
-                               for i, v in pairs(game.workspace:GetDescendants()) do
-        if v.Name == "Mysterious Key" then
-            fireproximityprompt(v.ProximityPrompt)
-        end
-    end
-                        end)
+while getgenv().SusKey do
+    pcall(function()
+        for i, v in pairs(game.Workspace:GetDescendants()) do
+            if v.Name == "Mysterious Key" and v:IsA("BasePart") then
+                local proximityPrompt = v:FindFirstChildOfClass("ProximityPrompt")
+                if proximityPrompt then
+                    local maxDistance = proximityPrompt.MaxActivationDistance
+                    if (v.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude <= maxDistance then
+                        proximityPrompt:InputHoldBegin()
+                    end
                 end
+            end
+        end
+    end)
+    wait(0.1)
+end
 	end    
 })
 
@@ -395,17 +419,24 @@ Tab2:AddToggle({
 	Default = false,
 	Save = true,
 	Callback = function(Value)
-		getgenv().Crucifix = Value;
+		getgenv().Crucifix = Value
 
-                while getgenv().Crucifix and wait(0.1) do
-                        pcall(function()
-                               for i, v in pairs(game.workspace:GetDescendants()) do
-        if v.Name == "Crucifix" then
-            fireproximityprompt(v.ProximityPrompt)
-        end
-    end
-                        end)
+while getgenv().Crucifix do
+    pcall(function()
+        for i, v in pairs(game.Workspace:GetDescendants()) do
+            if v.Name == "Crucifix" and v:IsA("BasePart") then
+                local proximityPrompt = v:FindFirstChildOfClass("ProximityPrompt")
+                if proximityPrompt then
+                    local maxDistance = proximityPrompt.MaxActivationDistance
+                    if (v.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude <= maxDistance then
+                        proximityPrompt:InputHoldBegin()
+                    end
                 end
+            end
+        end
+    end)
+    wait(0.1)
+end
 	end    
 })
 
@@ -527,17 +558,21 @@ Tab3:AddToggle({
 	end    
 })
 
-Tab3:AddButton({
+
+Tab3:AddToggle({
 	Name = "Infinite Jump",
-	Callback = function()
-      		local InfiniteJumpEnabled = true
-			game:GetService("UserInputService").JumpRequest:connect(function()
-				if InfiniteJumpEnabled then
-					game:GetService"Players".LocalPlayer.Character:FindFirstChildOfClass'Humanoid':ChangeState("Jumping")
-				end
-			end)
-  	end    
+	Default = false,
+	Callback = function(Value)
+		local InfiniteJumpEnabled = Value
+
+game:GetService("UserInputService").JumpRequest:Connect(function()
+    if InfiniteJumpEnabled then
+        game:GetService("Players").LocalPlayer.Character:FindFirstChildOfClass("Humanoid"):ChangeState("Jumping")
+    end
+end)
+	end    
 })
+
 
 local Section = Tab4:AddSection({
 	Name = "Cringe#0438 | Scripter (did mostly everything)"
