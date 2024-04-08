@@ -21,10 +21,25 @@ end
 task.wait();
 
 task.spawn(function()
-task.wait(1.5)
-for _,orio in ipairs(game.CoreGui:WaitForChild("Orion"):GetChildren()) do
-orio.Position = UDim2.new(0.43, -307, 0.3, -172)
+    task.wait(1.5)
+    local orion = game.CoreGui:WaitForChild("Orion")
+    for _, orio in ipairs(orion:GetChildren()) do
+        orio.Position = UDim2.new(0.43, -307, 0.3, -172)
+        orio:GetPropertyChangedSignal("Visible"):Connect(function()
+            if not orio.Visible then
+                orio.Visible = true
+            end
+        end)
+    end
+end)
+
+task.spawn(function()
+game.Players.LocalPlayer.PlayerGui:WaitForChild("MainGUI"):WaitForChild("HintFrame").ChildAdded:Connect(function(no)
+if no:IsA("TextLabel") and no.Text == "Cannot pick that up." then
+repeat wait() until no
+no:Destroy()
 end
+end)
 end)
 
 game:GetService("ProximityPromptService").PromptButtonHoldBegan:Connect(function(prompt)
