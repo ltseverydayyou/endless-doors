@@ -1,0 +1,38 @@
+local curroom = game.workspace.Game.Values.RoomsNumber.Value
+local rmMain=curroom
+local rmOld=curroom - 4
+
+if workspace.Game.Rooms:FindFirstChild("Room"..rmOld) then
+    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = workspace.Game.Rooms["Room"..rmMain].Door.Stamp.CFrame
+    task.wait(0.3)
+    
+    for i = 1, 3 do
+        task.wait(0.1)
+        fireproximityprompt(workspace.Game.Rooms["Room"..rmMain].Door.Handle.ProximityPrompt)
+    end
+    
+    task.wait(0.2)
+    
+    local args = {
+        workspace.Game.Rooms["Room"..rmOld].Models.Wardrobe,
+        false,
+        false
+    }
+    
+    game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("HIDE"):FireServer(unpack(args))
+    
+    for i = 1, 5 do
+        task.wait(0.3)
+        game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = workspace.Game.Rooms["Room"..rmMain].Door.Stamp.CFrame
+    end
+    
+    game:GetService("Players").LocalPlayer.Character:FindFirstChild("Hiding").Value = false
+	else
+	game.StarterGui:SetCore("SendNotification", {
+Title = "ERR";
+Text = "open a few doors for this to work";
+Icon = "";
+Duration = 2;
+Callback = NotificationBindable;
+})
+end
