@@ -472,9 +472,16 @@ Tab2:AddToggle({
                         pcall(function()
                                for _, v in ipairs(game:GetService("Workspace"):GetDescendants()) do
     if v:IsA("ProximityPrompt") and v.Name == "ProximityPrompt" then
-        local maxDistance = v.MaxActivationDistance + 5
-        if (v.Parent.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude <= maxDistance then
+        local bitVal = game.Players.LocalPlayer.leaderstats.Bits
+local maxDistance = v.MaxActivationDistance + 5
+            if (v.Parent.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude <= maxDistance then
+        if bitVal.Value >= 2500 then
+if game.PlaceId == 16810788519 and v.Parent.Name ~= "Bit" then
             fireproximityprompt(v, 0)
+end
+        else
+                fireproximityprompt(v, 0)
+            end
         end
     end
 end
