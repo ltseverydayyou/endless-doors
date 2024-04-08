@@ -1,6 +1,97 @@
+local GetService = game.GetService
+ iamcore = game:GetService("CoreGui")
+if not game:IsLoaded() then
+	local waiting = Instance.new("Message")
+	waiting.Parent = iamcore
+	waiting.Text = 'waiting for the game to load'
+	game.Loaded:Wait()
+	waiting:Destroy()
+end
+
+if game.GameId == 3927488489 and (game.PlaceId == 10891480658 or game.PlaceId == 16810788519) then
+
+local txt = "nil"
+
+if game.PlaceId == 10891480658 then
+txt = "Endless Doors"
+elseif game.PlaceId == 16810788519 then
+txt = "Endless Doors [Epic Mode]"
+end
+
+task.wait();
+
+task.spawn(function()
+task.wait(1.5)
+for _,orio in ipairs(game.CoreGui:WaitForChild("Orion"):GetChildren()) do
+orio.Position = UDim2.new(0.43, -307, 0.3, -172)
+end
+end)
+
 game:GetService("ProximityPromptService").PromptButtonHoldBegan:Connect(function(prompt)
             fireproximityprompt(prompt)
         end)
+
+function fallDMG()
+		local Part = "FDMG"
+		 
+		local femboy = game:GetDescendants()
+		for i = 1, #femboy do local v = femboy[i]
+		if v.Name == Part then
+repeat wait() until v
+		v:Destroy()
+		end
+		end
+end
+
+function dark()
+local Part = "InDarkRoom"
+
+		local femboy = game:GetDescendants()
+		for i = 1, #femboy do local v = femboy[i]
+		if v.Name == Part then
+repeat wait() until v
+                v.Value = false
+task.wait();
+		v:Destroy()
+		end
+		end
+end
+
+task.spawn(function()
+spawn(fallDMG)
+spawn(dark)
+game.Players.LocalPlayer.CharacterAdded:Connect(function()
+spawn(fallDMG)
+spawn(dark)
+end)
+end)
+
+task.spawn(function()
+game.workspace.DescendantAdded:Connect(function(seer)
+if (seer:IsA("Model") or seer:IsA("BasePart")) and seer.Name == "Overseer" then
+repeat wait() until seer
+seer:Destroy()
+end
+end)
+end)
+
+task.spawn(function()
+game.workspace.DescendantAdded:Connect(function(lamp)
+if lamp:IsA("BasePart") and lamp.Name == "BrokenLamp" then
+repeat wait() until lamp
+lamp:Destroy()
+end
+end)
+end)
+
+task.spawn(function()
+game.workspace.DescendantAdded:Connect(function(abyss)
+if abyss:IsA("BasePart") and abyss.Name == "AbyssKill" then
+repeat wait() until abyss
+abyss:Destroy()
+end
+end)
+end)
 
 game.Players.LocalPlayer.Character.Humanoid.AutoJumpEnabled = false
 
@@ -8,21 +99,16 @@ wait(0.3)
 
 local OrionLib = loadstring(game:HttpGet(('https://raw.githubusercontent.com/shlexware/Orion/main/source')))()
 
-local Window = OrionLib:MakeWindow({Name = "Cringe Hub: Endless Doors", HidePremium = false, IntroText = "Endless Doors", SaveConfig = false, IntroIcon = "rbxassetid://13361894613", ConfigFolder = "Endless"})
+local Window = OrionLib:MakeWindow({Name = txt, HidePremium = false, IntroText = "", SaveConfig = false, IntroIcon = "rbxassetid://13361894613", ConfigFolder = "Endless"})
 
 getgenv().speed = nil
 getgenv().jump = nil
+getgenv().fov = nil
 
 
 local Tab = Window:MakeTab({
 	Name = "Main",
 	Icon = "rbxassetid://13361894613",
-	PremiumOnly = false
-})
-
-local Tab1 = Window:MakeTab({
-	Name = "Bypass",
-	Icon = "rbxassetid://12981291804",
 	PremiumOnly = false
 })
 
@@ -68,36 +154,12 @@ Tab:AddButton({
 })
 
 Tab:AddButton({
-	Name = "Better Flashlight",
-	Callback = function()
-      		game.Players.LocalPlayer.Character.Flashlight.Attachment.SpotLight.Range = 9999
-            game.Players.LocalPlayer.Character.Flashlight.Attachment2.SpotLight.Range = 9999
-  	end    
-})
-
-Tab:AddButton({
 	Name = "SetUp",
 	Callback = function()
       		game:GetService("Players").LocalPlayer.DevEnableMouseLock = false
 			game:GetService("Players").LocalPlayer.CameraMaxZoomDistance = 9999999
 			game:GetService("Players").LocalPlayer.CameraMinZoomDistance = 0
 			game:GetService("Players").LocalPlayer.CameraMode = "Classic"
-  	end    
-})
-
-Tab:AddButton({
-	Name = "Anti FallDamage",
-	Callback = function()
-      		-- Name
-		local Part = "FDMG"
-		 
-		-- Script
-		local femboy = game:GetDescendants()
-		for i = 1, #femboy do local v = femboy[i]
-		if v.Name == Part then
-		v:Destroy()
-		end
-		end
   	end    
 })
 
@@ -108,10 +170,9 @@ Tab:AddToggle({
 	Callback = function(Value)
 		_G.battery = Value
 		while _G.battery == true do
-		-- Name
+
 		local Part = "Battery"
-		 
-		-- Script
+		
 		local femboy = game:GetDescendants()
 		for i = 1, #femboy do local v = femboy[i]
 		if v.Name == Part then
@@ -181,82 +242,6 @@ Tab:AddToggle({
 	end
 		end    
 	})
-
-Tab1:AddButton({
-	Name = "Bypass Dark Rooms [buggy]",
-	Callback = function()
-      		-- Name
-		local Part = "InDarkRoom"
-		 
-		-- Script
-		local femboy = game:GetDescendants()
-		for i = 1, #femboy do local v = femboy[i]
-		if v.Name == Part then
-                v.Value = false
-		v:Destroy()
-		end
-		end
-  	end    
-})
-
-Tab1:AddToggle({
-	Name = "Disable Abyss [if ur dumb and fall into one]",
-	Default = false,
-	Callback = function(Value)
-	getgenv().deathlol = Value;
-
-	while getgenv().deathlol and wait(0.5) do
-			pcall(function()
-			for i, v in pairs(game.workspace:GetDescendants()) do
-			if v.Name == "AbyssKill" then
-				v:Destroy()
-			end
-		end
-			end)
-	end 
-
-	end    
-})
-
-
-Tab1:AddToggle({
-	Name = "Bypass Overseer",
-	Default = false,
-	Save = true,
-	Callback = function(Value)
-		_G.monster = Value
-while _G.monster == true do
--- Name
-local Part = "Overseer"
- 
--- Script
-local femboy = game:GetDescendants()
-for i = 1, #femboy do local v = femboy[i]
-if v.Name == Part then
-v:Destroy()
-end
-end
-wait(0.1)
-end
-	end    
-})
-
-Tab1:AddToggle({
-	Name = "Anti Broken Lamps",
-	Default = false,
-	Save = true,
-	Callback = function(Value)
-		_G.lemp = Value
-while _G.lemp == true do
-for i, v in pairs(game.workspace:GetDescendants()) do
-        if v.Name == "BrokenLamp" then
-            v:Destroy()
-        end
-    end
-task.wait()
-end
-	end    
-})
 
 local Section = Tab2:AddSection({
 	Name = "Still in beta so don't expect it to work properly"
@@ -461,49 +446,22 @@ local Section = Tab2:AddSection({
 local Section = Tab2:AddSection({
 	Name = ""
 })
-local Section = Tab2:AddSection({
-	Name = ""
-})
-local Section = Tab2:AddSection({
-	Name = ""
-})
-local Section = Tab2:AddSection({
-	Name = ""
-})
-local Section = Tab2:AddSection({
-	Name = ""
-})
-local Section = Tab2:AddSection({
-	Name = ""
-})
-local Section = Tab2:AddSection({
-	Name = ""
-})
-local Section = Tab2:AddSection({
-	Name = ""
-})
-local Section = Tab2:AddSection({
-	Name = ""
-})
-local Section = Tab2:AddSection({
-	Name = ""
-})
-local Section = Tab2:AddSection({
-	Name = ""
-})
 
 Tab2:AddToggle({
-	Name = "Trigger Everything [excluding wardrobes]",
+	Name = "Trigger Everything [not wardrobes]",
 	Default = false,
 	Callback = function(Value)
 		getgenv().chaos = Value;
 
-                while getgenv().chaos and wait(0.1) do
+                while getgenv().chaos and task.wait() do
                         pcall(function()
-                               for i,v in pairs(game:GetService("Workspace"):GetDescendants()) do
+                               for _, v in ipairs(game:GetService("Workspace"):GetDescendants()) do
     if v:IsA("ProximityPrompt") and v.Name == "ProximityPrompt" then
-        fireproximityprompt(v, 0)
-end
+        local maxDistance = v.MaxActivationDistance + 5
+        if (v.Parent.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude <= maxDistance then
+            fireproximityprompt(v, 0)
+        end
+    end
 end
                         end)
                 end
@@ -527,7 +485,7 @@ Tab3:AddToggle({
 	Callback = function(Value)
 		getgenv().sped = Value;
 
-                while getgenv().sped and wait(0) do
+                while getgenv().sped and task.wait() do
                         pcall(function()
                                game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = getgenv().speed
                         end)
@@ -550,9 +508,32 @@ Tab3:AddToggle({
 	Callback = function(Value)
 		getgenv().jumpy = Value;
 
-                while getgenv().jumpy and wait(0) do
+                while getgenv().jumpy and task.wait() do
                         pcall(function()
                                game.Players.LocalPlayer.Character.Humanoid.JumpPower = getgenv().jump
+                        end)
+                end
+	end    
+})
+
+Tab3:AddTextbox({
+	Name = "Set FOV",
+	Default = "",
+	TextDisappear = false,
+	Callback = function(Value)
+		getgenv().fov = Value
+	end	  
+})
+
+Tab3:AddToggle({
+	Name = "Toggle FOV",
+	Default = false,
+	Callback = function(Value)
+		getgenv().wide = Value;
+
+                while getgenv().wide and task.wait() do
+                        pcall(function()
+                               game.Workspace.CurrentCamera.FieldOfView = getgenv().fov
                         end)
                 end
 	end    
@@ -565,21 +546,24 @@ Tab3:AddToggle({
 	Callback = function(Value)
 		local InfiniteJumpEnabled = Value
 
-game:GetService("UserInputService").JumpRequest:Connect(function()
-    if InfiniteJumpEnabled then
-        game:GetService("Players").LocalPlayer.Character:FindFirstChildOfClass("Humanoid"):ChangeState("Jumping")
-    end
+if InfiniteJumpEnabled then
+infinite = game:GetService("UserInputService").JumpRequest:Connect(function()   game:GetService("Players").LocalPlayer.Character:FindFirstChildOfClass("Humanoid"):ChangeState("Jumping")
 end)
+else
+if infinite then
+infinite:Disconnect()
+end
+end
 	end    
 })
 
 
 local Section = Tab4:AddSection({
-	Name = "Cringe#0438 | Scripter (did mostly everything)"
+	Name = "maxype | Scripter (did mostly everything)"
 })
 
 local Section = Tab4:AddSection({
-	Name = "mixalispantidos12#7016 | Tester, Helper (helped with bypass section)"
+	Name = "mixalispantidos12 | Tester, Helper (helped with bypass)"
 })
 
 
@@ -599,3 +583,5 @@ Tab6:AddButton({
 })
 
 OrionLib:Init()
+
+end
