@@ -267,21 +267,26 @@ Tab2:AddToggle({
 	Default = false,
 	Save = true,
 	Callback = function(Value)
-		_G.bits = Value
+		getgenv().bits = Value
 
-while _G.bits do
+while getgenv().bits and task.wait() do
+pcall(function()
     for i, v in pairs(game.Workspace:GetDescendants()) do
         if v.Name == "Bit" and v:IsA("BasePart") then
+        local bitVal = game.Players.LocalPlayer.leaderstats.Bits
             local proximityPrompt = v:FindFirstChildOfClass("ProximityPrompt")
             if proximityPrompt then
                 local maxDistance = proximityPrompt.MaxActivationDistance
                 if (v.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude <= maxDistance then
-                    proximityPrompt:InputHoldBegin()
+if game.PlaceId == 16810788519 and bitVal.Value >= 2500 then
+else
+                    fireproximityprompt(proximityPrompt)
+end
                 end
             end
         end
     end
-    wait(0.1)
+end)
 end
 	end    
 })
@@ -291,21 +296,22 @@ Tab2:AddToggle({
 	Default = false,
 	Save = true,
 	Callback = function(Value)
-		_G.Key = Value
+		getgenv().Key = Value
 
-while _G.Key do
+while getgenv().Key and task.wait() do
+pcall(function()
     for i, v in pairs(game.Workspace:GetDescendants()) do
         if v.Name == "RoomKey" and v:IsA("BasePart") then
             local proximityPrompt = v:FindFirstChildOfClass("ProximityPrompt")
             if proximityPrompt then
                 local maxDistance = proximityPrompt.MaxActivationDistance
                 if (v.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude <= maxDistance then
-                    proximityPrompt:InputHoldBegin()
+                    fireproximityprompt(proximityPrompt)
                 end
             end
         end
     end
-    wait(0.1)
+end)
 end
 	end    
 })
@@ -317,7 +323,7 @@ Tab2:AddToggle({
 	Callback = function(Value)
 		getgenv().Vita = Value
 
-while getgenv().Vita do
+while getgenv().Vita and task.wait() do
     pcall(function()
         for i, v in pairs(game.Workspace:GetDescendants()) do
             if v.Name == "Vitamins" and v:IsA("BasePart") then
@@ -325,13 +331,12 @@ while getgenv().Vita do
                 if proximityPrompt then
                     local maxDistance = proximityPrompt.MaxActivationDistance
                     if (v.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude <= maxDistance then
-                        proximityPrompt:InputHoldBegin()
+                        fireproximityprompt(proximityPrompt)
                     end
                 end
             end
         end
     end)
-    wait(0.1)
 end
 	end    
 })
@@ -343,7 +348,7 @@ Tab2:AddToggle({
 	Callback = function(Value)
 		getgenv().Band = Value
 
-while getgenv().Band do
+while getgenv().Band and task.wait() do
     pcall(function()
         for i, v in pairs(game.Workspace:GetDescendants()) do
             if v.Name == "Bandage" and v:IsA("BasePart") then
@@ -351,13 +356,12 @@ while getgenv().Band do
                 if proximityPrompt then
                     local maxDistance = proximityPrompt.MaxActivationDistance
                     if (v.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude <= maxDistance then
-                        proximityPrompt:InputHoldBegin()
+                        fireproximityprompt(proximityPrompt)
                     end
                 end
             end
         end
     end)
-    wait(0.1)
 end
 	end    
 })
@@ -369,7 +373,7 @@ Tab2:AddToggle({
 	Callback = function(Value)
 		getgenv().LockPick = Value
 
-while getgenv().LockPick do
+while getgenv().LockPick and task.wait() do
     pcall(function()
         for i, v in pairs(game.Workspace:GetDescendants()) do
             if v.Name == "Lockpick" and v:IsA("BasePart") then
@@ -377,13 +381,12 @@ while getgenv().LockPick do
                 if proximityPrompt then
                     local maxDistance = proximityPrompt.MaxActivationDistance
                     if (v.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude <= maxDistance then
-                        proximityPrompt:InputHoldBegin()
+                        fireproximityprompt(proximityPrompt)
                     end
                 end
             end
         end
     end)
-    wait(0.1)
 end
 	end    
 })
@@ -395,7 +398,7 @@ Tab2:AddToggle({
 	Callback = function(Value)
 		getgenv().SusKey = Value
 
-while getgenv().SusKey do
+while getgenv().SusKey and task.wait() do
     pcall(function()
         for i, v in pairs(game.Workspace:GetDescendants()) do
             if v.Name == "Mysterious Key" and v:IsA("BasePart") then
@@ -403,13 +406,12 @@ while getgenv().SusKey do
                 if proximityPrompt then
                     local maxDistance = proximityPrompt.MaxActivationDistance
                     if (v.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude <= maxDistance then
-                        proximityPrompt:InputHoldBegin()
+                        fireproximityprompt(proximityPrompt)
                     end
                 end
             end
         end
     end)
-    wait(0.1)
 end
 	end    
 })
@@ -421,7 +423,7 @@ Tab2:AddToggle({
 	Callback = function(Value)
 		getgenv().Crucifix = Value
 
-while getgenv().Crucifix do
+while getgenv().Crucifix and task.wait() do
     pcall(function()
         for i, v in pairs(game.Workspace:GetDescendants()) do
             if v.Name == "Crucifix" and v:IsA("BasePart") then
@@ -429,13 +431,12 @@ while getgenv().Crucifix do
                 if proximityPrompt then
                     local maxDistance = proximityPrompt.MaxActivationDistance
                     if (v.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude <= maxDistance then
-                        proximityPrompt:InputHoldBegin()
+                        fireproximityprompt(proximityPrompt)
                     end
                 end
             end
         end
     end)
-    wait(0.1)
 end
 	end    
 })
