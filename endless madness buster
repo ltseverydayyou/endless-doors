@@ -40,6 +40,14 @@ repeat wait() until no
 no:Destroy()
 end
 end)
+game.Players.LocalPlayer.CharacterAdded:Connect(function()
+game.Players.LocalPlayer.PlayerGui:WaitForChild("MainGUI"):WaitForChild("HintFrame").ChildAdded:Connect(function(no)
+if no:IsA("TextLabel") and no.Text == "Cannot pick that up." then
+repeat wait() until no
+no:Destroy()
+end
+end)
+end)
 end)
 
 game:GetService("ProximityPromptService").PromptButtonHoldBegan:Connect(function(prompt)
