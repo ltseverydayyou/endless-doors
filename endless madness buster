@@ -291,11 +291,13 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432) and (game.PlaceId ==
 	end)
 
 	task.spawn(function()
-		while task.wait(.2) do
+		game:GetService("RunService").RenderStepped:Connect(function()
 			pcall(function()
-				antiRagdoll()
+				if game.PlaceId == renovation then
+					antiRagdoll()
+				end
 			end)
-		end
+		end)
 	end)
 
 	task.spawn(function()
@@ -1204,8 +1206,8 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432) and (game.PlaceId ==
 	Tab3:CreateInput({
 		Name = "Set FOV",
 		PlaceholderText = "number",
-		Flag = "fovTxt",
 		RemoveTextAfterFocusLost = false,
+		Flag = "fovTxt",
 		Callback = function(Text)
 			getgenv().fov = Text
 		end,
@@ -1383,7 +1385,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432) and (game.PlaceId ==
 	end
 
 	task.spawn(function()
-		while task.wait(.1) do
+		game:GetService("RunService").RenderStepped:Connect(function()
 			pcall(function()
 				rmtxt:Set("Rooms: "..playerRoom())
 				bittxt:Set("Bits: "..playerBits())
@@ -1410,7 +1412,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432) and (game.PlaceId ==
 				end
 
 			end)
-		end
+		end)
 	end)
 
 	Tab6:CreateButton({
