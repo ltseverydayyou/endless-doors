@@ -1320,7 +1320,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432) and (game.PlaceId ==
 			pcall(function()
 				for _, room in ipairs(workspace.Game.Rooms:GetChildren()) do
 					for _, v in pairs(room:GetDescendants()) do
-						local bitVal = game:GetService("Players").LocalPlayer.leaderstats.Bit
+						local bitVal = game:GetService("Players").LocalPlayer.leaderstats.Bits
 						if game.PlaceId == epicmode and bitVal.Value >= 2500 then
 						else
 							processObject(v, "bit")
@@ -1401,7 +1401,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432) and (game.PlaceId ==
 				for _, room in ipairs(workspace.Game.Rooms:GetChildren()) do
 					for _, v in ipairs(room:GetDescendants()) do
 						if v:IsA("ProximityPrompt") and v.Name == "ProximityPrompt" then
-							local bitVal = game:GetService("Players").LocalPlayer.leaderstats.Bit
+							local bitVal = game:GetService("Players").LocalPlayer.leaderstats.Bits
 							local h = 0
 							if game.PlaceId == renovation then
 								h = 0
