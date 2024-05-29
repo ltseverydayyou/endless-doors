@@ -141,7 +141,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432) and (game.PlaceId ==
 			end)
 		end
 	end)
-	
+
 	task.spawn(function()
 		local decalsyeeted = true
 		local g = game
@@ -1214,7 +1214,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432) and (game.PlaceId ==
 	Tab3:CreateToggle({
 		Name = "Toggle FOV",
 		CurrentValue = false,
-		Flag = FovTgl",
+		Flag = "FovTgl",
 		Callback = function(Value)
 			getgenv().wide = Value;
 
@@ -1401,7 +1401,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432) and (game.PlaceId ==
 					dies:Set("Deaths: "..deaths())
 					inRift:Set("Rift: "..rifted())
 					joinedGroup:Set("Joined Group: "..inGroup())
-					
+
 					Fuzzi:Set("Fuzzi: "..fuz())
 					Zav:Set("Zav: "..zavv())
 					Jake:Set("Jake: "..jaek())
