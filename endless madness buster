@@ -984,20 +984,6 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432) and (game.PlaceId ==
 		Flag = "bitAura",
 		Callback = function(Value)
 			getgenv().bits = Value
-
-			while getgenv().bits and task.wait(.05) do
-				pcall(function()
-					for _, room in ipairs(workspace.Game.Rooms:GetChildren()) do
-						for _, v in pairs(room:GetDescendants()) do
-							local bitVal = playerBits()
-							if game.PlaceId == epicmode and bitVal.Value >= 2500 then
-							else
-								processObject(v, "bit")
-							end
-						end
-					end
-				end)
-			end
 		end,
 	})
 
@@ -1007,16 +993,6 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432) and (game.PlaceId ==
 		Flag = "keyAura",
 		Callback = function(Value)
 			getgenv().Key = Value
-
-			while getgenv().Key and task.wait(.05) do
-				pcall(function()
-					for _, room in ipairs(workspace.Game.Rooms:GetChildren()) do
-						for _, v in pairs(room:GetDescendants()) do
-							processObject(v, "roomkey")
-						end
-					end
-				end)
-			end
 		end,
 	})
 
@@ -1026,16 +1002,6 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432) and (game.PlaceId ==
 		Flag = "VitaminAura",
 		Callback = function(Value)
 			getgenv().Vita = Value
-
-			while getgenv().Vita and task.wait(.05) do
-				pcall(function()
-					for _, room in ipairs(workspace.Game.Rooms:GetChildren()) do
-						for _, v in pairs(room:GetDescendants()) do
-							processObject(v, "vitamins")
-						end
-					end
-				end)
-			end
 		end,
 	})
 
@@ -1045,16 +1011,6 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432) and (game.PlaceId ==
 		Flag = "BandageAura",
 		Callback = function(Value)
 			getgenv().Band = Value
-
-			while getgenv().Band and task.wait(.05) do
-				pcall(function()
-					for _, room in ipairs(workspace.Game.Rooms:GetChildren()) do
-						for _, v in pairs(room:GetDescendants()) do
-							processObject(v, "bandage")
-						end
-					end
-				end)
-			end
 		end,
 	})
 
@@ -1064,16 +1020,6 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432) and (game.PlaceId ==
 		Flag = "LockpickAura",
 		Callback = function(Value)
 			getgenv().LockPick = Value
-
-			while getgenv().LockPick and task.wait(.05) do
-				pcall(function()
-					for _, room in ipairs(workspace.Game.Rooms:GetChildren()) do
-						for _, v in pairs(room:GetDescendants()) do
-							processObject(v, "lockpick")
-						end
-					end
-				end)
-			end
 		end,
 	})
 
@@ -1083,16 +1029,6 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432) and (game.PlaceId ==
 		Flag = "MysteriousKeyAura",
 		Callback = function(Value)
 			getgenv().SusKey = Value
-
-			while getgenv().SusKey and task.wait(.05) do
-				pcall(function()
-					for _, room in ipairs(workspace.Game.Rooms:GetChildren()) do
-						for _, v in pairs(room:GetDescendants()) do
-							processObject(v, "mysterious key")
-						end
-					end
-				end)
-			end
 		end,
 	})
 
@@ -1102,14 +1038,6 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432) and (game.PlaceId ==
 		Flag = "CrucifixAura",
 		Callback = function(Value)
 			getgenv().Crucifix = Value
-
-			while getgenv().Crucifix and task.wait(.05) do
-				pcall(function()
-					for _, v in pairs(workspace.Game.Rooms:GetDescendants()) do
-						processObject(v, "crucifix")
-					end
-				end)
-			end
 		end,
 	})
 
@@ -1125,31 +1053,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432) and (game.PlaceId ==
 		CurrentValue = false,
 		Flag = "AuraAll",
 		Callback = function(Value)
-			getgenv().chaos = Value;
-
-			while getgenv().chaos and task.wait(.05) do
-				pcall(function()
-					for _, room in ipairs(workspace.Game.Rooms:GetChildren()) do
-						for _, v in ipairs(room:GetDescendants()) do
-							if v:IsA("ProximityPrompt") and v.Name == "ProximityPrompt" then
-								local bitVal = playerBits()
-								local maxDistance = v.MaxActivationDistance
-								if (v.Parent.Position - game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.Position).Magnitude <= maxDistance then
-									if game.PlaceId == epicmode then
-										if (bitVal >= 2500 and v.Parent.Name ~= "Bit") then
-											fireproximityprompt(v)
-										elseif bitVal < 2500 then
-											fireproximityprompt(v)
-										end
-									else
-										fireproximityprompt(v)
-									end
-								end
-							end
-						end
-					end
-				end)
-			end
+			getgenv().chaos = Value
 		end,
 	})
 
@@ -1170,13 +1074,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432) and (game.PlaceId ==
 		CurrentValue = false,
 		Flag = "WSspeed",
 		Callback = function(Value)
-			getgenv().sped = Value;
-
-			while getgenv().sped and task.wait() do
-				pcall(function()
-					game:GetService("Players").LocalPlayer.Character.Humanoid.WalkSpeed = getgenv().speed
-				end)
-			end
+			getgenv().sped = Value
 		end,
 	})
 
@@ -1195,13 +1093,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432) and (game.PlaceId ==
 		CurrentValue = false,
 		Flag = "JPtgl",
 		Callback = function(Value)
-			getgenv().jumpy = Value;
-
-			while getgenv().jumpy and task.wait() do
-				pcall(function()
-					game:GetService("Players").LocalPlayer.Character.Humanoid.JumpPower = getgenv().jump
-				end)
-			end
+			getgenv().jumpy = Value
 		end,
 	})
 
@@ -1220,13 +1112,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432) and (game.PlaceId ==
 		CurrentValue = false,
 		Flag = "FovTgl",
 		Callback = function(Value)
-			getgenv().wide = Value;
-
-			while getgenv().wide and task.wait() do
-				pcall(function()
-					workspace.CurrentCamera.FieldOfView = getgenv().fov
-				end)
-			end
+			getgenv().wide = Value
 		end,
 	})
 
@@ -1426,4 +1312,135 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432) and (game.PlaceId ==
 
 	Rayfield:LoadConfiguration()
 
+	-- auras
+
+	game:GetService("RunService").RenderStepped:Connect(function()
+		if getgenv().bits then
+			pcall(function()
+				for _, room in ipairs(workspace.Game.Rooms:GetChildren()) do
+					for _, v in pairs(room:GetDescendants()) do
+						local bitVal = playerBits()
+						if game.PlaceId == epicmode and bitVal.Value >= 2500 then
+						else
+							processObject(v, "bit")
+						end
+					end
+				end
+			end)
+		end
+	end)
+	game:GetService("RunService").RenderStepped:Connect(function()
+		if getgenv().Key then
+			pcall(function()
+				for _, room in ipairs(workspace.Game.Rooms:GetChildren()) do
+					for _, v in pairs(room:GetDescendants()) do
+						processObject(v, "roomkey")
+					end
+				end
+			end)
+
+		end
+	end)
+	game:GetService("RunService").RenderStepped:Connect(function()
+		if getgenv().Vita then
+			pcall(function()
+				for _, room in ipairs(workspace.Game.Rooms:GetChildren()) do
+					for _, v in pairs(room:GetDescendants()) do
+						processObject(v, "vitamins")
+					end
+				end
+			end)
+		end
+	end)
+	game:GetService("RunService").RenderStepped:Connect(function()
+		if getgenv().Band then
+			pcall(function()
+				for _, room in ipairs(workspace.Game.Rooms:GetChildren()) do
+					for _, v in pairs(room:GetDescendants()) do
+						processObject(v, "bandage")
+					end
+				end
+			end)
+		end
+	end)
+	game:GetService("RunService").RenderStepped:Connect(function()
+		if getgenv().LockPick then
+			pcall(function()
+				for _, room in ipairs(workspace.Game.Rooms:GetChildren()) do
+					for _, v in pairs(room:GetDescendants()) do
+						processObject(v, "lockpick")
+					end
+				end
+			end)
+		end
+	end)
+	game:GetService("RunService").RenderStepped:Connect(function()
+		if getgenv().SusKey then
+			pcall(function()
+				for _, room in ipairs(workspace.Game.Rooms:GetChildren()) do
+					for _, v in pairs(room:GetDescendants()) do
+						processObject(v, "mysterious key")
+					end
+				end
+			end)
+		end
+	end)
+	game:GetService("RunService").RenderStepped:Connect(function()
+		if getgenv().Crucifix then
+			pcall(function()
+				for _, v in pairs(workspace.Game.Rooms:GetDescendants()) do
+					processObject(v, "crucifix")
+				end
+			end)
+		end
+	end)
+	game:GetService("RunService").RenderStepped:Connect(function()
+		if getgenv().chaos then
+			pcall(function()
+				for _, room in ipairs(workspace.Game.Rooms:GetChildren()) do
+					for _, v in ipairs(room:GetDescendants()) do
+						if v:IsA("ProximityPrompt") and v.Name == "ProximityPrompt" then
+							local bitVal = playerBits()
+							local maxDistance = v.MaxActivationDistance
+							if (v.Parent.Position - game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.Position).Magnitude <= maxDistance then
+								if game.PlaceId == epicmode then
+									if (bitVal >= 2500 and v.Parent.Name ~= "Bit") then
+										fireproximityprompt(v)
+									elseif bitVal < 2500 then
+										fireproximityprompt(v)
+									end
+								else
+									fireproximityprompt(v)
+								end
+							end
+						end
+					end
+				end
+			end)
+		end
+	end)
+
+	-- player stuff
+
+	game:GetService("RunService").RenderStepped:Connect(function()
+		if getgenv().sped then
+			pcall(function()
+				game:GetService("Players").LocalPlayer.Character.Humanoid.WalkSpeed = getgenv().speed
+			end)
+		end
+	end)
+	game:GetService("RunService").RenderStepped:Connect(function()
+		if getgenv().jumpy then
+			pcall(function()
+				game:GetService("Players").LocalPlayer.Character.Humanoid.JumpPower = getgenv().jump
+			end)
+		end
+	end)
+	game:GetService("RunService").RenderStepped:Connect(function()
+		if getgenv().wide then
+			pcall(function()
+				workspace.CurrentCamera.FieldOfView = getgenv().fov
+			end)
+		end
+	end)
 end
