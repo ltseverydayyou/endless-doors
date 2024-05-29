@@ -1155,7 +1155,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432) and (game.PlaceId ==
 		Name = "Set WalkSpeed",
 		PlaceholderText = "number",
 		RemoveTextAfterFocusLost = false,
-		Flag = "WSspeed",
+		Flag = "WSTxt",
 		Callback = function(Text)
 			getgenv().speed = Text
 		end,
@@ -1164,6 +1164,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432) and (game.PlaceId ==
 	Tab3:CreateToggle({
 		Name = "Toggle WalkSpeed",
 		CurrentValue = false,
+		Flag = "WSspeed",
 		Callback = function(Value)
 			getgenv().sped = Value;
 
@@ -1179,6 +1180,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432) and (game.PlaceId ==
 		Name = "Set JumpPower",
 		PlaceholderText = "number",
 		RemoveTextAfterFocusLost = false,
+		Flag = "jpTxt",
 		Callback = function(Text)
 			getgenv().jump = Text
 		end,
@@ -1187,6 +1189,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432) and (game.PlaceId ==
 	Tab3:CreateToggle({
 		Name = "Toggle JumpPower",
 		CurrentValue = false,
+		Flag = "JPtgl",
 		Callback = function(Value)
 			getgenv().jumpy = Value;
 
@@ -1201,6 +1204,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432) and (game.PlaceId ==
 	Tab3:CreateInput({
 		Name = "Set FOV",
 		PlaceholderText = "number",
+		Flag = "fovTxt",
 		RemoveTextAfterFocusLost = false,
 		Callback = function(Text)
 			getgenv().fov = Text
@@ -1210,6 +1214,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432) and (game.PlaceId ==
 	Tab3:CreateToggle({
 		Name = "Toggle FOV",
 		CurrentValue = false,
+		Flag = FovTgl",
 		Callback = function(Value)
 			getgenv().wide = Value;
 
