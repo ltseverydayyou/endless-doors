@@ -5,9 +5,9 @@ local curroom = game.workspace.Game.Values.RoomsNumber.Value
 local rmMain=curroom
 local rmOld
 if workspace.Game.Rooms:FindFirstChild("Room"..rmMain - 5) then
-    rmOld==curroom - 5
+    rmOld=curroom - 5
 else
-    rmOld==curroom - 4
+    rmOld=curroom - 4
 end
 if (workspace.Game.Rooms:FindFirstChild("Room"..rmMain - 5) or workspace.Game.Rooms:FindFirstChild("Room"..rmMain -4)) then
 if workspace.Game.Rooms["Room"..rmOld].Models:FindFirstChild("Wardrobe") then
