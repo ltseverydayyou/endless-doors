@@ -1222,6 +1222,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432) and (game.PlaceId ==
 		Name = "Notification Text",
 		PlaceholderText = "Text",
 		RemoveTextAfterFocusLost = false,
+		Flag = "notifTxt",
 		Callback = function(Text)
 			getgenv().Notifv1 = Text
 		end,
