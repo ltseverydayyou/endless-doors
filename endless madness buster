@@ -1314,7 +1314,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432) and (game.PlaceId ==
 	Rayfield:LoadConfiguration()
 
 	-- auras
-
+	task.spawn(function()
 	game:GetService("RunService").RenderStepped:Connect(function()
 		if getgenv().bits then
 			pcall(function()
@@ -1402,7 +1402,13 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432) and (game.PlaceId ==
 					for _, v in ipairs(room:GetDescendants()) do
 						if v:IsA("ProximityPrompt") and v.Name == "ProximityPrompt" then
 							local bitVal = playerBits()
-							local maxDistance = v.MaxActivationDistance
+							local h = 0
+							if game.PlaceId == renovation then
+								h = 0
+							else
+								h=10
+							end
+							local maxDistance = v.MaxActivationDistance + h
 							if (v.Parent.Position - game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.Position).Magnitude <= maxDistance then
 								if game.PlaceId == epicmode then
 									if (bitVal >= 2500 and v.Parent.Name ~= "Bit") then
@@ -1420,9 +1426,10 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432) and (game.PlaceId ==
 			end)
 		end
 	end)
+end)
 
 	-- player stuff
-
+	task.spawn(function()
 	game:GetService("RunService").RenderStepped:Connect(function()
 		if getgenv().sped then
 			pcall(function()
@@ -1443,5 +1450,6 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432) and (game.PlaceId ==
 				workspace.CurrentCamera.FieldOfView = getgenv().fov
 			end)
 		end
+	end)
 	end)
 end
