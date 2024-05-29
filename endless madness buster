@@ -671,15 +671,17 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432) and (game.PlaceId ==
 		end,
 	})
 
-	Tab:CreateToggle({
-		Name = "Disable Camera Shaking",
-		CurrentValue = false,
-		Flag = "camShaking",
-		Callback = function(Value)
-			game:GetService("Players").LocalPlayer.PlayerScripts:FindFirstChild("LocalShaking").Enabled = not Value
-			game:GetService("Players").LocalPlayer.PlayerScripts:FindFirstChild("CameraShake").Enabled = not Value
-		end,
-	})
+	if game.PlaceId == renovation then
+		Tab:CreateToggle({
+			Name = "Disable Camera Shaking",
+			CurrentValue = false,
+			Flag = "camShaking",
+			Callback = function(Value)
+				game:GetService("Players").LocalPlayer.PlayerScripts:FindFirstChild("LocalShaking").Enabled = not Value
+				game:GetService("Players").LocalPlayer.PlayerScripts:FindFirstChild("CameraShake").Enabled = not Value
+			end,
+		})
+	end
 
 	Tab:CreateToggle({
 		Name = "Full Bright",
