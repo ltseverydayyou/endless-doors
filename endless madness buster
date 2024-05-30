@@ -1,10 +1,11 @@
 -- discontinued so here's the source code
 -- enjoy reading this very scuffed ahh code
 
-if (game.GameId == 3927488489 or game.GameId == 5927366432) and (game.PlaceId == 10891480658 or game.PlaceId == 16810788519 or game.PlaceId == 17324650150) then
+if (game.GameId == 3927488489 or game.GameId == 5927366432) and (game.PlaceId == 10891480658 or game.PlaceId == 16810788519 or game.PlaceId == 17324650150 or game.PlaceId == 17639491565) then
 	oldPlace=10891480658
 	epicmode=16810788519
 	renovation=17324650150
+ EMArchive=17639491565
 
 	decalID=17471548099
 	UIdecal="rbxassetid://"..decalID
@@ -106,17 +107,21 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432) and (game.PlaceId ==
 		if game.PlaceId == oldPlace then
 			txt = "Endless Doors [OLD] | Mobile"
 		elseif game.PlaceId == epicmode then
-			txt = "Endless Doors [Epic Mode] | Mobile"
+			txt = "Endless Doors [OLD Epic Mode] | Mobile"
 		elseif game.PlaceId == renovation then
 			txt = "Endless Doors | Mobile"
+elseif game.PlaceId == EMArchive then
+    txt = "Endless Doors [Epic Mode] | Mobile"
 		end
 	else
 		if game.PlaceId == oldPlace then
 			txt = "Endless Doors [OLD]"
 		elseif game.PlaceId == epicmode then
-			txt = "Endless Doors [Epic Mode]"
+			txt = "Endless Doors [OLD Epic Mode]"
 		elseif game.PlaceId == renovation then
 			txt = "Endless Doors"
+   elseif game.PlaceId == EMArchive then
+    txt = "Endless Doors [Epic Mode]"
 		end
 	end
 
@@ -128,13 +133,13 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432) and (game.PlaceId ==
 			pcall(function()
 				for _,vals in ipairs(game:GetService("Players").LocalPlayer.PlayerGui:FindFirstChild("MainGUI"):FindFirstChild("Values"):GetDescendants()) do
 					if vals:IsA("DoubleConstrainedValue") then
-						vals.MaxValue = 999999999999
+						vals.MaxValue = 999999
 						vals.MinValue = 0
 					end
 				end
 				for _,brah in ipairs(workspace:FindFirstChild("Game"):FindFirstChild("Values"):GetDescendants()) do
 					if brah:IsA("DoubleConstrainedValue") then
-						brah.MaxValue = 999999999999
+						brah.MaxValue = 999999
 						brah.MinValue = 0
 					end
 				end
@@ -1065,7 +1070,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432) and (game.PlaceId ==
 		RemoveTextAfterFocusLost = false,
 		Flag = "WSTxt",
 		Callback = function(Text)
-			getgenv().speed = Text
+			getgenv().speed = tonumber(Text)
 		end,
 	})
 
@@ -1084,7 +1089,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432) and (game.PlaceId ==
 		RemoveTextAfterFocusLost = false,
 		Flag = "jpTxt",
 		Callback = function(Text)
-			getgenv().jump = Text
+			getgenv().jump = tonumber(Text)
 		end,
 	})
 
@@ -1103,7 +1108,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432) and (game.PlaceId ==
 		RemoveTextAfterFocusLost = false,
 		Flag = "fovTxt",
 		Callback = function(Text)
-			getgenv().fov = Text
+			getgenv().fov = tonumber(Text)
 		end,
 	})
 
@@ -1299,7 +1304,6 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432) and (game.PlaceId ==
 					Blue:Set("Blue: "..cyan())
 					Alan:Set("Alan: "..alen())
 				end
-
 			end)
 		end)
 	end)
@@ -1406,7 +1410,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432) and (game.PlaceId ==
 							if game.PlaceId == renovation then
 								h = 0
 							else
-								h=10
+								h=5
 							end
 							local maxDistance = v.MaxActivationDistance + h
 							if (v.Parent.Position - game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.Position).Magnitude <= maxDistance then
