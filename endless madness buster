@@ -604,11 +604,13 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 
 	task.spawn(function()
 		game:GetService("RunService").RenderStepped:Connect(function()
-			if rotation and game.PlaceId==renovation then
+		if game.PlaceId==renovation then
+			if rotation then
 				charRotate(true)
 			else
 				charRotate(false)
 			end
+		end
 		end)
 	end)
 
