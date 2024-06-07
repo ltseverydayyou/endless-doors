@@ -6,8 +6,8 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 	oldPlace=10891480658
 	epicmode=16810788519
 	renovation=17324650150
- EMArchive=17639491565
- classicED=17594182379
+	EMArchive=17639491565
+	classicED=17594182379
 
 	decalID=17471548099
 	UIdecal="rbxassetid://"..decalID
@@ -28,12 +28,12 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 
 	local IsOnMobile = table.find({Enum.Platform.IOS, Enum.Platform.Android}, game:GetService("UserInputService"):GetPlatform())
 
-	local function teleporttodoor()
+	function teleporttodoor()
 		local curroom = vals.RoomsNumber.Value
 		game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.CFrame = workspace.Game.Rooms["Room"..curroom].Door:FindFirstChildOfClass("Part").CFrame
 	end
 
-	local function teleporttokey()
+	function teleporttokey()
 		local curroom = vals.RoomsNumber.Value
 		for _,keyroom in ipairs(workspace.Game.Rooms["Room"..curroom]:GetDescendants()) do
 			if (keyroom:IsA("BasePart") and keyroom.Name == "RoomKey" and keyroom.Parent.Name ~= "Door") then
@@ -42,15 +42,15 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 		end
 	end
 
-	local function antiRagdoll()
+	function antiRagdoll()
 		game:GetService("Players").LocalPlayer.Character:FindFirstChild("RagdollTrigger").Value=false
 	end
 
-	local function charRotate(val)
+	function charRotate(val)
 		game:GetService("Players").LocalPlayer.Character:FindFirstChild("CanRotate").Value=val
 	end
 
-	local function processObject(v, itemName)
+	function processObject(v, itemName)
 		if (v:IsA("BasePart") or v:IsA("Model") or v:IsA("Folder")) and v.Name:lower() == itemName then
 			local proximityPrompt = v:FindFirstChildOfClass("ProximityPrompt")
 			if proximityPrompt then
@@ -71,7 +71,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 		local dragStart
 		local startPos
 
-		local function update(input)
+		function update(input)
 			local delta = input.Position - dragStart
 			ui.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
 		end
@@ -103,7 +103,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 		end)
 	end
 
-	local txt = "Unknown"
+	local txt = "unknown"
 
 	if IsOnMobile then
 		if game.PlaceId == oldPlace then
@@ -112,10 +112,10 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 			txt = "Endless Doors [OLD Epic Mode] | Mobile"
 		elseif game.PlaceId == renovation then
 			txt = "Endless Doors | Mobile"
-elseif game.PlaceId == EMArchive then
-    txt = "Endless Doors [Epic Mode] | Mobile"
-elseif game.PlaceId==classicED then
-txt = "Endless Doors [Retro #classic 🔥🔥🔥] | Mobile"
+		elseif game.PlaceId == EMArchive then
+			txt = "Endless Doors [Epic Mode] | Mobile"
+		elseif game.PlaceId==classicED then
+			txt = "Endless Doors [Retro #classic] | Mobile"
 		end
 	else
 		if game.PlaceId == oldPlace then
@@ -124,20 +124,19 @@ txt = "Endless Doors [Retro #classic 🔥🔥🔥] | Mobile"
 			txt = "Endless Doors [OLD Epic Mode]"
 		elseif game.PlaceId == renovation then
 			txt = "Endless Doors"
-   elseif game.PlaceId == EMArchive then
-    txt = "Endless Doors [Epic Mode]"
-elseif game.PlaceId==classicED then
-txt = "Endless Doors [Retro #classic 🔥🔥🔥]"
+		elseif game.PlaceId == EMArchive then
+			txt = "Endless Doors [Epic Mode]"
+		elseif game.PlaceId==classicED then
+			txt = "Endless Doors [Retro #classic]"
 		end
 	end
 
 	task.wait();
 
 	task.spawn(function()
-		task.wait(1.5)
 		while task.wait(2) do
 			pcall(function()
-				for _,vals in ipairs(game:GetService("Players").LocalPlayer.PlayerGui:FindFirstChild("MainGUI"):FindFirstChild("Values"):GetDescendants()) do
+				for _,vals in ipairs(game:GetService("Players").LocalPlayer:FindFirstChild("PlayerGui"):FindFirstChild("MainGUI"):FindFirstChild("Values"):GetDescendants()) do
 					if vals:IsA("DoubleConstrainedValue") then
 						vals.MaxValue = 999999
 						vals.MinValue = 0
@@ -155,20 +154,21 @@ txt = "Endless Doors [Retro #classic 🔥🔥🔥]"
 
 	task.spawn(function()
 		local decalsyeeted = true
-		local g = game
-		local w = g.Workspace
-		local l = g.Lighting
-		local t = w.Terrain
+		local g = game;
+		local w = g.Workspace;
+		local l = g.Lighting;
+		local t = w.Terrain;
 		sethiddenproperty(l,"Technology",2)
 		sethiddenproperty(t,"Decoration",false)
-		t.WaterWaveSize = 0
-		t.WaterWaveSpeed = 0
-		t.WaterReflectance = 0
-		t.WaterTransparency = 0
-		l.GlobalShadows = 0
-		l.FogEnd = 9e9
-		l.Brightness = 0
-		settings().Rendering.QualityLevel = "Level01"
+		t.WaterWaveSize = 0;
+		t.WaterWaveSpeed = 0;
+		t.WaterReflectance = 0;
+		t.WaterTransparency = 0;
+		l.GlobalShadows = 0;
+		l.FogEnd = 9e9;
+		l.Brightness = 0;
+		settings().Rendering.QualityLevel=Enum.QualityLevel.Level01;
+		settings().Rendering.GraphicsMode=Enum.GraphicsMode.Vulkan;
 		for i, v in pairs(w:GetDescendants()) do
 			if v:IsA("BasePart") and not v:IsA("MeshPart") then
 				v.Material = "Plastic"
@@ -204,64 +204,64 @@ txt = "Endless Doors [Retro #classic 🔥🔥🔥]"
 
 	--Player Stats
 
-	local function playerRoom()
+	function playerRoom()
 		return tostring(game:GetService("Players").LocalPlayer.leaderstats.Room.Value)
 	end
-	local function playerBits()
+	function playerBits()
 		return tostring(game:GetService("Players").LocalPlayer.leaderstats.Bits.Value)
 	end
-	local function x2bits()
+	function x2bits()
 		return tostring(game:GetService("Players").LocalPlayer.Character:FindFirstChild("Values"):FindFirstChild("DoubleBits").Value)
 	end
-	local function fame()
+	function fame()
 		return tostring(game:GetService("Players").LocalPlayer:FindFirstChild("Fame").Value)
 	end
-	local function deaths()
+	function deaths()
 		return tostring(game:GetService("Players").LocalPlayer:FindFirstChild("Deaths").Value)
 	end
-	local function rifted()
+	function rifted()
 		return tostring(game:GetService("Players").LocalPlayer:FindFirstChild("Rift").Value)
 	end
-	local function inGroup()
+	function inGroup()
 		return tostring(game:GetService("Players").LocalPlayer:FindFirstChild("JoinedGroup").Value)
 	end
 
 	--Game Info
 
-	local function curRoom()
+	function curRoom()
 		return tostring(vals.RoomsNumber.Value)
 	end
-	local function philChance()
+	function philChance()
 		return tostring(vals.PhilMeter.Value)
 	end
-	local function tamara()
+	function tamara()
 		return tostring(vals.SpiderChance.Value)
 	end
-	local function revPrice()
+	function revPrice()
 		return tostring(vals.RevivePrice.Value)
 	end
-	local function AlivePlrs()
+	function AlivePlrs()
 		return tostring(vals.PlayersAlive.Value)
 	end
-	local function inGamePlrs()
+	function inGamePlrs()
 		return tostring(vals.PlayersInGame.Value)
 	end
 
 	--collectibles
 
-	local function fuz()
+	function fuz()
 		return tostring(game:GetService("Players").LocalPlayer.Character:FindFirstChild("Collectibles").Fuzzi.Value)
 	end
-	local function zavv()
+	function zavv()
 		return tostring(game:GetService("Players").LocalPlayer.Character:FindFirstChild("Collectibles").Zav.Value)
 	end
-	local function jaek()
+	function jaek()
 		return tostring(game:GetService("Players").LocalPlayer.Character:FindFirstChild("Collectibles").Jake.Value)
 	end
-	local function cyan()
+	function cyan()
 		return tostring(game:GetService("Players").LocalPlayer.Character:FindFirstChild("Collectibles").Blue.Value)
 	end
-	local function alen()
+	function alen()
 		return tostring(game:GetService("Players").LocalPlayer.Character:FindFirstChild("Collectibles").Alan.Value)
 	end
 
@@ -269,7 +269,7 @@ txt = "Endless Doors [Retro #classic 🔥🔥🔥]"
 		fireproximityprompt(prompt)
 	end)
 
-	function destroyIfExist(partName)
+	function killurself(partName)
 		task.spawn(function()
 			local descendants = game:GetDescendants()
 			for _, descendant in ipairs(descendants) do
@@ -281,33 +281,32 @@ txt = "Endless Doors [Retro #classic 🔥🔥🔥]"
 		end)
 	end
 
-	function sussy()
-		destroyIfExist("fdmg")
-		destroyIfExist("indarkroom")
-		destroyIfExist("brokenlamp")
-		destroyIfExist("abysskill")
-		destroyIfExist("flowergrowth")
-		destroyIfExist("longcrate")
-		destroyIfExist("crate")
-		destroyIfExist("chasetrigger")
-		destroyIfExist("spirit")
-		destroyIfExist("chair")
-		destroyIfExist("sofa")
+	function thingy_idk()
+		killurself("fdmg")
+		killurself("indarkroom")
+		killurself("brokenlamp")
+		killurself("abysskill")
+		killurself("flowergrowth")
+		killurself("longcrate")
+		killurself("crate")
+		killurself("chasetrigger")
+		killurself("spirit")
+		killurself("chair")
+		killurself("sofa")
+		killurself("fire")
 	end
 
 	task.spawn(function()
 		repeat wait() until game:GetService("Players").LocalPlayer.Character
 		task.wait(2)
-		spawn(sussy)
+		spawn(thingy_idk)
 	end)
 
 	task.spawn(function()
 		game:GetService("RunService").RenderStepped:Connect(function()
-			pcall(function()
-				if game.PlaceId == renovation then
-					antiRagdoll()
-				end
-			end)
+			if game.PlaceId == renovation then
+				antiRagdoll()
+			end
 		end)
 	end)
 
@@ -316,7 +315,7 @@ txt = "Endless Doors [Retro #classic 🔥🔥🔥]"
 			if (descendant:IsA("Model") or descendant:IsA("BasePart") or descendant:IsA("ValueBase") or descendant:IsA("LocalScript")) and
 				(descendant.Name:lower() == "brokenlamp" or descendant.Name:lower() == "chasetrigger" 
 					or descendant.Name:lower() == "abysskill" or descendant.Name:lower() == "fdmg" or
-					descendant.Name:lower() == "indarkroom" or descendant.Name:lower() == "flowergrowth" or descendant.Name:lower() == "longcrate" or descendant.Name:lower() == "crate" or descendant.Name:lower() == "spirit" or descendant.Name:lower() == "chair" or descendant.Name:lower() == "sofa") then
+					descendant.Name:lower() == "indarkroom" or descendant.Name:lower() == "flowergrowth" or descendant.Name:lower() == "longcrate" or descendant.Name:lower() == "crate" or descendant.Name:lower() == "spirit" or descendant.Name:lower() == "chair" or descendant.Name:lower() == "sofa" or descendant.Name:lower() == "fire") then
 				wait();
 				descendant:Destroy()
 			end
@@ -340,7 +339,7 @@ txt = "Endless Doors [Retro #classic 🔥🔥🔥]"
 	local Window = Rayfield:CreateWindow({
 		Name = txt,
 		LoadingTitle = txt,
-		LoadingSubtitle = "by v3r_",
+		LoadingSubtitle = "zav x fuzzi",
 		ConfigurationSaving = {
 			Enabled = true,
 			FolderName = "Endless Doors",
@@ -352,11 +351,17 @@ txt = "Endless Doors [Retro #classic 🔥🔥🔥]"
 	local bitESP = false
 	local batteryESP = false
 	local rotation = true
-	task.spawn(function() --like why?
+	task.spawn(function() -- idk why i even added this lol
 		game:GetService("Players").PlayerAdded:Connect(function(noob)
+			local h="somebody"
+			if noob.Name:lower() == noob.DisplayName:lower() then
+				h="@"..noob.Name
+			else
+				h=noob.DisplayName.." (@"..noob.Name..")"
+			end
 			Rayfield:Notify({
 				Title = "Player Join Log",
-				Content = noob.DisplayName.." (@"..noob.Name..")".." Joined",
+				Content = h.." Joined",
 				Duration = 3,
 				Image = decalID,
 			})
@@ -598,15 +603,13 @@ txt = "Endless Doors [Retro #classic 🔥🔥🔥]"
 	end)
 
 	task.spawn(function()
-		while task.wait() do
-			pcall(function()
-				if rotation then
-					charRotate(true)
-				else
-					charRotate(false)
-				end
-			end)
-		end
+		game:GetService("RunService").RenderStepped:Connect(function()
+			if rotation then
+				charRotate(true)
+			else
+				charRotate(false)
+			end
+		end)
 	end)
 
 	getgenv().speed = nil
@@ -634,10 +637,7 @@ txt = "Endless Doors [Retro #classic 🔥🔥🔥]"
 	Tab:CreateButton({
 		Name = "Infinite Flashlight",
 		Callback = function()
-			local ohBoolean1 = false
-			local ohNumber2 = 99999999999999
-
-			game:GetService("ReplicatedStorage").Remotes.FLASHLIGHT_TOGGLE:FireServer(ohBoolean1, ohNumber2)
+			game:GetService("ReplicatedStorage").Remotes.FLASHLIGHT_TOGGLE:FireServer(false, 99999999999999)
 		end,
 	})
 
@@ -655,13 +655,13 @@ txt = "Endless Doors [Retro #classic 🔥🔥🔥]"
 		Callback = function(Value)
 			if Value then
 				manageOver = workspace.Game.DescendantAdded:Connect(function(seer)
-					if seer.Name=="Overseer" then
+					if seer.Name:lower()=="overseer" then
 						wait()
 						seer:Destroy()
 					end
 				end)
 				for _,seerover in ipairs(workspace.Game.Entities:GetChildren()) do
-					if seerover.Name=="Overseer" then
+					if seerover.Name:lower()=="overseer" then
 						seerover:Destroy()
 					end
 				end
@@ -678,21 +678,24 @@ txt = "Endless Doors [Retro #classic 🔥🔥🔥]"
 		CurrentValue = false,
 		Flag = "fallenLook",
 		Callback = function(Value)
-			game:GetService("Players").LocalPlayer.PlayerScripts:FindFirstChild("Looking").Enabled = not Value
+			if game.PlaceId~=classicED then
+				game:GetService("Players").LocalPlayer.PlayerScripts:FindFirstChild("Looking").Enabled = not Value
+			else
+			end
 		end,
 	})
 
-		Tab:CreateToggle({
-			Name = "Disable Camera Shaking",
-			CurrentValue = false,
-			Flag = "camShaking",
-			Callback = function(Value)
-				if game.PlaceId == renovation then
+	Tab:CreateToggle({
+		Name = "Disable Camera Shaking",
+		CurrentValue = false,
+		Flag = "camShaking",
+		Callback = function(Value)
+			if game.PlaceId == renovation then
 				game:GetService("Players").LocalPlayer.PlayerScripts:FindFirstChild("LocalShaking").Enabled = not Value
 				game:GetService("Players").LocalPlayer.PlayerScripts:FindFirstChild("CameraShake").Enabled = not Value
-				end
-			end,
-		})
+			end
+		end,
+	})
 
 	Tab:CreateToggle({
 		Name = "Full Bright",
@@ -700,7 +703,7 @@ txt = "Endless Doors [Retro #classic 🔥🔥🔥]"
 		Flag = "brightLol",
 		Callback = function(Value)
 			if Value then
-				local function brightFunc()
+				function brightFunc()
 					game:GetService("Lighting").ClockTime = 14
 					game:GetService("Lighting").FogEnd = 10000000000
 					game:GetService("Lighting").FogStart = 0
@@ -1134,12 +1137,18 @@ txt = "Endless Doors [Retro #classic 🔥🔥🔥]"
 		Flag = "infJP",
 		Callback = function(Value)
 			local InfiniteJumpEnabled = Value
+			local infinite=nil
+			local mobileInfinite=nil
 
 			if InfiniteJumpEnabled then
+				if infinite then
+					infinite:Disconnect()
+					infinite=nil
+				end
 				infinite = game:GetService("UserInputService").JumpRequest:Connect(function()
 					game:GetService("Players").LocalPlayer.Character:FindFirstChildOfClass("Humanoid"):ChangeState("Jumping")
 				end)
-				if IsOnMobile  and game.PlaceId == renovation then
+				if IsOnMobile and game.PlaceId == renovation then
 					local controls = require(game:GetService("Players").LocalPlayer.PlayerScripts.PlayerModule):GetControls()
 					controls:Enable()
 					local cmdlp = game:GetService("Players").LocalPlayer
@@ -1147,6 +1156,11 @@ txt = "Endless Doors [Retro #classic 🔥🔥🔥]"
 
 					local jumpbtn = cmdlp.PlayerGui.TouchControls.MobileControls.JumpButton
 					local run = false
+					
+					if mobileInfinite then
+						mobileInfinite:Disconnect()
+						mobileInfinite=nil
+					end
 
 					mobileInfinite = jumpbtn.MouseButton1Click:Connect(function()
 						run = not run
@@ -1156,9 +1170,11 @@ txt = "Endless Doors [Retro #classic 🔥🔥🔥]"
 			else
 				if infinite then
 					infinite:Disconnect()
+					infinite=nil
 				end
 				if mobileInfinite then
 					mobileInfinite:Disconnect()
+					mobileInfinite=nil
 				end
 			end
 		end,
@@ -1270,9 +1286,9 @@ txt = "Endless Doors [Retro #classic 🔥🔥🔥]"
 	curtxt = Tab50:CreateLabel("Current Room: "..curRoom())
 	philMeter = Tab50:CreateLabel("Phil Chance: "..philChance())
 	spiderChance = Tab50:CreateLabel("Spider Chance: "..tamara())
-if game.PlaceId ~= classicED then
-	RevCount = Tab50:CreateLabel("Revive Price: "..revPrice())
-end
+	if game.PlaceId ~= classicED then
+		RevCount = Tab50:CreateLabel("Revive Price: "..revPrice())
+	end
 	plrAlives = Tab50:CreateLabel("Players Alive: "..AlivePlrs())
 	plrInGame = Tab50:CreateLabel("Players In Game: "..inGamePlrs())
 	if game.PlaceId == renovation then
@@ -1296,9 +1312,9 @@ end
 				curtxt:Set("Current Room: "..curRoom())
 				philMeter:Set("Phil Chance: "..philChance())
 				spiderChance:Set("Spider Chance: "..tamara())
-if game.PlaceId ~= classicED then
-				RevCount:Set("Revive Price: "..revPrice())
-end
+				if game.PlaceId ~= classicED then
+					RevCount:Set("Revive Price: "..revPrice())
+				end
 				plrAlives:Set("Players Alive: "..AlivePlrs())
 				plrInGame:Set("Players In Game: "..inGamePlrs())
 
@@ -1325,159 +1341,159 @@ end
 		end,
 	})
 
-if game.PlaceId==classicED then
-Rayfield:Notify({
-				Title = "Info",
-				Content = "Door Aura has been disabled on this mode due to tamara",
-				Duration = 7,
-				Image = decalID,
-			})
-end
+	if game.PlaceId==classicED then
+		Rayfield:Notify({
+			Title = "Info",
+			Content = "Door Aura has been disabled on this mode due to tamara",
+			Duration = 7,
+			Image = decalID,
+		})
+	end
 
 	Rayfield:LoadConfiguration()
 
 	-- auras
 	task.spawn(function()
-	game:GetService("RunService").RenderStepped:Connect(function()
-		if getgenv().bits then
-			pcall(function()
-				for _, room in ipairs(workspace.Game.Rooms:GetChildren()) do
-					for _, v in pairs(room:GetDescendants()) do
-						local bitVal = game:GetService("Players").LocalPlayer.leaderstats.Bits
-						if (game.PlaceId == epicmode or game.PlaceId == EMArchive) and bitVal.Value >= 2500 then
-						else
-							processObject(v, "bit")
+		game:GetService("RunService").RenderStepped:Connect(function()
+			if getgenv().bits then
+				pcall(function()
+					for _, room in ipairs(workspace.Game.Rooms:GetChildren()) do
+						for _, v in pairs(room:GetDescendants()) do
+							local bitVal = game:GetService("Players").LocalPlayer.leaderstats.Bits
+							if (game.PlaceId == epicmode or game.PlaceId == EMArchive) and bitVal.Value >= 2500 then
+							else
+								processObject(v, "bit")
+							end
 						end
 					end
-				end
-			end)
-		end
-	end)
-	game:GetService("RunService").RenderStepped:Connect(function()
-		if getgenv().Key then
-			pcall(function()
-				for _, room in ipairs(workspace.Game.Rooms:GetChildren()) do
-					for _, v in pairs(room:GetDescendants()) do
-						processObject(v, "roomkey")
+				end)
+			end
+		end)
+		game:GetService("RunService").RenderStepped:Connect(function()
+			if getgenv().Key then
+				pcall(function()
+					for _, room in ipairs(workspace.Game.Rooms:GetChildren()) do
+						for _, v in pairs(room:GetDescendants()) do
+							processObject(v, "roomkey")
+						end
 					end
-				end
-			end)
+				end)
 
-		end
-	end)
-	game:GetService("RunService").RenderStepped:Connect(function()
-		if getgenv().Vita then
-			pcall(function()
-				for _, room in ipairs(workspace.Game.Rooms:GetChildren()) do
-					for _, v in pairs(room:GetDescendants()) do
-						processObject(v, "vitamins")
+			end
+		end)
+		game:GetService("RunService").RenderStepped:Connect(function()
+			if getgenv().Vita then
+				pcall(function()
+					for _, room in ipairs(workspace.Game.Rooms:GetChildren()) do
+						for _, v in pairs(room:GetDescendants()) do
+							processObject(v, "vitamins")
+						end
 					end
-				end
-			end)
-		end
-	end)
-	game:GetService("RunService").RenderStepped:Connect(function()
-		if getgenv().Band then
-			pcall(function()
-				for _, room in ipairs(workspace.Game.Rooms:GetChildren()) do
-					for _, v in pairs(room:GetDescendants()) do
-						processObject(v, "bandage")
+				end)
+			end
+		end)
+		game:GetService("RunService").RenderStepped:Connect(function()
+			if getgenv().Band then
+				pcall(function()
+					for _, room in ipairs(workspace.Game.Rooms:GetChildren()) do
+						for _, v in pairs(room:GetDescendants()) do
+							processObject(v, "bandage")
+						end
 					end
-				end
-			end)
-		end
-	end)
-	game:GetService("RunService").RenderStepped:Connect(function()
-		if getgenv().LockPick then
-			pcall(function()
-				for _, room in ipairs(workspace.Game.Rooms:GetChildren()) do
-					for _, v in pairs(room:GetDescendants()) do
-						processObject(v, "lockpick")
+				end)
+			end
+		end)
+		game:GetService("RunService").RenderStepped:Connect(function()
+			if getgenv().LockPick then
+				pcall(function()
+					for _, room in ipairs(workspace.Game.Rooms:GetChildren()) do
+						for _, v in pairs(room:GetDescendants()) do
+							processObject(v, "lockpick")
+						end
 					end
-				end
-			end)
-		end
-	end)
-	game:GetService("RunService").RenderStepped:Connect(function()
-		if getgenv().SusKey then
-			pcall(function()
-				for _, room in ipairs(workspace.Game.Rooms:GetChildren()) do
-					for _, v in pairs(room:GetDescendants()) do
-						processObject(v, "mysterious key")
+				end)
+			end
+		end)
+		game:GetService("RunService").RenderStepped:Connect(function()
+			if getgenv().SusKey then
+				pcall(function()
+					for _, room in ipairs(workspace.Game.Rooms:GetChildren()) do
+						for _, v in pairs(room:GetDescendants()) do
+							processObject(v, "mysterious key")
+						end
 					end
-				end
-			end)
-		end
-	end)
-	game:GetService("RunService").RenderStepped:Connect(function()
-		if getgenv().Crucifix then
-			pcall(function()
-				for _, v in pairs(workspace.Game.Rooms:GetDescendants()) do
-					processObject(v, "crucifix")
-				end
-			end)
-		end
-	end)
-	game:GetService("RunService").RenderStepped:Connect(function()
-		if getgenv().chaos then
-			pcall(function()
-				for _, room in ipairs(workspace.Game.Rooms:GetChildren()) do
-					for _, v in ipairs(room:GetDescendants()) do
-						if v:IsA("ProximityPrompt") and v.Name == "ProximityPrompt" then
-							local bitVal = game:GetService("Players").LocalPlayer.leaderstats.Bits
-							local h = 0
-							if game.PlaceId == renovatio then
-								h = 0
-							else
-								h=4
-							end
-							local maxDistance = v.MaxActivationDistance + h
-							if (v.Parent.Position - game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.Position).Magnitude <= maxDistance then
-								if (game.PlaceId == epicmode or game.PlaceId == EMArchive) then
-									if (bitVal.Value >= 2500 and v.Parent.Name ~= "Bit") then
-										fireproximityprompt(v)
-									elseif bitVal.Value < 2500 then
+				end)
+			end
+		end)
+		game:GetService("RunService").RenderStepped:Connect(function()
+			if getgenv().Crucifix then
+				pcall(function()
+					for _, v in pairs(workspace.Game.Rooms:GetDescendants()) do
+						processObject(v, "crucifix")
+					end
+				end)
+			end
+		end)
+		game:GetService("RunService").RenderStepped:Connect(function()
+			if getgenv().chaos then
+				pcall(function()
+					for _, room in ipairs(workspace.Game.Rooms:GetChildren()) do
+						for _, v in ipairs(room:GetDescendants()) do
+							if v:IsA("ProximityPrompt") and v.Name == "ProximityPrompt" then
+								local bitVal = game:GetService("Players").LocalPlayer.leaderstats.Bits
+								local h = 0
+								if game.PlaceId == renovation then
+									h = 0
+								else
+									h=4
+								end
+								local maxDistance = v.MaxActivationDistance + h
+								if (v.Parent.Position - game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.Position).Magnitude <= maxDistance then
+									if (game.PlaceId == epicmode or game.PlaceId == EMArchive) then
+										if (bitVal.Value >= 2500 and v.Parent.Name ~= "Bit") then
+											fireproximityprompt(v)
+										elseif bitVal.Value < 2500 then
+											fireproximityprompt(v)
+										end
+									elseif game.PlaceId==classicED then
+										if v.Parent.Name:lower() == "handle" then
+										else
+											fireproximityprompt(v)
+										end
+									else
 										fireproximityprompt(v)
 									end
-								elseif game.PlaceId==classicED then
-if v.Parent.Name:lower() == "handle" then
-else
-fireproximityprompt(v)
-end
-else
-									fireproximityprompt(v)
 								end
 							end
 						end
 					end
-				end
-			end)
-		end
+				end)
+			end
+		end)
 	end)
-end)
 
 	-- player stuff
 	task.spawn(function()
-	game:GetService("RunService").RenderStepped:Connect(function()
-		if getgenv().sped then
-			pcall(function()
-				game:GetService("Players").LocalPlayer.Character.Humanoid.WalkSpeed = getgenv().speed
-			end)
-		end
-	end)
-	game:GetService("RunService").RenderStepped:Connect(function()
-		if getgenv().jumpy then
-			pcall(function()
-				game:GetService("Players").LocalPlayer.Character.Humanoid.JumpPower = getgenv().jump
-			end)
-		end
-	end)
-	game:GetService("RunService").RenderStepped:Connect(function()
-		if getgenv().wide then
-			pcall(function()
-				workspace.CurrentCamera.FieldOfView = getgenv().fov
-			end)
-		end
-	end)
+		game:GetService("RunService").RenderStepped:Connect(function()
+			if getgenv().sped then
+				pcall(function()
+					game:GetService("Players").LocalPlayer.Character.Humanoid.WalkSpeed = getgenv().speed
+				end)
+			end
+		end)
+		game:GetService("RunService").RenderStepped:Connect(function()
+			if getgenv().jumpy then
+				pcall(function()
+					game:GetService("Players").LocalPlayer.Character.Humanoid.JumpPower = getgenv().jump
+				end)
+			end
+		end)
+		game:GetService("RunService").RenderStepped:Connect(function()
+			if getgenv().wide then
+				pcall(function()
+					workspace.CurrentCamera.FieldOfView = getgenv().fov
+				end)
+			end
+		end)
 	end)
 end
