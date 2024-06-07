@@ -13,7 +13,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 	UIdecal="rbxassetid://"..decalID
 	local plr = game:GetService("Players").LocalPlayer
 	local char = plr.Character or plr.CharacterAdded:Wait()
-	local humpart = char.HumanoidRootPart
+	local humpart = char:FindFirstChild("HumanoidRootPart")
 	local vals = game:GetService("Workspace").Game.Values
 
 	local GetService = game.GetService
@@ -114,8 +114,8 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 			txt = "Endless Doors | Mobile"
 elseif game.PlaceId == EMArchive then
     txt = "Endless Doors [Epic Mode] | Mobile"
-elseif game.PlaceId==classicEd then
-txt = "Endless Doors [Retro #classic] | Mobile"
+elseif game.PlaceId==classicED then
+txt = "Endless Doors [Retro #classic 🔥🔥🔥] | Mobile"
 		end
 	else
 		if game.PlaceId == oldPlace then
@@ -126,8 +126,8 @@ txt = "Endless Doors [Retro #classic] | Mobile"
 			txt = "Endless Doors"
    elseif game.PlaceId == EMArchive then
     txt = "Endless Doors [Epic Mode]"
-elseif game.PlaceId==classicEd then
-txt = "Endless Doors [Retro #classic]"
+elseif game.PlaceId==classicED then
+txt = "Endless Doors [Retro #classic 🔥🔥🔥]"
 		end
 	end
 
@@ -1325,6 +1325,15 @@ end
 		end,
 	})
 
+if game.PlaceId==classicED then
+Rayfield:Notify({
+				Title = "Info",
+				Content = "Door Aura has been disabled on this mode due to tamara",
+				Duration = 7,
+				Image = decalID,
+			})
+end
+
 	Rayfield:LoadConfiguration()
 
 	-- auras
@@ -1430,7 +1439,12 @@ end
 									elseif bitVal.Value < 2500 then
 										fireproximityprompt(v)
 									end
-								else
+								elseif game.PlaceId==classicED then
+if v.Parent.Name:lower() == "handle" then
+else
+fireproximityprompt(v)
+end
+else
 									fireproximityprompt(v)
 								end
 							end
