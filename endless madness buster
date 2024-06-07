@@ -1270,7 +1270,9 @@ txt = "Endless Doors [Retro #classic]"
 	curtxt = Tab50:CreateLabel("Current Room: "..curRoom())
 	philMeter = Tab50:CreateLabel("Phil Chance: "..philChance())
 	spiderChance = Tab50:CreateLabel("Spider Chance: "..tamara())
+if game.PlaceId ~= classicED then
 	RevCount = Tab50:CreateLabel("Revive Price: "..revPrice())
+end
 	plrAlives = Tab50:CreateLabel("Players Alive: "..AlivePlrs())
 	plrInGame = Tab50:CreateLabel("Players In Game: "..inGamePlrs())
 	if game.PlaceId == renovation then
@@ -1294,7 +1296,9 @@ txt = "Endless Doors [Retro #classic]"
 				curtxt:Set("Current Room: "..curRoom())
 				philMeter:Set("Phil Chance: "..philChance())
 				spiderChance:Set("Spider Chance: "..tamara())
+if game.PlaceId ~= classicED then
 				RevCount:Set("Revive Price: "..revPrice())
+end
 				plrAlives:Set("Players Alive: "..AlivePlrs())
 				plrInGame:Set("Players In Game: "..inGamePlrs())
 
