@@ -167,8 +167,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 		l.GlobalShadows = 0;
 		l.FogEnd = 9e9;
 		l.Brightness = 0;
-		settings().Rendering.QualityLevel=Enum.QualityLevel.Level01;
-		settings().Rendering.GraphicsMode=Enum.GraphicsMode.Vulkan;
+		settings().Rendering.QualityLevel="Level01"
 		for i, v in pairs(w:GetDescendants()) do
 			if v:IsA("BasePart") and not v:IsA("MeshPart") then
 				v.Material = "Plastic"
