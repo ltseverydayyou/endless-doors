@@ -1426,7 +1426,7 @@ end
 						if v:IsA("ProximityPrompt") and v.Name == "ProximityPrompt" then
 							local bitVal = game:GetService("Players").LocalPlayer.leaderstats.Bits
 							local h = 0
-							if game.PlaceId == renovation or game.PlaceId == classicED then
+							if game.PlaceId == renovatio then
 								h = 0
 							else
 								h=4
