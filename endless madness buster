@@ -1,11 +1,12 @@
 -- discontinued so here's the source code
 -- enjoy reading this very scuffed ahh code
 
-if (game.GameId == 3927488489 or game.GameId == 5927366432) and (game.PlaceId == 10891480658 or game.PlaceId == 16810788519 or game.PlaceId == 17324650150 or game.PlaceId == 17639491565) then
+if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId==6023940812) and (game.PlaceId == 10891480658 or game.PlaceId == 16810788519 or game.PlaceId == 17324650150 or game.PlaceId == 17639491565 or game.PlaceId==17594182379) then
 	oldPlace=10891480658
 	epicmode=16810788519
 	renovation=17324650150
  EMArchive=17639491565
+classicED=17594182379
 
 	decalID=17471548099
 	UIdecal="rbxassetid://"..decalID
@@ -112,6 +113,8 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432) and (game.PlaceId ==
 			txt = "Endless Doors | Mobile"
 elseif game.PlaceId == EMArchive then
     txt = "Endless Doors [Epic Mode] | Mobile"
+elseif game.PlaceId=classicEd then
+txt = "Endless Doors [Retro #classic] | Mobile"
 		end
 	else
 		if game.PlaceId == oldPlace then
@@ -122,6 +125,8 @@ elseif game.PlaceId == EMArchive then
 			txt = "Endless Doors"
    elseif game.PlaceId == EMArchive then
     txt = "Endless Doors [Epic Mode]"
+elseif game.PlaceId=classicEd then
+txt = "Endless Doors [Retro #classic]"
 		end
 	end
 
