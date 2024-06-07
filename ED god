@@ -43,7 +43,7 @@ if workspace.Game.Rooms["Room"..rmOld].Models:FindFirstChild("Wardrobe") then
     until game:GetService("Players").LocalPlayer.Character:FindFirstChild("Hiding").Value == false
     
     end)
-    task.wait(2.5);
+    task.wait(3.5);
     game:GetService("Players").LocalPlayer.Character:FindFirstChild("Hiding").Value = false
 
     else
