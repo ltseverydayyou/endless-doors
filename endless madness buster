@@ -616,7 +616,9 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 
 	task.spawn(function()
 		game:GetService"Players".LocalPlayer.PlayerGui.DescendantAdded:connect(function(txt)
-			if txt:IsA'TextLabel' and txt.Text:lower() == "cannot pick that up."
+			if txt:IsA'TextLabel' and txt.Text:lower() == "cannot pick that up." then
+				txt:Destroy()
+			end
 		end)
 	end)
 
