@@ -8,12 +8,10 @@ if workspace.Game.Rooms:FindFirstChild("Room"..rmMain - 5) then
     rmOld=curroom - 5
 elseif workspace.Game.Rooms:FindFirstChild("Room"..rmMain - 4) then
     rmOld=curroom - 4
-elseif workspace.Game.Rooms:FindFirstChild("Room"..rmMain - 3) then
-    rmOld=curroom - 3
 else
-    rmOld=curroom - 2
+    rmOld=curroom - 3
 end
-if (workspace.Game.Rooms:FindFirstChild("Room"..rmMain - 5) or workspace.Game.Rooms:FindFirstChild("Room"..rmMain -4) or workspace.Game.Rooms:FindFirstChild("Room"..rmMain -3) or workspace.Game.Rooms:FindFirstChild("Room"..rmMain -2)) then
+if (workspace.Game.Rooms:FindFirstChild("Room"..rmMain - 5) or workspace.Game.Rooms:FindFirstChild("Room"..rmMain -4) or workspace.Game.Rooms:FindFirstChild("Room"..rmMain -3)) then
 if workspace.Game.Rooms["Room"..rmOld].Models:FindFirstChild("Wardrobe") then
     game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.CFrame = workspace.Game.Rooms["Room"..rmMain].Door:FindFirstChildOfClass("Part").CFrame
     
