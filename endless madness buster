@@ -13,11 +13,13 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 	UIdecal="rbxassetid://"..decalID
 	local plr = game:GetService("Players").LocalPlayer
 	local char = plr.Character or plr.CharacterAdded:Wait()
-	local humpart = char:FindFirstChild("HumanoidRootPart")
-	local vals = game:GetService("Workspace").Game.Values
+	local vals = game:GetService("Workspace"):FindFirstChild("Game"):FindFirstChild("Values")
 
-local r = 0
-	local d = 0.5
+	local r = 0
+	local d = 2
+
+	local h=0
+	local p=0.1
 
 	local GetService = game.GetService
 	iamcore = game:GetService("CoreGui")
@@ -32,19 +34,19 @@ local r = 0
 	local IsOnMobile = table.find({Enum.Platform.IOS, Enum.Platform.Android}, game:GetService("UserInputService"):GetPlatform())
 
 function getRoot(char)
-	local rootPart = char:FindFirstChild('HumanoidRootPart') or char:FindFirstChild('Torso') or char:FindFirstChild('UpperTorso')
-	return rootPart
+	local root = char:FindFirstChild('HumanoidRootPart') or char:FindFirstChild('Torso') or char:FindFirstChild('UpperTorso')
+	return root
 end
 
 	function teleporttodoor()
 		local curroom = vals.RoomsNumber.Value
-		getRoot(game:GetService("Players").LocalPlayer.Character).CFrame = workspace.Game.Rooms["Room"..curroom].Door:FindFirstChildOfClass("Part").CFrame
+		getRoot(game:GetService("Players").LocalPlayer.Character):PivotTo(workspace.Game.Rooms["Room"..curroom].Door:GetPivot())
 	end
 
 	function teleporttokey()
 		local curroom = vals.RoomsNumber.Value
 		for _,keyroom in ipairs(workspace.Game.Rooms["Room"..curroom]:GetDescendants()) do
-			if (keyroom:IsA("BasePart") and keyroom.Name == "RoomKey" and keyroom.Parent.Name ~= "Door") then
+			if (keyroom:IsA("BasePart") and keyroom.Name:lower() == "roomkey" and keyroom.Parent.Name:lower() ~= "door") then
 				getRoot(game:GetService("Players").LocalPlayer.Character).CFrame = keyroom.CFrame
 			end
 		end
@@ -58,7 +60,9 @@ end
 		game:GetService("Players").LocalPlayer.Character:FindFirstChild("CanRotate").Value=val
 	end
 
-	function processObject(v, itemName)
+	--[[function processObject(v, itemName)
+		if tick() - h > p then
+			h = tick()
 		if (v:IsA("BasePart") or v:IsA("Model") or v:IsA("Folder")) and v.Name:lower() == itemName then
 			local proximityPrompt = v:FindFirstChildOfClass("ProximityPrompt")
 			if proximityPrompt then
@@ -69,47 +73,7 @@ end
 			end
 		end
 	end
-
-	endlessMove = function(ui, dragui)
-		if not dragui then dragui = ui end
-		local UserInputService = game:GetService("UserInputService")
-
-		local dragging
-		local dragInput
-		local dragStart
-		local startPos
-
-		function update(input)
-			local delta = input.Position - dragStart
-			ui.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
-		end
-
-		dragui.InputBegan:Connect(function(input)
-			if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-				dragging = true
-				dragStart = input.Position
-				startPos = ui.Position
-
-				input.Changed:Connect(function()
-					if input.UserInputState == Enum.UserInputState.End then
-						dragging = false
-					end
-				end)
-			end
-		end)
-
-		dragui.InputChanged:Connect(function(input)
-			if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
-				dragInput = input
-			end
-		end)
-
-		UserInputService.InputChanged:Connect(function(input)
-			if input == dragInput and dragging then
-				update(input)
-			end
-		end)
-	end
+	end]]
 
 	local txt = "unknown"
 
@@ -141,8 +105,10 @@ end
 
 	task.wait();
 
-	--[[task.spawn(function()
-		while task.wait(2) do
+	task.spawn(function()
+		game:GetService("RunService").RenderStepped:connect(function()
+			if tick() - r > d then
+			r = tick()
 			pcall(function()
 				for _,vals in ipairs(game:GetService("Players").LocalPlayer:FindFirstChild("PlayerGui"):FindFirstChild("MainGUI"):FindFirstChild("Values"):GetDescendants()) do
 					if vals:IsA("DoubleConstrainedValue") then
@@ -158,7 +124,8 @@ end
 				end
 			end)
 		end
-	end)]]
+		end)
+	end)
 
 	task.spawn(function()
 		local decalsyeeted = true
@@ -1012,9 +979,7 @@ Tab:CreateButton({
 		end,
 	})
 
-	Tab2:CreateSection("Still in beta so don't expect it to work properly")
-
-	Tab2:CreateToggle({
+	--[[Tab2:CreateToggle({
 		Name = "Bit Aura",
 		CurrentValue = false,
 		Flag = "bitAura",
@@ -1075,17 +1040,13 @@ Tab:CreateButton({
 		Callback = function(Value)
 			getgenv().Crucifix = Value
 		end,
-	})
+	})]]
 
-
-	Tab2:CreateSection("")
-	Tab2:CreateSection("")
-	Tab2:CreateSection("")
-	Tab2:CreateSection("")
-	Tab2:CreateSection("")
+	Tab2:CreateSection("had to remove the other sections since they were broken and too buggy")
+	Tab2:CreateSection("Everything Aura will only work for items that are needed")
 
 	Tab2:CreateToggle({
-		Name = "Aura | [WIP]",
+		Name = "Everything Aura | [WIP]",
 		CurrentValue = false,
 		Flag = "AuraAll",
 		Callback = function(Value)
@@ -1408,6 +1369,7 @@ Tab:CreateButton({
 				pcall(function()
 					for _, room in ipairs(workspace.Game.Rooms:GetChildren()) do
 						for _, v in pairs(room:GetDescendants()) do
+
 							processObject(v, "vitamins")
 						end
 					end
@@ -1460,22 +1422,20 @@ Tab:CreateButton({
 game:GetService("RunService").RenderStepped:Connect(function()
 			if getgenv().chaos then
 				pcall(function()
-if tick() - r > d then
-				r = tick()
+				--if tick() - r > d then
+				--r = tick()
 					for _, room in ipairs(workspace.Game.Rooms:GetChildren()) do
 						for _, v in ipairs(room:GetDescendants()) do
 							if v:IsA("ProximityPrompt") and v.Name == "ProximityPrompt" then
 								local bitVal = game:GetService("Players").LocalPlayer.leaderstats.Bits
 								local h = 0
-								if game.PlaceId == renovation then
-									h = 0
-								else
-									h=4
+								if game.PlaceId ~= renovation then
+									h=6
 								end
 								local maxDistance = v.MaxActivationDistance + h
 								if (v.Parent.Position - game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.Position).Magnitude <= maxDistance then
 									if (game.PlaceId == epicmode or game.PlaceId == EMArchive) then
-										if (bitVal.Value >= 2500 and v.Parent.Name ~= "Bit") then
+										if (bitVal.Value >= 2500 and v.Parent.Name:lower() ~= "bit") then
 											fireproximityprompt(v)
 										elseif bitVal.Value < 2500 then
 											fireproximityprompt(v)
@@ -1492,7 +1452,7 @@ if tick() - r > d then
 							end
 						end
 					end
-end
+					--end
 				end)
 			end
 		end)
