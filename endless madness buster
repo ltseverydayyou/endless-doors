@@ -287,7 +287,6 @@ end
 
 	function thingy_idk()
 		killurself("fdmg")
-		killurself("indarkroom")
 		killurself("brokenlamp")
 		killurself("abysskill")
 		killurself("flowergrowth")
@@ -318,8 +317,7 @@ end
 		game.Workspace.DescendantAdded:Connect(function(descendant)
 			if (descendant:IsA("Model") or descendant:IsA("BasePart") or descendant:IsA("ValueBase") or descendant:IsA("LocalScript")) and
 				(descendant.Name:lower() == "brokenlamp" or descendant.Name:lower() == "chasetrigger" 
-					or descendant.Name:lower() == "abysskill" or descendant.Name:lower() == "fdmg" or
-					descendant.Name:lower() == "indarkroom" or descendant.Name:lower() == "flowergrowth" or descendant.Name:lower() == "longcrate" or descendant.Name:lower() == "crate" or descendant.Name:lower() == "spirit" or descendant.Name:lower() == "chair" or descendant.Name:lower() == "sofa" or descendant.Name:lower() == "fire") then
+					or descendant.Name:lower() == "abysskill" or descendant.Name:lower() == "fdmg" or descendant.Name:lower() == "flowergrowth" or descendant.Name:lower() == "longcrate" or descendant.Name:lower() == "crate" or descendant.Name:lower() == "spirit" or descendant.Name:lower() == "chair" or descendant.Name:lower() == "sofa" or descendant.Name:lower() == "fire") then
 				wait();
 				descendant:Destroy()
 			end
