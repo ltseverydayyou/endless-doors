@@ -16,6 +16,9 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 	local humpart = char:FindFirstChild("HumanoidRootPart")
 	local vals = game:GetService("Workspace").Game.Values
 
+local r = 0
+	local d = 3
+
 local RunService = game:GetService("RunService")
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
@@ -1476,10 +1479,10 @@ Tab:CreateButton({
 		game:GetService("RunService").RenderStepped:Connect(function()
 	if getgenv().chaos then
         pcall(function()
-            if os.clock() - lastUpd > 2 then
-                updThingy()
-                lastUpd = os.clock()
-            end
+if tick() - r > d then
+				r = tick()
+				updThingy()
+			end
 
             local bitVal = LocalPlayer.leaderstats.Bits
             local h = 0
