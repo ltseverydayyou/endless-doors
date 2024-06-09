@@ -170,7 +170,7 @@ end
 		t.WaterReflectance = 0;
 		t.WaterTransparency = 0;
 		l.GlobalShadows = 0;
-		l.FogEnd = 9e9;
+		l.FogEnd = math.huge;
 		l.Brightness = 0;
 		settings().Rendering.QualityLevel="Level01"
 		for i, v in pairs(w:GetDescendants()) do
