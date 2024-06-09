@@ -16,6 +16,10 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 	local humpart = char:FindFirstChild("HumanoidRootPart")
 	local vals = game:GetService("Workspace").Game.Values
 
+local RunService = game:GetService("RunService")
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+
 	local GetService = game.GetService
 	iamcore = game:GetService("CoreGui")
 	if not game:IsLoaded() then
@@ -27,6 +31,20 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 	end
 
 	local IsOnMobile = table.find({Enum.Platform.IOS, Enum.Platform.Android}, game:GetService("UserInputService"):GetPlatform())
+
+local getPrompts = {}
+local lastUpd = 0
+
+function updThingy()
+    cachedProximityPrompts = {}
+    for _, room in ipairs(workspace.Game.Rooms:GetChildren()) do
+        for _, v in ipairs(room:GetDescendants()) do
+            if v:IsA("ProximityPrompt") and v.Name == "ProximityPrompt" then
+                table.insert(getPrompts, v)
+            end
+        end
+    end
+end
 
 function getRoot(char)
 	local rootPart = char:FindFirstChild('HumanoidRootPart') or char:FindFirstChild('Torso') or char:FindFirstChild('UpperTorso')
@@ -630,6 +648,8 @@ end
 	local manageOver = nil
 	local brightLoop = nil
 	local ANTIAFK = nil
+
+updThingy()
 
 
 	local Tab = Window:CreateTab("Main", decalID)
@@ -1455,38 +1475,40 @@ Tab:CreateButton({
 		end)
 		game:GetService("RunService").RenderStepped:Connect(function()
 	if getgenv().chaos then
-		pcall(function()
-			for _, room in ipairs(workspace.Game.Rooms:GetChildren()) do
-				for _, v in ipairs(room:GetDescendants()) do
-					if v:IsA("ProximityPrompt") and v.Name == "ProximityPrompt" then
-						local bitVal = game:GetService("Players").LocalPlayer.leaderstats.Bits
-						local h = 0
-						if game.PlaceId ~= renovation then
-							h = 6
-						end
-						local maxDistance = v.MaxActivationDistance + h
-						if (v.Parent.Position - getRoot(game:GetService("Players").LocalPlayer.Character).Position).Magnitude <= maxDistance then
-							if (game.PlaceId == epicmode or game.PlaceId == EMArchive) then
-								if (bitVal.Value >= 2500 and v.Parent.Name ~= "Bit") then
-									fireproximityprompt(v)
-								elseif bitVal.Value < 2500 then
-									fireproximityprompt(v)
-								end
-							elseif game.PlaceId == classicED then
-								if v.Parent.Name:lower() ~= "handle" then
-									fireproximityprompt(v)
-								end
-							else
-								fireproximityprompt(v)
-							end
-						end
-					end
-				end
-			end
-		end)
-	end
+        pcall(function()
+            if os.clock() - lastUpd > 2 then
+                updThingy()
+                lastUpd = os.clock()
+            end
+
+            local bitVal = LocalPlayer.leaderstats.Bits
+            local h = 0
+            if game.PlaceId ~= renovation then
+                h = 6
+            end
+
+            for _, v in ipairs(getPrompts) do
+                local maxDistance = v.MaxActivationDistance + h
+                if (v.Parent.Position - getRoot(LocalPlayer.Character).Position).Magnitude <= maxDistance then
+                    if (game.PlaceId == epicmode or game.PlaceId == EMArchive) then
+                        if (bitVal.Value >= 2500 and v.Parent.Name ~= "Bit") or bitVal.Value < 2500 then
+                            fireproximityprompt(v)
+                        end
+                    elseif game.PlaceId == classicED then
+                        if v.Parent.Name:lower() ~= "handle" then
+                            fireproximityprompt(v)
+                        end
+                    else
+                        fireproximityprompt(v)
+                    end
+                end
+            end
+        end)
+    end
 end)
 	end)
+
+
 
 	-- player stuff
 	task.spawn(function()
