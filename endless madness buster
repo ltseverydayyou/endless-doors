@@ -1476,39 +1476,46 @@ Tab:CreateButton({
 				end)
 			end
 		end)
-		game:GetService("RunService").RenderStepped:Connect(function()
-	if getgenv().chaos then
-        pcall(function()
+
+game:GetService("RunService").RenderStepped:Connect(function()
+			if getgenv().chaos then
+				pcall(function()
 if tick() - r > d then
 				r = tick()
-				updThingy()
+					for _, room in ipairs(workspace.Game.Rooms:GetChildren()) do
+						for _, v in ipairs(room:GetDescendants()) do
+							if v:IsA("ProximityPrompt") and v.Name == "ProximityPrompt" then
+								local bitVal = game:GetService("Players").LocalPlayer.leaderstats.Bits
+								local h = 0
+								if game.PlaceId == renovation then
+									h = 0
+								else
+									h=4
+								end
+								local maxDistance = v.MaxActivationDistance + h
+								if (v.Parent.Position - game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.Position).Magnitude <= maxDistance then
+									if (game.PlaceId == epicmode or game.PlaceId == EMArchive) then
+										if (bitVal.Value >= 2500 and v.Parent.Name ~= "Bit") then
+											fireproximityprompt(v)
+										elseif bitVal.Value < 2500 then
+											fireproximityprompt(v)
+										end
+									elseif game.PlaceId==classicED then
+										if v.Parent.Name:lower() == "handle" then
+										else
+											fireproximityprompt(v)
+										end
+									else
+										fireproximityprompt(v)
+									end
+								end
+							end
+						end
+					end
+end
+				end)
 			end
-
-            local bitVal = LocalPlayer.leaderstats.Bits
-            local h = 0
-            if game.PlaceId ~= renovation then
-                h = 6
-            end
-
-            for _, v in ipairs(getPrompts) do
-                local maxDistance = v.MaxActivationDistance + h
-                if (v.Parent.Position - getRoot(LocalPlayer.Character).Position).Magnitude <= maxDistance then
-                    if (game.PlaceId == epicmode or game.PlaceId == EMArchive) then
-                        if (bitVal.Value >= 2500 and v.Parent.Name ~= "Bit") or bitVal.Value < 2500 then
-                            fireproximityprompt(v)
-                        end
-                    elseif game.PlaceId == classicED then
-                        if v.Parent.Name:lower() ~= "handle" then
-                            fireproximityprompt(v)
-                        end
-                    else
-                        fireproximityprompt(v)
-                    end
-                end
-            end
-        end)
-    end
-end)
+		end)
 	end)
 
 
