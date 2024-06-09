@@ -17,7 +17,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 	local vals = game:GetService("Workspace").Game.Values
 
 local r = 0
-	local d = 3
+	local d = 0.5
 
 	local GetService = game.GetService
 	iamcore = game:GetService("CoreGui")
