@@ -28,16 +28,21 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 
 	local IsOnMobile = table.find({Enum.Platform.IOS, Enum.Platform.Android}, game:GetService("UserInputService"):GetPlatform())
 
+function getRoot(char)
+	local rootPart = char:FindFirstChild('HumanoidRootPart') or char:FindFirstChild('Torso') or char:FindFirstChild('UpperTorso')
+	return rootPart
+end
+
 	function teleporttodoor()
 		local curroom = vals.RoomsNumber.Value
-		game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.CFrame = workspace.Game.Rooms["Room"..curroom].Door:FindFirstChildOfClass("Part").CFrame
+		getRoot(game:GetService("Players").LocalPlayer.Character).CFrame = workspace.Game.Rooms["Room"..curroom].Door:FindFirstChildOfClass("Part").CFrame
 	end
 
 	function teleporttokey()
 		local curroom = vals.RoomsNumber.Value
 		for _,keyroom in ipairs(workspace.Game.Rooms["Room"..curroom]:GetDescendants()) do
 			if (keyroom:IsA("BasePart") and keyroom.Name == "RoomKey" and keyroom.Parent.Name ~= "Door") then
-				game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.CFrame = keyroom.CFrame
+				getRoot(game:GetService("Players").LocalPlayer.Character).CFrame = keyroom.CFrame
 			end
 		end
 	end
@@ -55,7 +60,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 			local proximityPrompt = v:FindFirstChildOfClass("ProximityPrompt")
 			if proximityPrompt then
 				local maxDistance = proximityPrompt.MaxActivationDistance
-				if (v.Position - game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.Position).Magnitude <= maxDistance then
+				if (v.Position - getRoot(game:GetService("Players").LocalPlayer.Character).Position).Magnitude <= maxDistance then
 					fireproximityprompt(proximityPrompt)
 				end
 			end
@@ -133,7 +138,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 
 	task.wait();
 
-	task.spawn(function()
+	--[[task.spawn(function()
 		while task.wait(2) do
 			pcall(function()
 				for _,vals in ipairs(game:GetService("Players").LocalPlayer:FindFirstChild("PlayerGui"):FindFirstChild("MainGUI"):FindFirstChild("Values"):GetDescendants()) do
@@ -150,7 +155,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 				end
 			end)
 		end
-	end)
+	end)]]
 
 	task.spawn(function()
 		local decalsyeeted = true
@@ -302,11 +307,11 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 	end)
 
 	task.spawn(function()
+if game.PlaceId==renovation then
 		game:GetService("RunService").RenderStepped:Connect(function()
-			if game.PlaceId == renovation then
 				antiRagdoll()
-			end
 		end)
+end
 	end)
 
 	task.spawn(function()
@@ -322,8 +327,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 	end)
 
 	task.spawn(function()
-		repeat wait() until game:GetService("Players").LocalPlayer.Character
-		wait(.5)
+		wait(1)
 		game:GetService("Players").LocalPlayer.Character.Humanoid.AutoJumpEnabled = false
 		game:GetService("Players").LocalPlayer.CharacterAdded:Connect(function()
 			wait(.5)
@@ -764,6 +768,13 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 		Name = "Play Again",
 		Callback = function()
 			game:GetService("ReplicatedStorage").Remotes.PLAY_AGAIN:FireServer()
+		end,
+	})
+
+Tab:CreateButton({
+		Name = "Buy Respawn",
+		Callback = function()
+			game:GetService("ReplicatedStorage").Remotes.BUY_RESPAWN:FireServer()
 		end,
 	})
 
@@ -1455,10 +1466,10 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 								if game.PlaceId == renovation then
 									h = 0
 								else
-									h=4
+									h=6
 								end
 								local maxDistance = v.MaxActivationDistance + h
-								if (v.Parent.Position - game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.Position).Magnitude <= maxDistance then
+								if (v.Parent.Position - getRoot(game:GetService("Players").LocalPlayer.Character).Position).Magnitude <= maxDistance then
 									if (game.PlaceId == epicmode or game.PlaceId == EMArchive) then
 										if (bitVal.Value >= 2500 and v.Parent.Name ~= "Bit") then
 											fireproximityprompt(v)
