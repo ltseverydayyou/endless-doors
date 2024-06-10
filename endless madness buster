@@ -239,9 +239,9 @@ end
 		return tostring(game:GetService("Players").LocalPlayer.Character:FindFirstChild("Collectibles").Alan.Value)
 	end
 
-	--[[game:GetService("ProximityPromptService").PromptButtonHoldBegan:Connect(function(prompt)
+	game:GetService("ProximityPromptService").PromptButtonHoldBegan:Connect(function(prompt)
 		fireproximityprompt(prompt)
-	end)]]
+	end)
 
 	function killurself(partName)
 		task.spawn(function()
