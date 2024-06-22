@@ -1479,7 +1479,9 @@ game:GetService("RunService").RenderStepped:Connect(function()
 		game:GetService("RunService").RenderStepped:Connect(function()
 			if getgenv().wide then
 				pcall(function()
-					workspace.CurrentCamera.FieldOfView = getgenv().fov
+					num = (getgenv().fov or 70)
+					local hh=game:GetService("TweenService"):Create(workspace.CurrentCamera, TweenInfo.new(0, Enum.EasingStyle.Linear), {FieldOfView=tonumber(num)})
+					hh:Play()
 				end)
 			end
 		end)
