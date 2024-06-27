@@ -68,7 +68,7 @@ end
 			if proximityPrompt then
 				local maxDistance = proximityPrompt.MaxActivationDistance
 				if (v.Position - getRoot(game:GetService("Players").LocalPlayer.Character).Position).Magnitude <= maxDistance then
-					fireproximityprompt(proximityPrompt)
+					fireproximityprompt(proximityPrompt,1)
 				end
 			end
 		end
@@ -239,9 +239,21 @@ end
 		return tostring(game:GetService("Players").LocalPlayer.Character:FindFirstChild("Collectibles").Alan.Value)
 	end
 
-	game:GetService("ProximityPromptService").PromptButtonHoldBegan:Connect(function(prompt)
+if identifyexecutor() == "Solara" then
+for i,v in ipairs(workspace:GetDescendants()) do
+ if v.ClassName == "ProximityPrompt" then
+  v.HoldDuration = 0
+ end
+end
+workspace.DescendantAdded:Connect(function(pp)
+if pp.ClassName == "ProximityPrompt" then
+  pp.HoldDuration = 0
+ end
+end)
+else	game:GetService("ProximityPromptService").PromptButtonHoldBegan:Connect(function(prompt)
 		fireproximityprompt(prompt)
 	end)
+end
 
 	function killurself(partName)
 		task.spawn(function()
@@ -1436,17 +1448,17 @@ game:GetService("RunService").RenderStepped:Connect(function()
 								if (v.Parent.Position - game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.Position).Magnitude <= maxDistance then
 									if (game.PlaceId == epicmode or game.PlaceId == EMArchive) then
 										if (bitVal.Value >= 2500 and v.Parent.Name:lower() ~= "bit") then
-											fireproximityprompt(v)
+											fireproximityprompt(v,1)
 										elseif bitVal.Value < 2500 then
-											fireproximityprompt(v)
+											fireproximityprompt(v,1)
 										end
 									elseif game.PlaceId==classicED then
 										if v.Parent.Name:lower() == "handle" then
 										else
-											fireproximityprompt(v)
+											fireproximityprompt(v,1)
 										end
 									else
-										fireproximityprompt(v)
+										fireproximityprompt(v,1)
 									end
 								end
 							end
