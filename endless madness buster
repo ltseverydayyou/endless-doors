@@ -68,7 +68,7 @@ end
 			if proximityPrompt then
 				local maxDistance = proximityPrompt.MaxActivationDistance
 				if (v.Position - getRoot(game:GetService("Players").LocalPlayer.Character).Position).Magnitude <= maxDistance then
-					fireproximityprompt(proximityPrompt,math.huge)
+					fireproximityprompt(proximityPrompt,0)
 				end
 			end
 		end
@@ -240,7 +240,7 @@ end
 	end
 
 game:GetService("ProximityPromptService").PromptButtonHoldBegan:Connect(function(prompt)
-	fireproximityprompt(prompt,math.huge)
+	fireproximityprompt(prompt,0)
 end)
 
 	function killurself(partName)
@@ -1433,17 +1433,17 @@ game:GetService("RunService").RenderStepped:Connect(function()
 								if (v.Parent.Position - getRoot(game:GetService("Players").LocalPlayer.Character).Position).Magnitude <= maxDistance then
 									if (game.PlaceId == epicmode or game.PlaceId == EMArchive) then
 										if (bitVal.Value >= 2500 and v.Parent.Name:lower() ~= "bit") then
-											fireproximityprompt(v,math.huge)
+											fireproximityprompt(v,0)
 										elseif bitVal.Value < 2500 then
-											fireproximityprompt(v,math.huge)
+											fireproximityprompt(v,0)
 										end
 									elseif game.PlaceId==classicED then
 										if v.Parent.Name:lower() == "handle" then
 										else
-											fireproximityprompt(v,math.huge)
+											fireproximityprompt(v,0)
 										end
 									else
-										fireproximityprompt(v,math.huge)
+										fireproximityprompt(v,0)
 									end
 								end
 							end
