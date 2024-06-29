@@ -40,14 +40,14 @@ end
 
 	function teleporttodoor()
 		local curroom = vals.RoomsNumber.Value
-		getRoot(game:GetService("Players").LocalPlayer.Character):PivotTo(workspace.Game.Rooms["Room"..curroom].Door:GetPivot())
+		game:GetService("Players").LocalPlayer.Character:PivotTo(workspace.Game.Rooms["Room"..curroom].Door:GetPivot())
 	end
 
 	function teleporttokey()
 		local curroom = vals.RoomsNumber.Value
 		for _,keyroom in ipairs(workspace.Game.Rooms["Room"..curroom]:GetDescendants()) do
 			if (keyroom:IsA("BasePart") and keyroom.Name:lower() == "roomkey" and keyroom.Parent.Name:lower() ~= "door") then
-				getRoot(game:GetService("Players").LocalPlayer.Character).CFrame = keyroom.CFrame
+				game:GetService("Players").LocalPlayer.Character:PivotTo(keyroom:GetPivot())
 			end
 		end
 	end
@@ -68,7 +68,7 @@ end
 			if proximityPrompt then
 				local maxDistance = proximityPrompt.MaxActivationDistance
 				if (v.Position - getRoot(game:GetService("Players").LocalPlayer.Character).Position).Magnitude <= maxDistance then
-					fireproximityprompt(proximityPrompt,1)
+					fireproximityprompt(proximityPrompt,math.huge)
 				end
 			end
 		end
@@ -278,7 +278,7 @@ end)
 	task.spawn(function()
 if game.PlaceId==renovation then
 		game:GetService("RunService").RenderStepped:Connect(function()
-				antiRagdoll()
+			antiRagdoll()
 		end)
 end
 	end)
@@ -1428,25 +1428,22 @@ game:GetService("RunService").RenderStepped:Connect(function()
 						for _, v in ipairs(room:GetDescendants()) do
 							if v:IsA("ProximityPrompt") and v.Name == "ProximityPrompt" then
 								local bitVal = game:GetService("Players").LocalPlayer.leaderstats.Bits
-								local h = 0
-								if game.PlaceId ~= renovation then
-									h=6
-								end
+								local h = (game.PlaceId ~= renovation) and 6 or 0
 								local maxDistance = v.MaxActivationDistance + h
-								if (v.Parent.Position - game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.Position).Magnitude <= maxDistance then
+								if (v.Parent.Position - getRoot(game:GetService("Players").LocalPlayer.Character).Position).Magnitude <= maxDistance then
 									if (game.PlaceId == epicmode or game.PlaceId == EMArchive) then
 										if (bitVal.Value >= 2500 and v.Parent.Name:lower() ~= "bit") then
-											fireproximityprompt(v,1)
+											fireproximityprompt(v,math.huge)
 										elseif bitVal.Value < 2500 then
-											fireproximityprompt(v,1)
+											fireproximityprompt(v,math.huge)
 										end
 									elseif game.PlaceId==classicED then
 										if v.Parent.Name:lower() == "handle" then
 										else
-											fireproximityprompt(v,1)
+											fireproximityprompt(v,math.huge)
 										end
 									else
-										fireproximityprompt(v,1)
+										fireproximityprompt(v,math.huge)
 									end
 								end
 							end

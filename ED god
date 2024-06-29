@@ -15,16 +15,16 @@ else
 end
 if (workspace.Game.Rooms:FindFirstChild("Room"..rmMain - 5) or workspace.Game.Rooms:FindFirstChild("Room"..rmMain -4) or workspace.Game.Rooms:FindFirstChild("Room"..rmMain -3) or workspace.Game.Rooms:FindFirstChild("Room"..rmMain -2)) then
 if workspace.Game.Rooms["Room"..rmOld].Models:FindFirstChild("Wardrobe") then
-    game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.CFrame = workspace.Game.Rooms["Room"..rmMain].Door:FindFirstChildOfClass("Part").CFrame
+    game:GetService("Players").LocalPlayer.Character:PivotTo(workspace.Game.Rooms["Room"..rmMain].Door:GetPivot())
     
-    task.spawn(function()
-    for i = 1, 10 do
+    pcall(function()
+    for i=1, 15 do
         task.wait(0.05)
-        fireproximityprompt(workspace.Game.Rooms["Room"..rmMain].Door.Handle.ProximityPrompt,math.huge)
+        fireproximityprompt(workspace.Game.Rooms["Room"..rmMain].Door.Handle:FindFirstChildOfClass("ProximityPrompt"),math.huge)
     end
     end)
     
-    task.wait(0.5);
+    wait(0.5);
     
     local args = {
         workspace.Game.Rooms["Room"..rmOld].Models.Wardrobe,
@@ -33,13 +33,13 @@ if workspace.Game.Rooms["Room"..rmOld].Models:FindFirstChild("Wardrobe") then
     }
     
     game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("HIDE"):FireServer(unpack(args))
-    task.wait(1);
-    task.spawn(function()
+    wait(1);
+    spawn(function()
 
     repeat wait() until game:GetService("Players").LocalPlayer.Character:FindFirstChild("Hiding").Value == true
 
     repeat task.wait(.1)
-    game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.CFrame = workspace.Game.Rooms["Room"..rmMain].Door:FindFirstChildOfClass("Part").CFrame
+        game:GetService("Players").LocalPlayer.Character:PivotTo(workspace.Game.Rooms["Room"..rmMain].Door:GetPivot())
     until game:GetService("Players").LocalPlayer.Character:FindFirstChild("Hiding").Value == false
     
     end)
