@@ -17,7 +17,7 @@ if (workspace.Game.Rooms:FindFirstChild("Room"..rmMain - 5) or workspace.Game.Ro
 if workspace.Game.Rooms["Room"..rmOld].Models:FindFirstChild("Wardrobe") then
     game:GetService("Players").LocalPlayer.Character:PivotTo(workspace.Game.Rooms["Room"..rmMain].Door:GetPivot())
     
-    pcall(function()
+    task.spawn(function()
     for i=1, 15 do
         task.wait(0.05)
         fireproximityprompt(workspace.Game.Rooms["Room"..rmMain].Door.Handle:FindFirstChildOfClass("ProximityPrompt"),math.huge)
