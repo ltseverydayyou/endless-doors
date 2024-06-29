@@ -240,7 +240,7 @@ end
 	end
 
 game:GetService("ProximityPromptService").PromptButtonHoldBegan:Connect(function(prompt)
-	fireproximityprompt(prompt,1)
+	fireproximityprompt(prompt,math.huge)
 end)
 
 	function killurself(partName)
