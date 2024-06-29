@@ -20,7 +20,7 @@ if workspace.Game.Rooms["Room"..rmOld].Models:FindFirstChild("Wardrobe") then
     task.spawn(function()
     for i = 1, 10 do
         task.wait(0.05)
-        fireproximityprompt(workspace.Game.Rooms["Room"..rmMain].Door.Handle.ProximityPrompt)
+        fireproximityprompt(workspace.Game.Rooms["Room"..rmMain].Door.Handle.ProximityPrompt,1)
     end
     end)
     
