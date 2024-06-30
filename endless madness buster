@@ -330,12 +330,16 @@ end
 			else
 				h=noob.DisplayName.." (@"..noob.Name..")"
 			end
+if firesignal then
+firesignal(game.ReplicatedStorage.Remotes.HINTPLAYER.OnClientEvent, h.." Joined",3)
+else
 			Rayfield:Notify({
 				Title = "Player Join Log",
 				Content = h.." Joined",
 				Duration = 3,
 				Image = decalID,
 			})
+end
 		end)
 	end)
 	task.spawn(function()
@@ -406,13 +410,16 @@ end
 				end
 
 				wait();
-
+if firesignal then
+firesignal(game.ReplicatedStorage.Remotes.HINTPLAYER.OnClientEvent, gj.Name.." Has Spawned",3)
+else
 				Rayfield:Notify({
 					Title = "Entity",
 					Content = gj.Name.." Has Spawned",
 					Duration = 3,
 					Image = decalID,
 				})
+end
 			else
 			end
 		end)
@@ -423,22 +430,28 @@ end
 			if entityEsp then
 				if workspace.Game.Values.MimicActivated.Value then
 					wait();
-
+if firesignal then
+firesignal(game.ReplicatedStorage.Remotes.HINTPLAYER.OnClientEvent, "Mimic Is Enabled",3)
+else
 					Rayfield:Notify({
 						Title = "Entity",
 						Content = "Mimic Is Enabled",
 						Duration = 3,
 						Image = decalID,
 					})
+end
 				else
 					wait();
-
+if firesignal then
+firesignal(game.ReplicatedStorage.Remotes.HINTPLAYER.OnClientEvent, "Mimic Is Disabled",3)
+else
 					Rayfield:Notify({
 						Title = "Entity",
 						Content = "Mimic Is Disabled",
 						Duration = 3,
 						Image = decalID,
 					})
+end
 				end
 			else
 			end
@@ -1241,12 +1254,16 @@ Tab:CreateButton({
 	Tab5:CreateButton({
 		Name = "Send Notification",
 		Callback = function()
+if firesignal then
+firesignal(game.ReplicatedStorage.Remotes.HINTPLAYER.OnClientEvent, getgenv().Notifv1,3)
+else
 			Rayfield:Notify({
 				Title = "Notification",
 				Content = getgenv().Notifv1,
 				Duration = 3,
 				Image = decalID,
 			})
+end
 		end,
 	})
 
