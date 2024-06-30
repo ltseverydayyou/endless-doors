@@ -33,10 +33,10 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 
 	local IsOnMobile = table.find({Enum.Platform.IOS, Enum.Platform.Android}, game:GetService("UserInputService"):GetPlatform())
 
-function getRoot(char)
-	local root = char:FindFirstChild('HumanoidRootPart') or char:FindFirstChild('Torso') or char:FindFirstChild('UpperTorso')
-	return root
-end
+	function getRoot(char)
+		local root = char:FindFirstChild('HumanoidRootPart') or char:FindFirstChild('Torso') or char:FindFirstChild('UpperTorso')
+		return root
+	end
 
 	function teleporttodoor()
 		local curroom = vals.RoomsNumber.Value
@@ -108,72 +108,23 @@ end
 	task.spawn(function()
 		game:GetService("RunService").RenderStepped:connect(function()
 			if tick() - r > d then
-			r = tick()
-			pcall(function()
-				for _,vals in ipairs(game:GetService("Players").LocalPlayer:FindFirstChild("PlayerGui"):FindFirstChild("MainGUI"):FindFirstChild("Values"):GetDescendants()) do
-					if vals:IsA("DoubleConstrainedValue") then
-						vals.MaxValue = 999999
-						vals.MinValue = 0
+				r = tick()
+				pcall(function()
+					for _,vals in ipairs(game:GetService("Players").LocalPlayer:FindFirstChild("PlayerGui"):FindFirstChild("MainGUI"):FindFirstChild("Values"):GetDescendants()) do
+						if vals:IsA("DoubleConstrainedValue") then
+							vals.MaxValue = 999999
+							vals.MinValue = 0
+						end
 					end
-				end
-				for _,brah in ipairs(workspace:FindFirstChild("Game"):FindFirstChild("Values"):GetDescendants()) do
-					if brah:IsA("DoubleConstrainedValue") then
-						brah.MaxValue = 999999
-						brah.MinValue = 0
+					for _,brah in ipairs(workspace:FindFirstChild("Game"):FindFirstChild("Values"):GetDescendants()) do
+						if brah:IsA("DoubleConstrainedValue") then
+							brah.MaxValue = 999999
+							brah.MinValue = 0
+						end
 					end
-				end
-			end)
-		end
+				end)
+			end
 		end)
-	end)
-
-	task.spawn(function()
-		local decalsyeeted = true
-		local g = game;
-		local w = g.Workspace;
-		local l = g.Lighting;
-		local t = w.Terrain;
-		sethiddenproperty(l,"Technology",2)
-		sethiddenproperty(t,"Decoration",false)
-		t.WaterWaveSize = 0;
-		t.WaterWaveSpeed = 0;
-		t.WaterReflectance = 0;
-		t.WaterTransparency = 0;
-		l.GlobalShadows = 0;
-		l.FogEnd = math.huge;
-		l.Brightness = 0;
-		settings().Rendering.QualityLevel="Level01"
-		for i, v in pairs(w:GetDescendants()) do
-			if v:IsA("BasePart") and not v:IsA("MeshPart") then
-				v.Material = "Plastic"
-				v.Reflectance = 0
-			elseif (v:IsA("Decal") or v:IsA("Texture")) and decalsyeeted then
-				v.Transparency = 1
-			elseif v:IsA("ParticleEmitter") or v:IsA("Trail") then
-				v.Lifetime = NumberRange.new(0)
-			elseif v:IsA("Explosion") then
-				v.BlastPressure = 0
-				v.BlastRadius = 0
-			elseif v:IsA("Fire") or v:IsA("SpotLight") or v:IsA("Smoke") or v:IsA("Sparkles") then
-				v.Enabled = false
-			elseif v:IsA("MeshPart") and decalsyeeted then
-				v.Material = "Plastic"
-				v.Reflectance = 0
-				v.TextureID = 10385902758728957
-			elseif v:IsA("SpecialMesh") and decalsyeeted  then
-				v.TextureId=0
-			elseif v:IsA("ShirtGraphic") and decalsyeeted then
-				v.Graphic=0
-			elseif (v:IsA("Shirt") or v:IsA("Pants")) and decalsyeeted then
-				v[v.ClassName.."Template"]=0
-			end
-		end
-		for i = 1,#l:GetChildren() do
-			e=l:GetChildren()[i]
-			if e:IsA("BlurEffect") or e:IsA("SunRaysEffect") or e:IsA("ColorCorrectionEffect") or e:IsA("BloomEffect") or e:IsA("DepthOfFieldEffect") then
-				e.Enabled = false
-			end
-		end
 	end)
 
 	--Player Stats
@@ -239,9 +190,9 @@ end
 		return tostring(game:GetService("Players").LocalPlayer.Character:FindFirstChild("Collectibles").Alan.Value)
 	end
 
-game:GetService("ProximityPromptService").PromptButtonHoldBegan:Connect(function(prompt)
-	fireproximityprompt(prompt,1)
-end)
+	game:GetService("ProximityPromptService").PromptButtonHoldBegan:Connect(function(prompt)
+		fireproximityprompt(prompt,1)
+	end)
 
 	function killurself(partName)
 		task.spawn(function()
@@ -276,11 +227,11 @@ end)
 	end)
 
 	task.spawn(function()
-if game.PlaceId==renovation then
-		game:GetService("RunService").RenderStepped:Connect(function()
-			antiRagdoll()
-		end)
-end
+		if game.PlaceId==renovation then
+			game:GetService("RunService").RenderStepped:Connect(function()
+				antiRagdoll()
+			end)
+		end
 	end)
 
 	task.spawn(function()
@@ -330,16 +281,16 @@ end
 			else
 				h=noob.DisplayName.." (@"..noob.Name..")"
 			end
-if firesignal then
-firesignal(game.ReplicatedStorage.Remotes.HINTPLAYER.OnClientEvent, h.." Joined",3)
-else
-			Rayfield:Notify({
-				Title = "Player Join Log",
-				Content = h.." Joined",
-				Duration = 3,
-				Image = decalID,
-			})
-end
+			if firesignal then
+				firesignal(game.ReplicatedStorage.Remotes.HINTPLAYER.OnClientEvent, h.." Joined",3)
+			else
+				Rayfield:Notify({
+					Title = "Player Join Log",
+					Content = h.." Joined",
+					Duration = 3,
+					Image = decalID,
+				})
+			end
 		end)
 	end)
 	task.spawn(function()
@@ -410,16 +361,16 @@ end
 				end
 
 				wait();
-if firesignal then
-firesignal(game.ReplicatedStorage.Remotes.HINTPLAYER.OnClientEvent, gj.Name.." Has Spawned",3)
-else
-				Rayfield:Notify({
-					Title = "Entity",
-					Content = gj.Name.." Has Spawned",
-					Duration = 3,
-					Image = decalID,
-				})
-end
+				if firesignal then
+					firesignal(game.ReplicatedStorage.Remotes.HINTPLAYER.OnClientEvent, gj.Name.." Has Spawned",3)
+				else
+					Rayfield:Notify({
+						Title = "Entity",
+						Content = gj.Name.." Has Spawned",
+						Duration = 3,
+						Image = decalID,
+					})
+				end
 			else
 			end
 		end)
@@ -430,28 +381,28 @@ end
 			if entityEsp then
 				if workspace.Game.Values.MimicActivated.Value then
 					wait();
-if firesignal then
-firesignal(game.ReplicatedStorage.Remotes.HINTPLAYER.OnClientEvent, "Mimic Is Enabled",3)
-else
-					Rayfield:Notify({
-						Title = "Entity",
-						Content = "Mimic Is Enabled",
-						Duration = 3,
-						Image = decalID,
-					})
-end
+					if firesignal then
+						firesignal(game.ReplicatedStorage.Remotes.HINTPLAYER.OnClientEvent, "Mimic Is Enabled",3)
+					else
+						Rayfield:Notify({
+							Title = "Entity",
+							Content = "Mimic Is Enabled",
+							Duration = 3,
+							Image = decalID,
+						})
+					end
 				else
 					wait();
-if firesignal then
-firesignal(game.ReplicatedStorage.Remotes.HINTPLAYER.OnClientEvent, "Mimic Is Disabled",3)
-else
-					Rayfield:Notify({
-						Title = "Entity",
-						Content = "Mimic Is Disabled",
-						Duration = 3,
-						Image = decalID,
-					})
-end
+					if firesignal then
+						firesignal(game.ReplicatedStorage.Remotes.HINTPLAYER.OnClientEvent, "Mimic Is Disabled",3)
+					else
+						Rayfield:Notify({
+							Title = "Entity",
+							Content = "Mimic Is Disabled",
+							Duration = 3,
+							Image = decalID,
+						})
+					end
 				end
 			else
 			end
@@ -588,13 +539,13 @@ end
 
 	task.spawn(function()
 		game:GetService("RunService").RenderStepped:Connect(function()
-		if game.PlaceId==renovation then
-			if rotation then
-				charRotate(true)
-			else
-				charRotate(false)
+			if game.PlaceId==renovation then
+				if rotation then
+					charRotate(true)
+				else
+					charRotate(false)
+				end
 			end
-		end
 		end)
 	end)
 
@@ -752,7 +703,7 @@ end
 		end,
 	})
 
-Tab:CreateButton({
+	Tab:CreateButton({
 		Name = "Buy Respawn",
 		Callback = function()
 			game:GetService("ReplicatedStorage").Remotes.BUY_RESPAWN:FireServer()
@@ -1152,7 +1103,7 @@ Tab:CreateButton({
 
 					local jumpbtn = cmdlp.PlayerGui.TouchControls.MobileControls.JumpButton
 					local run = false
-					
+
 					if mobileInfinite then
 						mobileInfinite:Disconnect()
 						mobileInfinite=nil
@@ -1254,16 +1205,16 @@ Tab:CreateButton({
 	Tab5:CreateButton({
 		Name = "Send Notification",
 		Callback = function()
-if firesignal then
-firesignal(game.ReplicatedStorage.Remotes.HINTPLAYER.OnClientEvent, getgenv().Notifv1,3)
-else
-			Rayfield:Notify({
-				Title = "Notification",
-				Content = getgenv().Notifv1,
-				Duration = 3,
-				Image = decalID,
-			})
-end
+			if firesignal then
+				firesignal(game.ReplicatedStorage.Remotes.HINTPLAYER.OnClientEvent, getgenv().Notifv1,3)
+			else
+				Rayfield:Notify({
+					Title = "Notification",
+					Content = getgenv().Notifv1,
+					Duration = 3,
+					Image = decalID,
+				})
+			end
 		end,
 	})
 
@@ -1436,11 +1387,11 @@ end
 			end
 		end)
 
-game:GetService("RunService").RenderStepped:Connect(function()
+		game:GetService("RunService").RenderStepped:Connect(function()
 			if getgenv().chaos then
 				pcall(function()
-				--if tick() - r > d then
-				--r = tick()
+					--if tick() - r > d then
+					--r = tick()
 					for _, room in ipairs(workspace.Game.Rooms:GetChildren()) do
 						for _, v in ipairs(room:GetDescendants()) do
 							if v:IsA("ProximityPrompt") and v.Name == "ProximityPrompt" then
