@@ -281,16 +281,12 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 			else
 				h=noob.DisplayName.." (@"..noob.Name..")"
 			end
-			if firesignal then
-				firesignal(game.ReplicatedStorage.Remotes.HINTPLAYER.OnClientEvent, h.." Joined",3)
-			else
-				Rayfield:Notify({
-					Title = "Player Join Log",
-					Content = h.." Joined",
-					Duration = 3,
-					Image = decalID,
-				})
-			end
+			Rayfield:Notify({
+				Title = "Player Join Log",
+				Content = h.." Joined",
+				Duration = 3,
+				Image = decalID,
+			})
 		end)
 	end)
 	task.spawn(function()
@@ -361,16 +357,12 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 				end
 
 				wait();
-				if firesignal then
-					firesignal(game.ReplicatedStorage.Remotes.HINTPLAYER.OnClientEvent, gj.Name.." Has Spawned",3)
-				else
-					Rayfield:Notify({
-						Title = "Entity",
-						Content = gj.Name.." Has Spawned",
-						Duration = 3,
-						Image = decalID,
-					})
-				end
+				Rayfield:Notify({
+					Title = "Entity",
+					Content = gj.Name.." Has Spawned",
+					Duration = 3,
+					Image = decalID,
+				})
 			else
 			end
 		end)
@@ -381,28 +373,20 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 			if entityEsp then
 				if workspace.Game.Values.MimicActivated.Value then
 					wait();
-					if firesignal then
-						firesignal(game.ReplicatedStorage.Remotes.HINTPLAYER.OnClientEvent, "Mimic Is Enabled",3)
-					else
-						Rayfield:Notify({
-							Title = "Entity",
-							Content = "Mimic Is Enabled",
-							Duration = 3,
-							Image = decalID,
-						})
-					end
+					Rayfield:Notify({
+						Title = "Entity",
+						Content = "Mimic Is Enabled",
+						Duration = 3,
+						Image = decalID,
+					})
 				else
 					wait();
-					if firesignal then
-						firesignal(game.ReplicatedStorage.Remotes.HINTPLAYER.OnClientEvent, "Mimic Is Disabled",3)
-					else
-						Rayfield:Notify({
-							Title = "Entity",
-							Content = "Mimic Is Disabled",
-							Duration = 3,
-							Image = decalID,
-						})
-					end
+					Rayfield:Notify({
+						Title = "Entity",
+						Content = "Mimic Is Disabled",
+						Duration = 3,
+						Image = decalID,
+					})
 				end
 			else
 			end
@@ -1205,16 +1189,12 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 	Tab5:CreateButton({
 		Name = "Send Notification",
 		Callback = function()
-			if firesignal then
-				firesignal(game.ReplicatedStorage.Remotes.HINTPLAYER.OnClientEvent, getgenv().Notifv1,3)
-			else
-				Rayfield:Notify({
-					Title = "Notification",
-					Content = getgenv().Notifv1,
-					Duration = 3,
-					Image = decalID,
-				})
-			end
+			Rayfield:Notify({
+				Title = "Notification",
+				Content = getgenv().Notifv1,
+				Duration = 3,
+				Image = decalID,
+			})
 		end,
 	})
 
