@@ -1,5 +1,19 @@
-local Notification = loadstring(game:HttpGet("https://raw.githubusercontent.com/ltseverydayyou/Nameless-Admin/main/notifications"))();
- local Notify = Notification.Notify;
+local Notification=nil
+
+repeat 
+	local s,r=pcall(function()
+		return loadstring(game:HttpGet("https://raw.githubusercontent.com/ltseverydayyou/Nameless-Admin/main/NamelessAdminNotifications.lua"))()
+	end);
+
+	if s then
+		Notification=r;
+	else
+		warn("Couldn't load notification module, retrying...");
+		task.wait();
+	end
+until Notification~=nil --waits for the module to load (cause loadstring takes ages)
+
+local Notify=Notification.Notify;
 
 local curroom = game.workspace.Game.Values.RoomsNumber.Value
 local rmMain=curroom
