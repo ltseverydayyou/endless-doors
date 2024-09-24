@@ -15,7 +15,7 @@ else
 end
 if (workspace.Game.Rooms:FindFirstChild("Room"..rmMain - 5) or workspace.Game.Rooms:FindFirstChild("Room"..rmMain -4) or workspace.Game.Rooms:FindFirstChild("Room"..rmMain -3) or workspace.Game.Rooms:FindFirstChild("Room"..rmMain -2)) then
 if workspace.Game.Rooms["Room"..rmOld].Models:FindFirstChild("Wardrobe") then
-    game:GetService("Players").LocalPlayer.Character:PivotTo(workspace.Game.Rooms["Room"..rmMain].Door:GetPivot())
+    game:FindService("Players").LocalPlayer.Character:PivotTo(workspace.Game.Rooms["Room"..rmMain].Door:GetPivot())
     
     task.spawn(function()
     for i=1, 15 do
@@ -32,19 +32,19 @@ if workspace.Game.Rooms["Room"..rmOld].Models:FindFirstChild("Wardrobe") then
         false
     }
     
-    game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("HIDE"):FireServer(unpack(args))
+    game:FindService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("HIDE"):FireServer(unpack(args))
     wait(1);
     spawn(function()
 
-    repeat wait() until game:GetService("Players").LocalPlayer.Character:FindFirstChild("Hiding").Value == true
+    repeat wait() until game:FindService("Players").LocalPlayer.Character:FindFirstChild("Hiding").Value == true
 
     repeat task.wait(.1)
-        game:GetService("Players").LocalPlayer.Character:PivotTo(workspace.Game.Rooms["Room"..rmMain].Door:GetPivot())
-    until game:GetService("Players").LocalPlayer.Character:FindFirstChild("Hiding").Value == false
+        game:FindService("Players").LocalPlayer.Character:PivotTo(workspace.Game.Rooms["Room"..rmMain].Door:GetPivot())
+    until game:FindService("Players").LocalPlayer.Character:FindFirstChild("Hiding").Value == false
     
     end)
     task.wait(3.5);
-    game:GetService("Players").LocalPlayer.Character:FindFirstChild("Hiding").Value = false
+    game:FindService("Players").LocalPlayer.Character:FindFirstChild("Hiding").Value = false
 
     else
 

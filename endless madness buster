@@ -11,9 +11,9 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 
 	decalID=17471548099
 	UIdecal="rbxassetid://"..decalID
-	local plr = game:GetService("Players").LocalPlayer
+	local plr = game:FindService("Players").LocalPlayer
 	local char = plr.Character or plr.CharacterAdded:Wait()
-	local vals = game:GetService("Workspace"):FindFirstChild("Game"):FindFirstChild("Values")
+	local vals = game:FindService("Workspace"):FindFirstChild("Game"):FindFirstChild("Values")
 
 	local r = 0
 	local d = 2
@@ -21,8 +21,8 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 	local h=0
 	local p=0.1
 
-	local GetService = game.GetService
-	iamcore = game:GetService("CoreGui")
+	local FindService = game.FindService
+	iamcore = game:FindService("CoreGui")
 	if not game:IsLoaded() then
 		local waiting = Instance.new("Message")
 		waiting.Parent = iamcore
@@ -31,7 +31,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 		waiting:Destroy()
 	end
 
-	local IsOnMobile = table.find({Enum.Platform.IOS, Enum.Platform.Android}, game:GetService("UserInputService"):GetPlatform())
+	local IsOnMobile = table.find({Enum.Platform.IOS, Enum.Platform.Android}, game:FindService("UserInputService"):GetPlatform())
 
 	function getRoot(char)
 		local root = char:FindFirstChild('HumanoidRootPart') or char:FindFirstChild('Torso') or char:FindFirstChild('UpperTorso')
@@ -40,24 +40,24 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 
 	function teleporttodoor()
 		local curroom = vals.RoomsNumber.Value
-		game:GetService("Players").LocalPlayer.Character:PivotTo(workspace.Game.Rooms["Room"..curroom].Door:GetPivot())
+		game:FindService("Players").LocalPlayer.Character:PivotTo(workspace.Game.Rooms["Room"..curroom].Door:GetPivot())
 	end
 
 	function teleporttokey()
 		local curroom = vals.RoomsNumber.Value
 		for _,keyroom in ipairs(workspace.Game.Rooms["Room"..curroom]:GetDescendants()) do
 			if (keyroom:IsA("BasePart") and keyroom.Name:lower() == "roomkey" and keyroom.Parent.Name:lower() ~= "door") then
-				game:GetService("Players").LocalPlayer.Character:PivotTo(keyroom:GetPivot())
+				game:FindService("Players").LocalPlayer.Character:PivotTo(keyroom:GetPivot())
 			end
 		end
 	end
 
 	function antiRagdoll()
-		game:GetService("Players").LocalPlayer.Character:FindFirstChild("RagdollTrigger").Value=false
+		game:FindService("Players").LocalPlayer.Character:FindFirstChild("RagdollTrigger").Value=false
 	end
 
 	function charRotate(val)
-		game:GetService("Players").LocalPlayer.Character:FindFirstChild("CanRotate").Value=val
+		game:FindService("Players").LocalPlayer.Character:FindFirstChild("CanRotate").Value=val
 	end
 
 	--[[function processObject(v, itemName)
@@ -67,7 +67,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 			local proximityPrompt = v:FindFirstChildOfClass("ProximityPrompt")
 			if proximityPrompt then
 				local maxDistance = proximityPrompt.MaxActivationDistance
-				if (v.Position - getRoot(game:GetService("Players").LocalPlayer.Character).Position).Magnitude <= maxDistance then
+				if (v.Position - getRoot(game:FindService("Players").LocalPlayer.Character).Position).Magnitude <= maxDistance then
 					fireproximityprompt(proximityPrompt,1)
 				end
 			end
@@ -106,11 +106,11 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 	task.wait();
 
 	task.spawn(function()
-		game:GetService("RunService").RenderStepped:connect(function()
+		game:FindService("RunService").RenderStepped:connect(function()
 			if tick() - r > d then
 				r = tick()
 				pcall(function()
-					for _,vals in ipairs(game:GetService("Players").LocalPlayer:FindFirstChild("PlayerGui"):FindFirstChild("MainGUI"):FindFirstChild("Values"):GetDescendants()) do
+					for _,vals in ipairs(game:FindService("Players").LocalPlayer:FindFirstChild("PlayerGui"):FindFirstChild("MainGUI"):FindFirstChild("Values"):GetDescendants()) do
 						if vals:IsA("DoubleConstrainedValue") then
 							vals.MaxValue = 999999
 							vals.MinValue = 0
@@ -130,25 +130,25 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 	--Player Stats
 
 	function playerRoom()
-		return tostring(game:GetService("Players").LocalPlayer.leaderstats.Room.Value)
+		return tostring(game:FindService("Players").LocalPlayer.leaderstats.Room.Value)
 	end
 	function playerBits()
-		return tostring(game:GetService("Players").LocalPlayer.leaderstats.Bits.Value)
+		return tostring(game:FindService("Players").LocalPlayer.leaderstats.Bits.Value)
 	end
 	function x2bits()
-		return tostring(game:GetService("Players").LocalPlayer.Character:FindFirstChild("Values"):FindFirstChild("DoubleBits").Value)
+		return tostring(game:FindService("Players").LocalPlayer.Character:FindFirstChild("Values"):FindFirstChild("DoubleBits").Value)
 	end
 	function fame()
-		return tostring(game:GetService("Players").LocalPlayer:FindFirstChild("Fame").Value)
+		return tostring(game:FindService("Players").LocalPlayer:FindFirstChild("Fame").Value)
 	end
 	function deaths()
-		return tostring(game:GetService("Players").LocalPlayer:FindFirstChild("Deaths").Value)
+		return tostring(game:FindService("Players").LocalPlayer:FindFirstChild("Deaths").Value)
 	end
 	function rifted()
-		return tostring(game:GetService("Players").LocalPlayer:FindFirstChild("Rift").Value)
+		return tostring(game:FindService("Players").LocalPlayer:FindFirstChild("Rift").Value)
 	end
 	function inGroup()
-		return tostring(game:GetService("Players").LocalPlayer:FindFirstChild("JoinedGroup").Value)
+		return tostring(game:FindService("Players").LocalPlayer:FindFirstChild("JoinedGroup").Value)
 	end
 
 	--Game Info
@@ -175,22 +175,22 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 	--collectibles
 
 	function fuz()
-		return tostring(game:GetService("Players").LocalPlayer.Character:FindFirstChild("Collectibles").Fuzzi.Value)
+		return tostring(game:FindService("Players").LocalPlayer.Character:FindFirstChild("Collectibles").Fuzzi.Value)
 	end
 	function zavv()
-		return tostring(game:GetService("Players").LocalPlayer.Character:FindFirstChild("Collectibles").Zav.Value)
+		return tostring(game:FindService("Players").LocalPlayer.Character:FindFirstChild("Collectibles").Zav.Value)
 	end
 	function jaek()
-		return tostring(game:GetService("Players").LocalPlayer.Character:FindFirstChild("Collectibles").Jake.Value)
+		return tostring(game:FindService("Players").LocalPlayer.Character:FindFirstChild("Collectibles").Jake.Value)
 	end
 	function cyan()
-		return tostring(game:GetService("Players").LocalPlayer.Character:FindFirstChild("Collectibles").Blue.Value)
+		return tostring(game:FindService("Players").LocalPlayer.Character:FindFirstChild("Collectibles").Blue.Value)
 	end
 	function alen()
-		return tostring(game:GetService("Players").LocalPlayer.Character:FindFirstChild("Collectibles").Alan.Value)
+		return tostring(game:FindService("Players").LocalPlayer.Character:FindFirstChild("Collectibles").Alan.Value)
 	end
 
-	game:GetService("ProximityPromptService").PromptButtonHoldBegan:Connect(function(prompt)
+	game:FindService("ProximityPromptService").PromptButtonHoldBegan:Connect(function(prompt)
 		fireproximityprompt(prompt,1)
 	end)
 
@@ -221,14 +221,14 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 	end
 
 	task.spawn(function()
-		repeat wait() until game:GetService("Players").LocalPlayer.Character
+		repeat wait() until game:FindService("Players").LocalPlayer.Character
 		task.wait(2)
 		spawn(thingy_idk)
 	end)
 
 	task.spawn(function()
 		if game.PlaceId==renovation then
-			game:GetService("RunService").RenderStepped:Connect(function()
+			game:FindService("RunService").RenderStepped:Connect(function()
 				antiRagdoll()
 			end)
 		end
@@ -247,10 +247,10 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 
 	task.spawn(function()
 		wait(1)
-		game:GetService("Players").LocalPlayer.Character.Humanoid.AutoJumpEnabled = false
-		game:GetService("Players").LocalPlayer.CharacterAdded:Connect(function()
+		game:FindService("Players").LocalPlayer.Character.Humanoid.AutoJumpEnabled = false
+		game:FindService("Players").LocalPlayer.CharacterAdded:Connect(function()
 			wait(.5)
-			game:GetService("Players").LocalPlayer.Character.Humanoid.AutoJumpEnabled = false
+			game:FindService("Players").LocalPlayer.Character.Humanoid.AutoJumpEnabled = false
 		end)
 	end)
 
@@ -274,7 +274,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 	local batteryESP = false
 	local rotation = true
 	task.spawn(function() -- idk why i even added this lol
-		game:GetService("Players").PlayerAdded:Connect(function(noob)
+		game:FindService("Players").PlayerAdded:Connect(function(noob)
 			local h="somebody"
 			if noob.Name:lower() == noob.DisplayName:lower() then
 				h="@"..noob.Name
@@ -538,7 +538,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 	end)
 
 	task.spawn(function()
-		game:GetService("RunService").RenderStepped:Connect(function()
+		game:FindService("RunService").RenderStepped:Connect(function()
 			if game.PlaceId==renovation then
 				if rotation then
 					charRotate(true)
@@ -550,7 +550,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 	end)
 
 	task.spawn(function()
-		game:GetService"Players".LocalPlayer.PlayerGui.DescendantAdded:connect(function(txt)
+		game:FindService"Players".LocalPlayer.PlayerGui.DescendantAdded:connect(function(txt)
 			if txt:IsA'TextLabel' and txt.Parent.Name:lower() == "hintframe" and (txt.Text:lower() == "cannot pick that up." or txt.Text:lower() == "you already have this") then
 				wait();
 				txt:Destroy()
@@ -583,7 +583,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 	Tab:CreateButton({
 		Name = "Infinite Flashlight",
 		Callback = function()
-			game:GetService("ReplicatedStorage").Remotes.FLASHLIGHT_TOGGLE:FireServer(false, 99999999999999)
+			game:FindService("ReplicatedStorage").Remotes.FLASHLIGHT_TOGGLE:FireServer(false, 99999999999999)
 		end,
 	})
 
@@ -625,7 +625,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 		Flag = "fallenLook",
 		Callback = function(Value)
 			if game.PlaceId~=classicED then
-				game:GetService("Players").LocalPlayer.PlayerScripts:FindFirstChild("Looking").Enabled = not Value
+				game:FindService("Players").LocalPlayer.PlayerScripts:FindFirstChild("Looking").Enabled = not Value
 			else
 			end
 		end,
@@ -637,8 +637,8 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 		Flag = "camShaking",
 		Callback = function(Value)
 			if game.PlaceId == renovation then
-				game:GetService("Players").LocalPlayer.PlayerScripts:FindFirstChild("LocalShaking").Enabled = not Value
-				game:GetService("Players").LocalPlayer.PlayerScripts:FindFirstChild("CameraShake").Enabled = not Value
+				game:FindService("Players").LocalPlayer.PlayerScripts:FindFirstChild("LocalShaking").Enabled = not Value
+				game:FindService("Players").LocalPlayer.PlayerScripts:FindFirstChild("CameraShake").Enabled = not Value
 			end
 		end,
 	})
@@ -650,28 +650,28 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 		Callback = function(Value)
 			if Value then
 				function brightFunc()
-					game:GetService("Lighting").ClockTime = 14
-					game:GetService("Lighting").FogEnd = 10000000000
-					game:GetService("Lighting").FogStart = 0
-					game:GetService("Lighting").GlobalShadows = false
-					game:GetService("Lighting").OutdoorAmbient = Color3.fromRGB(128, 128, 128)
+					game:FindService("Lighting").ClockTime = 14
+					game:FindService("Lighting").FogEnd = 10000000000
+					game:FindService("Lighting").FogStart = 0
+					game:FindService("Lighting").GlobalShadows = false
+					game:FindService("Lighting").OutdoorAmbient = Color3.fromRGB(128, 128, 128)
 				end
-				game:GetService("Lighting").Brightness = 3
-				for i,v in pairs(game:GetService("Lighting"):GetDescendants()) do
+				game:FindService("Lighting").Brightness = 3
+				for i,v in pairs(game:FindService("Lighting"):GetDescendants()) do
 					if v:IsA("Atmosphere") then
 						v:Destroy()
 					end
 				end
 
-				brightLoop = game:GetService("RunService").RenderStepped:Connect(brightFunc)
+				brightLoop = game:FindService("RunService").RenderStepped:Connect(brightFunc)
 			else
 				if brightLoop then
 					brightLoop:Disconnect()
-					game:GetService("Lighting").ClockTime = 0
-					game:GetService("Lighting").FogEnd = 100000
-					game:GetService("Lighting").GlobalShadows = false
-					game:GetService("Lighting").OutdoorAmbient = Color3.fromRGB(128, 128, 128)
-					game:GetService("Lighting").Brightness = 1
+					game:FindService("Lighting").ClockTime = 0
+					game:FindService("Lighting").FogEnd = 100000
+					game:FindService("Lighting").GlobalShadows = false
+					game:FindService("Lighting").OutdoorAmbient = Color3.fromRGB(128, 128, 128)
+					game:FindService("Lighting").Brightness = 1
 				end
 			end
 		end,
@@ -683,7 +683,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 		Flag = "antiAFK",
 		Callback = function(Value)
 			if Value then
-				ANTIAFK = game:GetService("Players").LocalPlayer.Idled:connect(function()
+				ANTIAFK = game:FindService("Players").LocalPlayer.Idled:connect(function()
 					game:FindService("VirtualUser"):Button2Down(Vector2.new(0,0),workspace.CurrentCamera.CFrame)
 					task.wait(1)
 					game:FindService("VirtualUser"):Button2Up(Vector2.new(0,0),workspace.CurrentCamera.CFrame)
@@ -699,14 +699,14 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 	Tab:CreateButton({
 		Name = "Play Again",
 		Callback = function()
-			game:GetService("ReplicatedStorage").Remotes.PLAY_AGAIN:FireServer()
+			game:FindService("ReplicatedStorage").Remotes.PLAY_AGAIN:FireServer()
 		end,
 	})
 
 	Tab:CreateButton({
 		Name = "Buy Respawn",
 		Callback = function()
-			game:GetService("ReplicatedStorage").Remotes.BUY_RESPAWN:FireServer()
+			game:FindService("ReplicatedStorage").Remotes.BUY_RESPAWN:FireServer()
 		end,
 	})
 
@@ -1092,13 +1092,13 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 					infinite:Disconnect()
 					infinite=nil
 				end
-				infinite = game:GetService("UserInputService").JumpRequest:Connect(function()
-					game:GetService("Players").LocalPlayer.Character:FindFirstChildOfClass("Humanoid"):ChangeState("Jumping")
+				infinite = game:FindService("UserInputService").JumpRequest:Connect(function()
+					game:FindService("Players").LocalPlayer.Character:FindFirstChildOfClass("Humanoid"):ChangeState("Jumping")
 				end)
 				if IsOnMobile and game.PlaceId == renovation then
-					local controls = require(game:GetService("Players").LocalPlayer.PlayerScripts.PlayerModule):GetControls()
+					local controls = require(game:FindService("Players").LocalPlayer.PlayerScripts.PlayerModule):GetControls()
 					controls:Enable()
-					local cmdlp = game:GetService("Players").LocalPlayer
+					local cmdlp = game:FindService("Players").LocalPlayer
 					cmdlp.Character.Humanoid:SetStateEnabled(Enum.HumanoidStateType.Jumping, true)
 
 					local jumpbtn = cmdlp.PlayerGui.TouchControls.MobileControls.JumpButton
@@ -1111,7 +1111,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 
 					mobileInfinite = jumpbtn.MouseButton1Click:Connect(function()
 						run = not run
-						game:GetService("Players").LocalPlayer.Character:FindFirstChildOfClass('Humanoid'):ChangeState("Jumping")
+						game:FindService("Players").LocalPlayer.Character:FindFirstChildOfClass('Humanoid'):ChangeState("Jumping")
 					end)
 				end
 			else
@@ -1139,7 +1139,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 	Tab5:CreateButton({
 		Name = "Hide Value",
 		Callback = function()
-			game:GetService("Players").LocalPlayer.Character.Hiding.Value = not game:GetService("Players").LocalPlayer.Character.Hiding.Value
+			game:FindService("Players").LocalPlayer.Character.Hiding.Value = not game:FindService("Players").LocalPlayer.Character.Hiding.Value
 		end    
 	})
 
@@ -1254,7 +1254,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 	end
 
 	task.spawn(function()
-		game:GetService("RunService").RenderStepped:Connect(function()
+		game:FindService("RunService").RenderStepped:Connect(function()
 			pcall(function()
 				rmtxt:Set("Rooms: "..playerRoom())
 				bittxt:Set("Bits: "..playerBits())
@@ -1305,12 +1305,12 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 
 	-- auras
 	task.spawn(function()
-		game:GetService("RunService").RenderStepped:Connect(function()
+		game:FindService("RunService").RenderStepped:Connect(function()
 			if getgenv().bits then
 				pcall(function()
 					for _, room in ipairs(workspace.Game.Rooms:GetChildren()) do
 						for _, v in pairs(room:GetDescendants()) do
-							local bitVal = game:GetService("Players").LocalPlayer.leaderstats.Bits
+							local bitVal = game:FindService("Players").LocalPlayer.leaderstats.Bits
 							if (game.PlaceId == epicmode or game.PlaceId == EMArchive) and bitVal.Value >= 2500 then
 							else
 								processObject(v, "bit")
@@ -1320,7 +1320,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 				end)
 			end
 		end)
-		game:GetService("RunService").RenderStepped:Connect(function()
+		game:FindService("RunService").RenderStepped:Connect(function()
 			if getgenv().Key then
 				pcall(function()
 					for _, room in ipairs(workspace.Game.Rooms:GetChildren()) do
@@ -1332,7 +1332,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 
 			end
 		end)
-		game:GetService("RunService").RenderStepped:Connect(function()
+		game:FindService("RunService").RenderStepped:Connect(function()
 			if getgenv().Vita then
 				pcall(function()
 					for _, room in ipairs(workspace.Game.Rooms:GetChildren()) do
@@ -1344,7 +1344,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 				end)
 			end
 		end)
-		game:GetService("RunService").RenderStepped:Connect(function()
+		game:FindService("RunService").RenderStepped:Connect(function()
 			if getgenv().Band then
 				pcall(function()
 					for _, room in ipairs(workspace.Game.Rooms:GetChildren()) do
@@ -1355,7 +1355,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 				end)
 			end
 		end)
-		game:GetService("RunService").RenderStepped:Connect(function()
+		game:FindService("RunService").RenderStepped:Connect(function()
 			if getgenv().LockPick then
 				pcall(function()
 					for _, room in ipairs(workspace.Game.Rooms:GetChildren()) do
@@ -1366,7 +1366,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 				end)
 			end
 		end)
-		game:GetService("RunService").RenderStepped:Connect(function()
+		game:FindService("RunService").RenderStepped:Connect(function()
 			if getgenv().SusKey then
 				pcall(function()
 					for _, room in ipairs(workspace.Game.Rooms:GetChildren()) do
@@ -1377,7 +1377,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 				end)
 			end
 		end)
-		game:GetService("RunService").RenderStepped:Connect(function()
+		game:FindService("RunService").RenderStepped:Connect(function()
 			if getgenv().Crucifix then
 				pcall(function()
 					for _, v in pairs(workspace.Game.Rooms:GetDescendants()) do
@@ -1387,7 +1387,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 			end
 		end)
 
-		game:GetService("RunService").RenderStepped:Connect(function()
+		game:FindService("RunService").RenderStepped:Connect(function()
 			if getgenv().chaos then
 				pcall(function()
 					--if tick() - r > d then
@@ -1395,10 +1395,10 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 					for _, room in ipairs(workspace.Game.Rooms:GetChildren()) do
 						for _, v in ipairs(room:GetDescendants()) do
 							if v:IsA("ProximityPrompt") and v.Name == "ProximityPrompt" then
-								local bitVal = game:GetService("Players").LocalPlayer.leaderstats.Bits
+								local bitVal = game:FindService("Players").LocalPlayer.leaderstats.Bits
 								local h = (game.PlaceId ~= renovation) and 6 or 0
 								local maxDistance = v.MaxActivationDistance + h
-								if (v.Parent.Position - getRoot(game:GetService("Players").LocalPlayer.Character).Position).Magnitude <= maxDistance then
+								if (v.Parent.Position - getRoot(game:FindService("Players").LocalPlayer.Character).Position).Magnitude <= maxDistance then
 									if (game.PlaceId == epicmode or game.PlaceId == EMArchive) then
 										if (bitVal.Value >= 2500 and v.Parent.Name:lower() ~= "bit") then
 											fireproximityprompt(v,1)
@@ -1427,25 +1427,25 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 
 	-- player stuff
 	task.spawn(function()
-		game:GetService("RunService").RenderStepped:Connect(function()
+		game:FindService("RunService").RenderStepped:Connect(function()
 			if getgenv().sped then
 				pcall(function()
-					game:GetService("Players").LocalPlayer.Character.Humanoid.WalkSpeed = getgenv().speed
+					game:FindService("Players").LocalPlayer.Character.Humanoid.WalkSpeed = getgenv().speed
 				end)
 			end
 		end)
-		game:GetService("RunService").RenderStepped:Connect(function()
+		game:FindService("RunService").RenderStepped:Connect(function()
 			if getgenv().jumpy then
 				pcall(function()
-					game:GetService("Players").LocalPlayer.Character.Humanoid.JumpPower = getgenv().jump
+					game:FindService("Players").LocalPlayer.Character.Humanoid.JumpPower = getgenv().jump
 				end)
 			end
 		end)
-		game:GetService("RunService").RenderStepped:Connect(function()
+		game:FindService("RunService").RenderStepped:Connect(function()
 			if getgenv().wide then
 				pcall(function()
 					num = (getgenv().fov or 70)
-					local hh=game:GetService("TweenService"):Create(workspace.CurrentCamera, TweenInfo.new(0, Enum.EasingStyle.Linear), {FieldOfView=tonumber(num)})
+					local hh=game:FindService("TweenService"):Create(workspace.CurrentCamera, TweenInfo.new(0, Enum.EasingStyle.Linear), {FieldOfView=tonumber(num)})
 					hh:Play()
 				end)
 			end
