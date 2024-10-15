@@ -14,13 +14,6 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 	local plr = game:FindService("Players").LocalPlayer
 	local char = plr.Character or plr.CharacterAdded:Wait()
 	local vals = game:FindService("Workspace"):FindFirstChild("Game"):FindFirstChild("Values")
-
-	local r = 0
-	local d = 2
-
-	local h=0
-	local p=0.1
-
 	local FindService = game.FindService
 	iamcore = game:FindService("CoreGui")
 	if not game:IsLoaded() then
@@ -106,9 +99,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 	task.wait();
 
 	task.spawn(function()
-		game:FindService("RunService").RenderStepped:connect(function()
-			if tick() - r > d then
-				r = tick()
+		while task.wait(2) do
 				pcall(function()
 					for _,vals in ipairs(game:FindService("Players").LocalPlayer:FindFirstChild("PlayerGui"):FindFirstChild("MainGUI"):FindFirstChild("Values"):GetDescendants()) do
 						if vals:IsA("DoubleConstrainedValue") then
@@ -122,9 +113,8 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 							brah.MinValue = 0
 						end
 					end
-				end)
-			end
-		end)
+			    end)
+		end
 	end)
 
 	--Player Stats
@@ -228,9 +218,9 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 
 	task.spawn(function()
 		if game.PlaceId==renovation then
-			game:FindService("RunService").RenderStepped:Connect(function()
+			while task.wait() do
 				antiRagdoll()
-			end)
+			end
 		end
 	end)
 
@@ -522,7 +512,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 	end)
 
 	task.spawn(function()
-		game:FindService("RunService").RenderStepped:Connect(function()
+		while task.wait() do
 			if game.PlaceId==renovation then
 				if rotation then
 					charRotate(true)
@@ -530,7 +520,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 					charRotate(false)
 				end
 			end
-		end)
+		end
 	end)
 
 	task.spawn(function()
@@ -1234,7 +1224,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 	end
 
 	task.spawn(function()
-		game:FindService("RunService").RenderStepped:Connect(function()
+	while task.wait() do
 			pcall(function()
 				rmtxt:Set("Rooms: "..playerRoom())
 				bittxt:Set("Bits: "..playerBits())
@@ -1262,7 +1252,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 					Alan:Set("Alan: "..alen())
 				end
 			end)
-		end)
+		end
 	end)
 
 	Tab6:CreateButton({
@@ -1285,7 +1275,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 
 	-- auras
 	task.spawn(function()
-		game:FindService("RunService").RenderStepped:Connect(function()
+		while task.wait() do
 			if getgenv().bits then
 				pcall(function()
 					for _, room in ipairs(workspace.Game.Rooms:GetChildren()) do
@@ -1299,8 +1289,10 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 					end
 				end)
 			end
-		end)
-		game:FindService("RunService").RenderStepped:Connect(function()
+		end
+	end)
+	task.spawn(function()
+		while task.wait() do
 			if getgenv().Key then
 				pcall(function()
 					for _, room in ipairs(workspace.Game.Rooms:GetChildren()) do
@@ -1311,8 +1303,10 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 				end)
 
 			end
-		end)
-		game:FindService("RunService").RenderStepped:Connect(function()
+		end
+	end)
+	task.spawn(function()
+		while task.wait() do
 			if getgenv().Vita then
 				pcall(function()
 					for _, room in ipairs(workspace.Game.Rooms:GetChildren()) do
@@ -1323,8 +1317,10 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 					end
 				end)
 			end
-		end)
-		game:FindService("RunService").RenderStepped:Connect(function()
+		end
+	end)
+	task.spawn(function()	
+		while task.wait() do
 			if getgenv().Band then
 				pcall(function()
 					for _, room in ipairs(workspace.Game.Rooms:GetChildren()) do
@@ -1334,8 +1330,10 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 					end
 				end)
 			end
-		end)
-		game:FindService("RunService").RenderStepped:Connect(function()
+		end
+	end)
+	task.spawn(function()
+		while task.wait() do
 			if getgenv().LockPick then
 				pcall(function()
 					for _, room in ipairs(workspace.Game.Rooms:GetChildren()) do
@@ -1345,8 +1343,10 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 					end
 				end)
 			end
-		end)
-		game:FindService("RunService").RenderStepped:Connect(function()
+		end
+	end)
+	task.spawn(function()
+		while task.wait() do
 			if getgenv().SusKey then
 				pcall(function()
 					for _, room in ipairs(workspace.Game.Rooms:GetChildren()) do
@@ -1356,8 +1356,10 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 					end
 				end)
 			end
-		end)
-		game:FindService("RunService").RenderStepped:Connect(function()
+		end
+	end)
+	task.spawn(function()
+		while task.wait() do
 			if getgenv().Crucifix then
 				pcall(function()
 					for _, v in pairs(workspace.Game.Rooms:GetDescendants()) do
@@ -1365,13 +1367,12 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 					end
 				end)
 			end
-		end)
-
-		game:FindService("RunService").RenderStepped:Connect(function()
+		end
+	end)
+	task.spawn(function()
+		while task.wait() do
 			if getgenv().chaos then
 				pcall(function()
-					--if tick() - r > d then
-					--r = tick()
 					for _, room in ipairs(workspace.Game.Rooms:GetChildren()) do
 						for _, v in ipairs(room:GetDescendants()) do
 							if v:IsA("ProximityPrompt") and v.Name == "ProximityPrompt" then
@@ -1397,31 +1398,34 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 							end
 						end
 					end
-					--end
 				end)
 			end
-		end)
+		end
 	end)
 
 
 
 	-- player stuff
 	task.spawn(function()
-		game:FindService("RunService").RenderStepped:Connect(function()
+		while task.wait() do
 			if getgenv().sped then
 				pcall(function()
 					game:FindService("Players").LocalPlayer.Character.Humanoid.WalkSpeed = getgenv().speed
 				end)
 			end
-		end)
-		game:FindService("RunService").RenderStepped:Connect(function()
+		end
+	end)
+	task.spawn(function()
+		while task.wait() do
 			if getgenv().jumpy then
 				pcall(function()
 					game:FindService("Players").LocalPlayer.Character.Humanoid.JumpPower = getgenv().jump
 				end)
 			end
-		end)
-		game:FindService("RunService").RenderStepped:Connect(function()
+		end
+	end)
+	task.spawn(function()
+		while task.wait() do
 			if getgenv().wide then
 				pcall(function()
 					num = (getgenv().fov or 70)
@@ -1429,6 +1433,6 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 					hh:Play()
 				end)
 			end
-		end)
+		end
 	end)
 end
