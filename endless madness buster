@@ -383,6 +383,22 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 		end)
 	end)
 
+task.spawn(function()
+game:GetService'ReplicatedStorage'.Remotes:FindFirstChild("E_A",true).OnClientEvent:connect(function(ent)
+if entityEsp then 
+if ent:lower()=="greed" then
+wait();
+					Rayfield:Notify({
+						Title = "Entity",
+						Content = "Greed Spawned",
+						Duration = 3,
+						Image = decalID,
+					})
+end
+end
+end)
+end)
+
 	task.spawn(function()
 		workspace.Game.Rooms.DescendantAdded:Connect(function(roomkey)
 			if roomkey.Name:lower() == "roomkey" and roomkey.Parent.Name:lower() ~= "door" then
