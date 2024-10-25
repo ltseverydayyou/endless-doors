@@ -1,6 +1,3 @@
--- discontinued so here's the source code
--- enjoy reading this very scuffed ahh code
-
 if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 6023940812) and (game.PlaceId == 10891480658 or game.PlaceId == 16810788519 or game.PlaceId == 17324650150 or game.PlaceId == 17639491565 or game.PlaceId == 17594182379) then
 
 	oldPlace=10891480658
@@ -259,11 +256,13 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 		}
 	})
 	local entityEsp = false
+local entityNotif = false
 	local keyESP = false
 	local bitESP = false
 	local batteryESP = false
 	local rotation = true
  local remoteThingy = false
+
 	task.spawn(function() -- idk why i even added this lol
 		game:GetService("Players").PlayerAdded:Connect(function(noob)
 			local h="somebody"
@@ -346,7 +345,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 					a.Color3 = Color3.new(1, 0, 0)
 				else
 				end
-
+if entityNotif then
 				wait();
 				Rayfield:Notify({
 					Title = "Entity",
@@ -354,6 +353,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 					Duration = 3,
 					Image = decalID,
 				})
+end
 			else
 			end
 		end)
@@ -361,7 +361,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 
 	task.spawn(function()
 		vals.MimicActivated:GetPropertyChangedSignal("Value"):Connect(function()
-			if entityEsp then
+			if entityNotif then
 				if workspace.Game.Values.MimicActivated.Value then
 					wait();
 					Rayfield:Notify({
@@ -386,7 +386,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 
 task.spawn(function()
 game:GetService'ReplicatedStorage'.Remotes:FindFirstChild("E_A",true).OnClientEvent:connect(function(ent)
-if entityEsp then 
+if entityNotif then 
 if ent:lower()=="greed" then
 wait();
 					Rayfield:Notify({
@@ -396,7 +396,8 @@ wait();
 						Image = decalID,
 					})
 end
-elseif remoteThingy then
+end 
+if remoteThingy then
 wait();
 					Rayfield:Notify({
 						Title = "Remote Call",
@@ -948,6 +949,15 @@ Tab1:CreateToggle({
 		Flag = "entRem",
 		Callback = function(Value)
 			remoteThingy = Value
+		end,
+	})
+
+Tab1:CreateToggle({
+		Name = "Entity Notifier",
+		CurrentValue = false,
+		Flag = "entityNotifs",
+		Callback = function(Value)
+			entityNotif = Value
 		end,
 	})
 
