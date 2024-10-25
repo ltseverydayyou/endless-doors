@@ -263,6 +263,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 	local bitESP = false
 	local batteryESP = false
 	local rotation = true
+ local remoteThingy = false
 	task.spawn(function() -- idk why i even added this lol
 		game:GetService("Players").PlayerAdded:Connect(function(noob)
 			local h="somebody"
@@ -395,6 +396,14 @@ wait();
 						Image = decalID,
 					})
 end
+elseif remoteThingy then
+wait();
+					Rayfield:Notify({
+						Title = "Remote Call",
+						Content = "Returned: "..ent,
+						Duration = 3,
+						Image = decalID,
+					})
 end
 end)
 end)
@@ -558,7 +567,7 @@ end)
 
 	local Tab = Window:CreateTab("Main", decalID)
 
-	local Tab1 = Window:CreateTab("ESP", 12544524983)
+	local Tab1 = Window:CreateTab("Toggles", 12544524983)
 
 	local Tab2 = Window:CreateTab("Auto", 69395121)
 
@@ -930,6 +939,15 @@ end)
 					end
 				end
 			end
+		end,
+	})
+
+Tab2:CreateToggle({
+		Name = "Entity Remote Logger",
+		CurrentValue = false,
+		Flag = "entRem",
+		Callback = function(Value)
+			remoteThingy = Value
 		end,
 	})
 
