@@ -942,7 +942,7 @@ end)
 		end,
 	})
 
-Tab2:CreateToggle({
+Tab1:CreateToggle({
 		Name = "Entity Remote Logger",
 		CurrentValue = false,
 		Flag = "entRem",
