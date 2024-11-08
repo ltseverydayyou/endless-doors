@@ -22,6 +22,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 	end
 
 	local IsOnMobile = table.find({Enum.Platform.IOS, Enum.Platform.Android}, game:GetService("UserInputService"):GetPlatform())
+	local items = {}
 
 	function getRoot(char)
 		local root = char:FindFirstChild('HumanoidRootPart') or char:FindFirstChild('Torso') or char:FindFirstChild('UpperTorso')
@@ -97,20 +98,20 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 
 	task.spawn(function()
 		while task.wait(2) do
-				pcall(function()
-					for _,vals in ipairs(game:GetService("Players").LocalPlayer:FindFirstChild("PlayerGui"):FindFirstChild("MainGUI"):FindFirstChild("Values"):GetDescendants()) do
-						if vals:IsA("DoubleConstrainedValue") then
-							vals.MaxValue = 999999
-							vals.MinValue = 0
-						end
+			pcall(function()
+				for _,vals in ipairs(game:GetService("Players").LocalPlayer:FindFirstChild("PlayerGui"):FindFirstChild("MainGUI"):FindFirstChild("Values"):GetDescendants()) do
+					if vals:IsA("DoubleConstrainedValue") then
+						vals.MaxValue = 999999
+						vals.MinValue = 0
 					end
-					for _,brah in ipairs(workspace:FindFirstChild("Game"):FindFirstChild("Values"):GetDescendants()) do
-						if brah:IsA("DoubleConstrainedValue") then
-							brah.MaxValue = 999999
-							brah.MinValue = 0
-						end
+				end
+				for _,brah in ipairs(workspace:FindFirstChild("Game"):FindFirstChild("Values"):GetDescendants()) do
+					if brah:IsA("DoubleConstrainedValue") then
+						brah.MaxValue = 999999
+						brah.MinValue = 0
 					end
-			    end)
+				end
+			end)
 		end
 	end)
 
@@ -241,6 +242,49 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 		end)
 	end)
 
+	local function aC(p)
+		if p:IsA("ProximityPrompt") and p.Name == "ProximityPrompt" then
+			table.insert(items, p.Parent)
+		end
+	end
+
+	function fireItems()
+		pcall(function()
+			if getRoot(game:GetService("Players").LocalPlayer.Character) and getRoot(game:GetService("Players").LocalPlayer.Character).Parent then
+				for i = #items, 1, -1 do
+					local coin = items[i]
+					local pp = coin:FindFirstChildOfClass("ProximityPrompt")
+					local bp = coin:FindFirstChildWhichIsA("BasePart")
+
+					if coin and pp and bp then
+						local dist = (getRoot(game:GetService("Players").LocalPlayer.Character).Position - bp.Position).Magnitude
+						local bitVal = plr.leaderstats.Bits
+						local h = (game.PlaceId ~= renovation) and 6 or 0
+						local maxDistance = pp.MaxActivationDistance + h
+
+						if dist <= maxDistance then
+							if game.PlaceId == epicmode or game.PlaceId == EMArchive then
+								if bitVal.Value >= 2500 and coin.Name:lower() ~= "bit" then
+									fireproximityprompt(pp, 1)
+								elseif bitVal.Value < 2500 then
+									fireproximityprompt(pp, 1)
+								end
+							elseif game.PlaceId == classicED then
+								if coin.Name:lower() ~= "handle" then
+									fireproximityprompt(pp, 1)
+								end
+							else
+								fireproximityprompt(pp, 1)
+							end
+						end
+					else
+						table.remove(items, i)
+					end
+				end
+			end
+		end)
+	end
+
 	wait(0.3)
 
 	local Rayfield = loadstring(game:HttpGet('https://raw.githubusercontent.com/ltseverydayyou/Rayfield-backup/main/Rayfield'))()
@@ -256,12 +300,12 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 		}
 	})
 	local entityEsp = false
-local entityNotif = false
+	local entityNotif = false
 	local keyESP = false
 	local bitESP = false
 	local batteryESP = false
 	local rotation = true
- local remoteThingy = false
+	local remoteThingy = false
 
 	task.spawn(function() -- idk why i even added this lol
 		game:GetService("Players").PlayerAdded:Connect(function(noob)
@@ -345,15 +389,15 @@ local entityNotif = false
 					a.Color3 = Color3.new(1, 0, 0)
 				else
 				end
-if entityNotif then
-				wait();
-				Rayfield:Notify({
-					Title = "Entity",
-					Content = gj.Name.." Has Spawned",
-					Duration = 3,
-					Image = decalID,
-				})
-end
+				if entityNotif then
+					wait();
+					Rayfield:Notify({
+						Title = "Entity",
+						Content = gj.Name.." Has Spawned",
+						Duration = 3,
+						Image = decalID,
+					})
+				end
 			else
 			end
 		end)
@@ -384,30 +428,30 @@ end
 		end)
 	end)
 
-task.spawn(function()
-game:GetService'ReplicatedStorage'.Remotes:FindFirstChild("E_A",true).OnClientEvent:connect(function(ent)
-if entityNotif then 
-if ent:lower()=="greed" then
-wait();
+	task.spawn(function()
+		game:GetService'ReplicatedStorage'.Remotes:FindFirstChild("E_A",true).OnClientEvent:connect(function(ent)
+			if entityNotif then 
+				if ent:lower()=="greed" then
+					wait();
 					Rayfield:Notify({
 						Title = "Entity",
 						Content = "Greed Spawned",
 						Duration = 3,
 						Image = decalID,
 					})
-end
-end 
-if remoteThingy then
-wait();
-					Rayfield:Notify({
-						Title = "Remote Call",
-						Content = "Returned: "..ent,
-						Duration = 3,
-						Image = decalID,
-					})
-end
-end)
-end)
+				end
+			end 
+			if remoteThingy then
+				wait();
+				Rayfield:Notify({
+					Title = "Remote Call",
+					Content = "Returned: "..ent,
+					Duration = 3,
+					Image = decalID,
+				})
+			end
+		end)
+	end)
 
 	task.spawn(function()
 		workspace.Game.Rooms.DescendantAdded:Connect(function(roomkey)
@@ -943,7 +987,7 @@ end)
 		end,
 	})
 
-Tab1:CreateToggle({
+	Tab1:CreateToggle({
 		Name = "Entity Remote Logger",
 		CurrentValue = false,
 		Flag = "entRem",
@@ -952,7 +996,7 @@ Tab1:CreateToggle({
 		end,
 	})
 
-Tab1:CreateToggle({
+	Tab1:CreateToggle({
 		Name = "Entity Notifier",
 		CurrentValue = false,
 		Flag = "entityNotifs",
@@ -1268,7 +1312,7 @@ Tab1:CreateToggle({
 	end
 
 	task.spawn(function()
-	while task.wait() do
+		while task.wait() do
 			pcall(function()
 				rmtxt:Set("Rooms: "..playerRoom())
 				bittxt:Set("Bits: "..playerBits())
@@ -1416,7 +1460,7 @@ Tab1:CreateToggle({
 	task.spawn(function()
 		while task.wait() do
 			if getgenv().chaos then
-				pcall(function()
+				--[[pcall(function()
 					for _, room in ipairs(workspace.Game.Rooms:GetChildren()) do
 						for _, v in ipairs(room:GetDescendants()) do
 							if v:IsA("ProximityPrompt") and v.Name == "ProximityPrompt" then
@@ -1442,7 +1486,8 @@ Tab1:CreateToggle({
 							end
 						end
 					end
-				end)
+				end)]]
+				spawn(fireItems)
 			end
 		end
 	end)
@@ -1479,4 +1524,10 @@ Tab1:CreateToggle({
 			end
 		end
 	end)
+
+	for _, room in ipairs(workspace.Game.Rooms:GetDescendants()) do
+		aC(room)
+	end
+
+	workspace.Game.Rooms.DescendantAdded:Connect(aC)
 end
