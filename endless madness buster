@@ -1458,9 +1458,9 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 		end
 	end)
 	task.spawn(function()
-		while task.wait() do
+		--[[while task.wait() do
 			if getgenv().chaos then
-				--[[pcall(function()
+				pcall(function()
 					for _, room in ipairs(workspace.Game.Rooms:GetChildren()) do
 						for _, v in ipairs(room:GetDescendants()) do
 							if v:IsA("ProximityPrompt") and v.Name == "ProximityPrompt" then
@@ -1486,10 +1486,16 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 							end
 						end
 					end
-				end)]]
-				spawn(fireItems)
+				end)
 			end
-		end
+		end]]
+		game:GetService("RunService").RenderStepped:Connect(function()
+			if getgenv().chaos then
+				if getRoot(game:GetService("Players").LocalPlayer.Character) and getRoot(game:GetService("Players").LocalPlayer.Character).Parent then
+					spawn(fireItems)
+				end
+			end
+		end)
 	end)
 
 
