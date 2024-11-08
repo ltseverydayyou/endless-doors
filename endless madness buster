@@ -235,10 +235,10 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 
 	task.spawn(function()
 		wait(1)
-		game:GetService("Players").LocalPlayer.Character.Humanoid.AutoJumpEnabled = false
+		game:GetService("Players").LocalPlayer.Character:FindFirstChildWhichIsA("Humanoid").AutoJumpEnabled = false
 		game:GetService("Players").LocalPlayer.CharacterAdded:Connect(function()
 			wait(.5)
-			game:GetService("Players").LocalPlayer.Character.Humanoid.AutoJumpEnabled = false
+			game:GetService("Players").LocalPlayer.Character:FindFirstChildWhichIsA("Humanoid").AutoJumpEnabled = false
 		end)
 	end)
 
@@ -248,41 +248,44 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 		end
 	end
 
-	function fireItems()
-		pcall(function()
-			if getRoot(game:GetService("Players").LocalPlayer.Character) and getRoot(game:GetService("Players").LocalPlayer.Character).Parent then
-				for i = #items, 1, -1 do
-					local coin = items[i]
-					local pp = coin:FindFirstChildOfClass("ProximityPrompt")
-					local bp = coin:FindFirstChildWhichIsA("BasePart")
+	local function fireItems()
+		if getRoot(game:GetService("Players").LocalPlayer.Character) and getRoot(game:GetService("Players").LocalPlayer.Character).Parent then
+			for i = #items, 1, -1 do
+				local coin = items[i]
+				local pp = coin:FindFirstChildOfClass("ProximityPrompt")
+				local bp
+				if coin:IsA("Model") then
+					bp=coin:FindFirstChildWhichIsA("BasePart")
+				else
+					bp=coin
+				end
 
-					if coin and pp and bp then
-						local dist = (getRoot(game:GetService("Players").LocalPlayer.Character).Position - bp.Position).Magnitude
-						local bitVal = plr.leaderstats.Bits
-						local h = (game.PlaceId ~= renovation) and 6 or 0
-						local maxDistance = pp.MaxActivationDistance + h
+				if coin and pp and bp then
+					local dist = (getRoot(game:GetService("Players").LocalPlayer.Character).Position - bp.Position).Magnitude
+					local bitVal = plr.leaderstats.Bits
+					local h = 6
+					local maxDistance = pp.MaxActivationDistance + h
 
-						if dist <= maxDistance then
-							if game.PlaceId == epicmode or game.PlaceId == EMArchive then
-								if bitVal.Value >= 2500 and coin.Name:lower() ~= "bit" then
-									fireproximityprompt(pp, 1)
-								elseif bitVal.Value < 2500 then
-									fireproximityprompt(pp, 1)
-								end
-							elseif game.PlaceId == classicED then
-								if coin.Name:lower() ~= "handle" then
-									fireproximityprompt(pp, 1)
-								end
-							else
+					if dist <= maxDistance then
+						if game.PlaceId == epicmode or game.PlaceId == EMArchive then
+							if bitVal.Value >= 2500 and coin.Name:lower() ~= "bit" then
+								fireproximityprompt(pp, 1)
+							elseif bitVal.Value < 2500 then
 								fireproximityprompt(pp, 1)
 							end
+						elseif game.PlaceId == classicED then
+							if coin.Name:lower() ~= "handle" then
+								fireproximityprompt(pp, 1)
+							end
+						else
+							fireproximityprompt(pp, 1)
 						end
-					else
-						table.remove(items, i)
 					end
+				else
+					table.remove(items, i)
 				end
 			end
-		end)
+		end
 	end
 
 	wait(0.3)
@@ -1505,7 +1508,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 		while task.wait() do
 			if getgenv().sped then
 				pcall(function()
-					game:GetService("Players").LocalPlayer.Character.Humanoid.WalkSpeed = getgenv().speed
+					game:GetService("Players").LocalPlayer.Character:FindFirstChildWhichIsA("Humanoid").WalkSpeed = getgenv().speed
 				end)
 			end
 		end
@@ -1514,7 +1517,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 		while task.wait() do
 			if getgenv().jumpy then
 				pcall(function()
-					game:GetService("Players").LocalPlayer.Character.Humanoid.JumpPower = getgenv().jump
+					game:GetService("Players").LocalPlayer.Character:FindFirstChildWhichIsA("Humanoid").JumpPower = getgenv().jump
 				end)
 			end
 		end
