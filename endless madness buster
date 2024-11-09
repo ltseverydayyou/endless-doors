@@ -1085,13 +1085,14 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 
 
 
-	Tab3:CreateInput({
+	Tab3:CreateSlider({
 		Name = "Set WalkSpeed",
-		PlaceholderText = "number",
-		RemoveTextAfterFocusLost = false,
-		Flag = "WSTxt",
-		Callback = function(Text)
-			getgenv().speed = tonumber(Text)
+		Range = {0, 50},
+		Increment = 1,
+		CurrentValue = 16,
+		Flag = "WalkSpeedValue",
+		Callback = function(v)
+			getgenv().speed = v
 		end,
 	})
 
@@ -1104,13 +1105,14 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 		end,
 	})
 
-	Tab3:CreateInput({
+	Tab3:CreateSlider({
 		Name = "Set JumpPower",
-		PlaceholderText = "number",
-		RemoveTextAfterFocusLost = false,
-		Flag = "jpTxt",
-		Callback = function(Text)
-			getgenv().jump = tonumber(Text)
+		Range = {0, 100},
+		Increment = 1,
+		CurrentValue = 30,
+		Flag = "JumpPowerValue",
+		Callback = function(val)
+			getgenv().jump = val
 		end,
 	})
 
@@ -1123,13 +1125,14 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 		end,
 	})
 
-	Tab3:CreateInput({
+	Tab3:CreateSlider({
 		Name = "Set FOV",
-		PlaceholderText = "number",
-		RemoveTextAfterFocusLost = false,
-		Flag = "fovTxt",
-		Callback = function(Text)
-			getgenv().fov = tonumber(Text)
+		Range = {0, 120},
+		Increment = 1,
+		CurrentValue = 60,
+		Flag = "FieldOfViewValue",
+		Callback = function(fov)
+			getgenv().fov = fov
 		end,
 	})
 
@@ -1261,7 +1264,6 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 		Name = "Notification Text",
 		PlaceholderText = "Text",
 		RemoveTextAfterFocusLost = false,
-		Flag = "notifTxt",
 		Callback = function(Text)
 			getgenv().Notifv1 = Text
 		end,
