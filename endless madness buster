@@ -43,6 +43,15 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 		end
 	end
 
+	function teleporttolever()
+		local curroom = vals.RoomsNumber.Value
+		for _,leverroom in ipairs(workspace.Game.Rooms["Room"..curroom]:GetDescendants()) do
+			if ((leverroom:IsA("BasePart") or leverroom:IsA("Model")) and leverroom.Name:lower() == "gatelever") then
+				game:GetService("Players").LocalPlayer.Character:PivotTo(leverroom:GetPivot())
+			end
+		end
+	end
+
 	function antiRagdoll()
 		game:GetService("Players").LocalPlayer.Character:FindFirstChild("RagdollTrigger").Value=false
 	end
@@ -1248,6 +1257,27 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 			while getgenv().teletokey and wait(.5) do
 				pcall(function()
 					spawn(teleporttokey)
+				end)
+			end
+		end,
+	})
+
+	Tab5:CreateButton({
+		Name = "Teleport to Lever",
+		Callback = function()
+			spawn(teleporttolever)
+		end,
+	})
+
+	Tab5:CreateToggle({
+		Name = "Loop Teleport To Lever",
+		CurrentValue = false,
+		Callback = function(val)
+			getgenv().teletolever = val
+
+			while getgenv().teletolever and wait(.5) do
+				pcall(function()
+					spawn(teleporttolever)
 				end)
 			end
 		end,
