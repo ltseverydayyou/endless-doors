@@ -1,80 +1,121 @@
-local Notification=nil
+local N=nil
+local r=0
 
-repeat 
-	local s,r=pcall(function()
-		return loadstring(game:HttpGet("https://raw.githubusercontent.com/ltseverydayyou/Nameless-Admin/main/NamelessAdminNotifications.lua"))()
-	end);
-
-	if s then
-		Notification=r;
-	else
-		warn("Couldn't load notification module, retrying...");
-		task.wait();
-	end
-until Notification~=nil --waits for the module to load (cause loadstring takes ages)
-
-local Notify=Notification.Notify;
-
-local curroom = game.workspace.Game.Values.RoomsNumber.Value
-local rmMain=curroom
-local rmOld
-if workspace.Game.Rooms:FindFirstChild("Room"..rmMain - 5) then
-    rmOld=curroom - 5
-elseif workspace.Game.Rooms:FindFirstChild("Room"..rmMain - 4) then
-    rmOld=curroom - 4
-elseif workspace.Game.Rooms:FindFirstChild("Room"..rmMain - 3) then
-    rmOld=curroom - 3
-else
-    rmOld=curroom - 2
+while N==nil and r<5 do
+    local s,e=pcall(function()
+        return loadstring(game:HttpGet("https://raw.githubusercontent.com/ltseverydayyou/Nameless-Admin/main/NamelessAdminNotifications.lua"))()
+    end)
+    
+    if s then
+        N=e
+    else
+        r=r+1
+        warn(string.format("Couldn't load notification module (%d/%d), retrying... Error: %s", r,5,tostring(e)))
+        task.wait(1)
+    end
 end
-if (workspace.Game.Rooms:FindFirstChild("Room"..rmMain - 5) or workspace.Game.Rooms:FindFirstChild("Room"..rmMain -4) or workspace.Game.Rooms:FindFirstChild("Room"..rmMain -3) or workspace.Game.Rooms:FindFirstChild("Room"..rmMain -2)) then
-if workspace.Game.Rooms["Room"..rmOld].Models:FindFirstChild("Wardrobe") then
-    game:GetService("Players").LocalPlayer.Character:PivotTo(workspace.Game.Rooms["Room"..rmMain].Door:GetPivot())
+
+if not N then
+    error("Failed to load notification module after multiple attempts")
+end
+
+local function nt(i)
+    N.Notify(i)
+end
+
+local function fvr(c,m)
+    for i=m,2,-1 do
+        local n=c-i
+        if workspace.Game.Rooms:FindFirstChild("Room"..n) then
+            return n
+        end
+    end
+    return nil
+end
+
+local function fwr(n)
+    local r=workspace.Game.Rooms:FindFirstChild("Room"..n)
+    if r and r.Models:FindFirstChild("Wardrobe") then
+        return r.Models.Wardrobe
+    end
+    return nil
+end
+
+local function trd(n)
+    local r=workspace.Game.Rooms:FindFirstChild("Room"..n)
+    if r and r:FindFirstChild("Door") then
+        game:GetService("Players").LocalPlayer.Character:PivotTo(r.Door:GetPivot())
+        return true
+    end
+    return false
+end
+
+local function id(d)
+    task.spawn(function()
+        for i=1,15 do
+            task.wait(0.05)
+            local p=d.Handle:FindFirstChildOfClass("ProximityPrompt")
+            if p then
+                fireproximityprompt(p,1)
+            end
+        end
+    end)
+end
+
+local function hiw(w)
+    local a={w,false,false}
+    game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("HIDE"):FireServer(unpack(a))
+end
+
+local function ewe()
+    local p=game:GetService("Players").LocalPlayer
+    local c=game.workspace.Game.Values.RoomsNumber.Value
+    
+    local pr=fvr(c,5)
+    if not pr then
+        nt({Description="Open a few more doors for this to work",Title="Room Check Failed",Duration=3})
+        return false
+    end
+    
+    local w=fwr(pr)
+    if not w then
+        nt({Description="No wardrobe found, open a few more doors",Title="Wardrobe Check Failed",Duration=5})
+        return false
+    end
+    
+    if not trd(c) then
+        nt({Description="Failed to teleport to current room door",Title="Teleport Failed",Duration=3})
+        return false
+    end
+    
+    local cd=workspace.Game.Rooms["Room"..c].Door
+    id(cd)
+    
+    task.wait(0.5)
+    
+    hiw(w)
+    
+    task.wait(1)
     
     task.spawn(function()
-    for i=1, 15 do
-        task.wait(0.05)
-        fireproximityprompt(workspace.Game.Rooms["Room"..rmMain].Door.Handle:FindFirstChildOfClass("ProximityPrompt"),1)
+        repeat task.wait() until p.Character:FindFirstChild("Hiding") and p.Character.Hiding.Value==true
+        
+        nt({Description="Successfully hidden! Maintaining position...",Title="Exploit Active",Duration=3})
+        
+        repeat 
+            task.wait(0.1)
+            trd(c)
+        until not p.Character:FindFirstChild("Hiding") or p.Character.Hiding.Value==false
+    end)
+    
+    task.wait(3.5)
+    if p.Character:FindFirstChild("Hiding") then
+        p.Character.Hiding.Value=false
+        
+        nt({Description="Exploit completed successfully",Title="Success",Duration=3})
     end
-    end)
     
-    wait(0.5);
-    
-    local args = {
-        workspace.Game.Rooms["Room"..rmOld].Models.Wardrobe,
-        false,
-        false
-    }
-    
-    game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("HIDE"):FireServer(unpack(args))
-    wait(1);
-    spawn(function()
-
-    repeat wait() until game:GetService("Players").LocalPlayer.Character:FindFirstChild("Hiding").Value == true
-
-    repeat task.wait(.1)
-        game:GetService("Players").LocalPlayer.Character:PivotTo(workspace.Game.Rooms["Room"..rmMain].Door:GetPivot())
-    until game:GetService("Players").LocalPlayer.Character:FindFirstChild("Hiding").Value == false
-    
-    end)
-    task.wait(3.5);
-    game:GetService("Players").LocalPlayer.Character:FindFirstChild("Hiding").Value = false
-
-    else
-
-    Notify({
-    Description = "no wardrobe found, open a few more doors";
-    Title = "uh oh";
-    Duration = 5;
-    });
- end
-
-	else
-
-	Notify({
-    Description = "open a few doors for this to work";
-    Title = "uh oh";
-    Duration = 3;
-    });
-
+    return true
 end
+
+ewe()
