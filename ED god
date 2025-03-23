@@ -1,121 +1,124 @@
-local N=nil
-local r=0
+local MAX_RETRIES = 5
+local PROXIMITY_PROMPT_ATTEMPTS = 15
+local ROOM_CHECK_RADIUS = 5
 
-while N==nil and r<5 do
-    local s,e=pcall(function()
+local NotificationModule = nil
+local retryCount = 0
+
+while NotificationModule == nil and retryCount < MAX_RETRIES do
+    local success, result = pcall(function()
         return loadstring(game:HttpGet("https://raw.githubusercontent.com/ltseverydayyou/Nameless-Admin/main/NamelessAdminNotifications.lua"))()
     end)
     
-    if s then
-        N=e
+    if success then
+        NotificationModule = result
     else
-        r=r+1
-        warn(string.format("Couldn't load notification module (%d/%d), retrying... Error: %s", r,5,tostring(e)))
+        retryCount = retryCount + 1
+        warn(string.format("Couldn't load notification module (%d/%d), retrying... Error: %s", retryCount, MAX_RETRIES, tostring(result)))
         task.wait(1)
     end
 end
 
-if not N then
+if not NotificationModule then
     error("Failed to load notification module after multiple attempts")
 end
 
-local function nt(i)
-    N.Notify(i)
+local function notify(info)
+    NotificationModule.Notify(info)
 end
 
-local function fvr(c,m)
-    for i=m,2,-1 do
-        local n=c-i
-        if workspace.Game.Rooms:FindFirstChild("Room"..n) then
-            return n
+local function findValidRoom(currentRoom, radius)
+    for i = radius, 2, -1 do
+        local roomNumber = currentRoom - i
+        if workspace.Game.Rooms:FindFirstChild("Room" .. roomNumber) then
+            return roomNumber
         end
     end
     return nil
 end
 
-local function fwr(n)
-    local r=workspace.Game.Rooms:FindFirstChild("Room"..n)
-    if r and r.Models:FindFirstChild("Wardrobe") then
-        return r.Models.Wardrobe
+local function findWardrobe(roomNumber)
+    local room = workspace.Game.Rooms:FindFirstChild("Room" .. roomNumber)
+    if room and room.Models:FindFirstChild("Wardrobe") then
+        return room.Models.Wardrobe
     end
     return nil
 end
 
-local function trd(n)
-    local r=workspace.Game.Rooms:FindFirstChild("Room"..n)
-    if r and r:FindFirstChild("Door") then
-        game:GetService("Players").LocalPlayer.Character:PivotTo(r.Door:GetPivot())
+local function teleportToRoomDoor(roomNumber)
+    local room = workspace.Game.Rooms:FindFirstChild("Room" .. roomNumber)
+    if room and room:FindFirstChild("Door") then
+        game:GetService("Players").LocalPlayer.Character:PivotTo(room.Door:GetPivot())
         return true
     end
     return false
 end
 
-local function id(d)
+local function interactWithDoor(door)
     task.spawn(function()
-        for i=1,15 do
+        for _ = 1, PROXIMITY_PROMPT_ATTEMPTS do
             task.wait(0.05)
-            local p=d.Handle:FindFirstChildOfClass("ProximityPrompt")
-            if p then
-                fireproximityprompt(p,1)
+            local prompt = door.Handle:FindFirstChildOfClass("ProximityPrompt")
+            if prompt then
+                fireproximityprompt(prompt, 1)
             end
         end
     end)
 end
 
-local function hiw(w)
-    local a={w,false,false}
-    game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("HIDE"):FireServer(unpack(a))
+local function hideInWardrobe(wardrobe)
+    local args = {wardrobe, false, false}
+    game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("HIDE"):FireServer(unpack(args))
 end
 
-local function ewe()
-    local p=game:GetService("Players").LocalPlayer
-    local c=game.workspace.Game.Values.RoomsNumber.Value
+local function executeExploit()
+    local player = game:GetService("Players").LocalPlayer
+    local currentRoom = workspace.Game.Values.RoomsNumber.Value
     
-    local pr=fvr(c,5)
-    if not pr then
-        nt({Description="Open a few more doors for this to work",Title="Room Check Failed",Duration=3})
+    local previousRoom = findValidRoom(currentRoom, ROOM_CHECK_RADIUS)
+    if not previousRoom then
+        notify({Description = "Open a few more doors for this to work", Title = "Room Check Failed", Duration = 3})
         return false
     end
     
-    local w=fwr(pr)
-    if not w then
-        nt({Description="No wardrobe found, open a few more doors",Title="Wardrobe Check Failed",Duration=5})
+    local wardrobe = findWardrobe(previousRoom)
+    if not wardrobe then
+        notify({Description = "No wardrobe found, open a few more doors", Title = "Wardrobe Check Failed", Duration = 5})
         return false
     end
     
-    if not trd(c) then
-        nt({Description="Failed to teleport to current room door",Title="Teleport Failed",Duration=3})
+    if not teleportToRoomDoor(currentRoom) then
+        notify({Description = "Failed to teleport to current room door", Title = "Teleport Failed", Duration = 3})
         return false
     end
     
-    local cd=workspace.Game.Rooms["Room"..c].Door
-    id(cd)
+    local currentDoor = workspace.Game.Rooms["Room" .. currentRoom].Door
+    interactWithDoor(currentDoor)
     
     task.wait(0.5)
     
-    hiw(w)
+    hideInWardrobe(wardrobe)
     
     task.wait(1)
     
     task.spawn(function()
-        repeat task.wait() until p.Character:FindFirstChild("Hiding") and p.Character.Hiding.Value==true
+        repeat task.wait() until player.Character:FindFirstChild("Hiding") and player.Character.Hiding.Value == true
         
-        nt({Description="Successfully hidden! Maintaining position...",Title="Exploit Active",Duration=3})
+        notify({Description = "Successfully hidden! Maintaining position...", Title = "Exploit Active", Duration = 3})
         
         repeat 
             task.wait(0.1)
-            trd(c)
-        until not p.Character:FindFirstChild("Hiding") or p.Character.Hiding.Value==false
+            teleportToRoomDoor(currentRoom)
+        until not player.Character:FindFirstChild("Hiding") or player.Character.Hiding.Value == false
     end)
     
     task.wait(3.5)
-    if p.Character:FindFirstChild("Hiding") then
-        p.Character.Hiding.Value=false
-        
-        nt({Description="Exploit completed successfully",Title="Success",Duration=3})
+    if player.Character:FindFirstChild("Hiding") then
+        player.Character.Hiding.Value = false
+        notify({Description = "Exploit completed successfully", Title = "Success", Duration = 3})
     end
     
     return true
 end
 
-ewe()
+executeExploit()
