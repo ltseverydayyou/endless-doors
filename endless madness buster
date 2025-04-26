@@ -1,13 +1,13 @@
 if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 6023940812) and (game.PlaceId == 10891480658 or game.PlaceId == 16810788519 or game.PlaceId == 17324650150 or game.PlaceId == 17639491565 or game.PlaceId == 17594182379) then
 
-	oldPlace=10891480658
-	epicmode=16810788519
-	renovation=17324650150
-	EMArchive=17639491565
-	classicED=17594182379
+	local oldPlace=10891480658
+	local epicmode=16810788519
+	local renovation=17324650150
+	local EMArchive=17639491565
+	local classicED=17594182379
 
-	decalID=17471548099
-	UIdecal="rbxassetid://"..decalID
+	local decalID=17471548099
+	--local UIdecal="rbxassetid://"..decalID
 	local plr = game:GetService("Players").LocalPlayer
 	local char = plr.Character or plr.CharacterAdded:Wait()
 	local vals = game:GetService("Workspace"):FindFirstChild("Game"):FindFirstChild("Values")
@@ -21,7 +21,10 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 		waiting:Destroy()
 	end
 
-	local IsOnMobile = table.find({Enum.Platform.IOS, Enum.Platform.Android}, game:GetService("UserInputService"):GetPlatform())
+	local IsOnMobile = false
+	if game:GetService("UserInputService").TouchEnabled then
+		IsOnMobile = true
+	end
 	local items = {}
 
 	function getRoot(char)
@@ -29,25 +32,51 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 		return root
 	end
 
-	function teleporttodoor()
-		local curroom = vals.RoomsNumber.Value
-		game:GetService("Players").LocalPlayer.Character:PivotTo(workspace.Game.Rooms["Room"..curroom].Door:GetPivot())
-	end
-
-	function teleporttokey()
-		local curroom = vals.RoomsNumber.Value
-		for _,keyroom in ipairs(workspace.Game.Rooms["Room"..curroom]:GetDescendants()) do
-			if (keyroom:IsA("BasePart") and keyroom.Name:lower() == "roomkey" and keyroom.Parent.Name:lower() ~= "door") then
-				game:GetService("Players").LocalPlayer.Character:PivotTo(keyroom:GetPivot())
+	function teleportToDoor()
+		local Players = game:GetService("Players")
+		local Workspace = game:GetService("Workspace")
+		local LocalPlayer = Players.LocalPlayer
+		local Rooms = Workspace.Game.Rooms
+		local curRoom = vals.RoomsNumber.Value
+		local room = Rooms:FindFirstChild("Room"..curRoom)
+		if room then
+			local door = room:FindFirstChild("Door")
+			if door then
+				LocalPlayer.Character:PivotTo(door:GetPivot())
 			end
 		end
 	end
-
-	function teleporttolever()
-		local curroom = vals.RoomsNumber.Value
-		for _,leverroom in ipairs(workspace.Game.Rooms["Room"..curroom]:GetDescendants()) do
-			if ((leverroom:IsA("BasePart") or leverroom:IsA("Model")) and leverroom.Name:lower() == "gatelever") then
-				game:GetService("Players").LocalPlayer.Character:PivotTo(leverroom:GetPivot())
+	
+	function teleportToKey()
+		local Players = game:GetService("Players")
+		local Workspace = game:GetService("Workspace")
+		local LocalPlayer = Players.LocalPlayer
+		local Rooms = Workspace.Game.Rooms
+		local curRoom = vals.RoomsNumber.Value
+		local room = Rooms:FindFirstChild("Room"..curRoom)
+		if room then
+			for _, descendant in ipairs(room:GetDescendants()) do
+				if descendant:IsA("BasePart") and descendant.Name:lower() == "roomkey" and descendant.Parent.Name:lower() ~= "door" then
+					LocalPlayer.Character:PivotTo(descendant:GetPivot())
+					break
+				end
+			end
+		end
+	end
+	
+	function teleportToLever()
+		local Players = game:GetService("Players")
+		local Workspace = game:GetService("Workspace")
+		local LocalPlayer = Players.LocalPlayer
+		local Rooms = Workspace.Game.Rooms
+		local curRoom = vals.RoomsNumber.Value
+		local room = Rooms:FindFirstChild("Room"..curRoom)
+		if room then
+			for _, descendant in ipairs(room:GetDescendants()) do
+				if (descendant:IsA("BasePart") or descendant:IsA("Model")) and descendant.Name:lower() == "gatelever" then
+					LocalPlayer.Character:PivotTo(descendant:GetPivot())
+					break
+				end
 			end
 		end
 	end
@@ -75,49 +104,49 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 	end
 	end]]
 
-	local txt = "unknown"
-
-	if IsOnMobile then
-		if game.PlaceId == oldPlace then
-			txt = "Endless Doors [OLD] | Mobile"
-		elseif game.PlaceId == epicmode then
-			txt = "Endless Doors [OLD Epic Mode] | Mobile"
-		elseif game.PlaceId == renovation then
-			txt = "Endless Doors | Mobile"
-		elseif game.PlaceId == EMArchive then
-			txt = "Endless Doors [Epic Mode] | Mobile"
-		elseif game.PlaceId==classicED then
-			txt = "Endless Doors [Retro #classic] | Mobile"
-		end
-	else
-		if game.PlaceId == oldPlace then
-			txt = "Endless Doors [OLD]"
-		elseif game.PlaceId == epicmode then
-			txt = "Endless Doors [OLD Epic Mode]"
-		elseif game.PlaceId == renovation then
-			txt = "Endless Doors"
-		elseif game.PlaceId == EMArchive then
-			txt = "Endless Doors [Epic Mode]"
-		elseif game.PlaceId==classicED then
-			txt = "Endless Doors [Retro #classic]"
-		end
-	end
+	local placeNames = {
+		[oldPlace] = "Endless Doors [OLD]",
+		[epicmode] = "Endless Doors [OLD Epic Mode]",
+		[renovation] = "Endless Doors",
+		[EMArchive] = "Endless Doors [Epic Mode]",
+		[classicED] = "Endless Doors [Retro #classic]"
+	}
+	
+	local baseName = placeNames[game.PlaceId] or "unknown"
+	local txt = IsOnMobile and (baseName.." | Mobile") or baseName
 
 	task.wait();
 
 	task.spawn(function()
 		while task.wait(2) do
 			pcall(function()
-				for _,vals in ipairs(game:GetService("Players").LocalPlayer:FindFirstChild("PlayerGui"):FindFirstChild("MainGUI"):FindFirstChild("Values"):GetDescendants()) do
-					if vals:IsA("DoubleConstrainedValue") then
-						vals.MaxValue = 999999
-						vals.MinValue = 0
+				local PlayerGui = game:GetService("Players").LocalPlayer:FindFirstChild("PlayerGui")
+				local WorkspaceGame = game:GetService("Workspace"):FindFirstChild("Game")
+				
+				if PlayerGui then
+					local MainGUI = PlayerGui:FindFirstChild("MainGUI")
+					if MainGUI then
+						local Values = MainGUI:FindFirstChild("Values")
+						if Values then
+							for _, val in ipairs(Values:GetDescendants()) do
+								if val:IsA("DoubleConstrainedValue") then
+									val.MaxValue = 999999
+									val.MinValue = 0
+								end
+							end
+						end
 					end
 				end
-				for _,brah in ipairs(workspace:FindFirstChild("Game"):FindFirstChild("Values"):GetDescendants()) do
-					if brah:IsA("DoubleConstrainedValue") then
-						brah.MaxValue = 999999
-						brah.MinValue = 0
+	
+				if WorkspaceGame then
+					local GameValues = WorkspaceGame:FindFirstChild("Values")
+					if GameValues then
+						for _, val in ipairs(GameValues:GetDescendants()) do
+							if val:IsA("DoubleConstrainedValue") then
+								val.MaxValue = 999999
+								val.MinValue = 0
+							end
+						end
 					end
 				end
 			end)
@@ -187,40 +216,78 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 		return tostring(game:GetService("Players").LocalPlayer.Character:FindFirstChild("Collectibles").Alan.Value)
 	end
 
+	function CreateESP(target, labelText, color)
+		local adornee = target:IsA("Model") and target:FindFirstChildWhichIsA("BasePart") or target
+		if not adornee then return end
+
+		local BillboardGui = Instance.new("BillboardGui")
+		BillboardGui.Name = "ESP_"..(labelText or adornee.Name)
+		BillboardGui.Adornee = adornee
+		BillboardGui.Parent = adornee
+		BillboardGui.Size = UDim2.new(0, 100, 0, 150)
+		BillboardGui.StudsOffset = Vector3.new(0, 1, 0)
+		BillboardGui.AlwaysOnTop = true
+	
+		local TextLabel = Instance.new("TextLabel")
+		TextLabel.Parent = BillboardGui
+		TextLabel.BackgroundTransparency = 1
+		TextLabel.Position = UDim2.new(0, 0, 0, -50)
+		TextLabel.Size = UDim2.new(0, 100, 0, 100)
+		TextLabel.Font = Enum.Font.SourceSansSemibold
+		TextLabel.TextSize = 17
+		TextLabel.TextColor3 = color or Color3.new(1, 0, 0)
+		TextLabel.TextStrokeTransparency = 0.3
+		TextLabel.TextYAlignment = Enum.TextYAlignment.Bottom
+		TextLabel.Text = "["..(labelText or adornee.Name).."]"
+		TextLabel.ZIndex = 10
+
+		local Box = Instance.new("BoxHandleAdornment")
+		Box.Name = adornee.Name:lower().."_PEEPEE"
+		Box.Adornee = adornee
+		Box.Parent = adornee
+		Box.AlwaysOnTop = true
+		Box.ZIndex = 0
+		Box.Transparency = 0.45
+		Box.Color3 = color or Color3.new(1, 0, 0)
+	
+		if adornee:IsA("BasePart") then
+			Box.Size = adornee.Size
+		else
+			Box.Size = Vector3.new(4, 4, 4)
+		end
+	end
+
 	game:GetService("ProximityPromptService").PromptButtonHoldBegan:Connect(function(prompt)
 		fireproximityprompt(prompt,1)
 	end)
 
-	function killurself(partName)
-		task.spawn(function()
-			local descendants = game:GetDescendants()
-			for _, descendant in ipairs(descendants) do
-				if descendant.Name:lower() == partName then
-					wait();
-					descendant:Destroy()
-				end
-			end
-		end)
-	end
-
-	function thingy_idk()
-		killurself("fdmg")
-		killurself("brokenlamp")
-		killurself("abysskill")
-		killurself("flowergrowth")
-		killurself("longcrate")
-		killurself("crate")
-		killurself("chasetrigger")
-		killurself("spirit")
-		killurself("chair")
-		killurself("sofa")
-		killurself("fire")
-	end
-
+	local targets = {
+		fdmg = true,
+		brokenlamp = true,
+		abysskill = true,
+		flowergrowth = true,
+		longcrate = true,
+		crate = true,
+		chasetrigger = true,
+		spirit = true,
+		chair = true,
+		sofa = true,
+		fire = true
+	}
+	
 	task.spawn(function()
-		repeat wait() until game:GetService("Players").LocalPlayer.Character
+		repeat task.wait() until game:GetService("Players").LocalPlayer.Character
 		task.wait(2)
-		spawn(thingy_idk)
+
+		for _, descendant in ipairs(game:GetDescendants()) do
+			if targets[descendant.Name:lower()] then
+				task.defer(function()
+					if descendant and descendant.Parent then
+						descendant:Destroy()
+					end
+				end)
+			end
+		end
 	end)
 
 	task.spawn(function()
@@ -232,22 +299,36 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 	end)
 
 	task.spawn(function()
-		game.Workspace.DescendantAdded:Connect(function(descendant)
-			if (descendant:IsA("Model") or descendant:IsA("BasePart") or descendant:IsA("ValueBase") or descendant:IsA("LocalScript")) and
-				(descendant.Name:lower() == "brokenlamp" or descendant.Name:lower() == "chasetrigger" 
-					or descendant.Name:lower() == "abysskill" or descendant.Name:lower() == "fdmg" or descendant.Name:lower() == "flowergrowth" or descendant.Name:lower() == "longcrate" or descendant.Name:lower() == "crate" or descendant.Name:lower() == "spirit" or descendant.Name:lower() == "chair" or descendant.Name:lower() == "sofa" or descendant.Name:lower() == "fire") then
-				wait();
-				descendant:Destroy()
+		game:GetService("Workspace").DescendantAdded:Connect(function(YESSS)
+			if (YESSS:IsA("Model") or YESSS:IsA("BasePart") or YESSS:IsA("ValueBase") or YESSS:IsA("LocalScript")) then
+				local name = YESSS.Name:lower()
+				if name == "brokenlamp" or name == "chasetrigger" or name == "abysskill" or name == "fdmg"
+				or name == "flowergrowth" or name == "longcrate" or name == "crate"
+				or name == "spirit" or name == "chair" or name == "sofa" or name == "fire" then
+					task.defer(function()
+						if YESSS and YESSS.Parent then
+							YESSS:Destroy()
+						end
+					end)
+				end
 			end
 		end)
 	end)
 
 	task.spawn(function()
-		wait(1)
-		game:GetService("Players").LocalPlayer.Character:FindFirstChildWhichIsA("Humanoid").AutoJumpEnabled = false
-		game:GetService("Players").LocalPlayer.CharacterAdded:Connect(function()
-			wait(.5)
-			game:GetService("Players").LocalPlayer.Character:FindFirstChildWhichIsA("Humanoid").AutoJumpEnabled = false
+		LOCALLLLPLAYERR=game:GetService("Players").LocalPlayer
+		if LOCALLLLPLAYERR.Character then
+			local humanoid = LOCALLLLPLAYERR.Character:FindFirstChildWhichIsA("Humanoid")
+			if humanoid then
+				humanoid.AutoJumpEnabled = false
+			end
+		end
+		
+		LOCALLLLPLAYERR.CharacterAdded:Connect(function(character)
+			local humanoid = character:WaitForChild("Humanoid", 5)
+			if humanoid then
+				humanoid.AutoJumpEnabled = false
+			end
 		end)
 	end)
 
@@ -258,46 +339,59 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 	end
 
 	local function fireItems()
-		if getRoot(game:GetService("Players").LocalPlayer.Character) and getRoot(game:GetService("Players").LocalPlayer.Character).Parent then
-			for i = #items, 1, -1 do
-				local coin = items[i]
-				local pp = coin:FindFirstChildOfClass("ProximityPrompt")
-				local bp
-				if coin:IsA("Model") then
-					bp=coin:FindFirstChildWhichIsA("BasePart")
-				else
-					bp=coin
-				end
-
-				if coin and pp and bp then
-					local dist = (getRoot(game:GetService("Players").LocalPlayer.Character).Position - bp.Position).Magnitude
-					local bitVal = plr.leaderstats.Bits
-					local h = 6
-					local maxDistance = pp.MaxActivationDistance + h
-
-					if dist <= maxDistance then
-						if game.PlaceId == epicmode or game.PlaceId == EMArchive then
-							if bitVal.Value >= 2500 and coin.Name:lower() ~= "bit" then
-								fireproximityprompt(pp, 1)
-							elseif bitVal.Value < 2500 then
-								fireproximityprompt(pp, 1)
-							end
-						elseif game.PlaceId == classicED then
-							if coin.Name:lower() ~= "handle" then
-								fireproximityprompt(pp, 1)
-							end
-						else
-							fireproximityprompt(pp, 1)
+		local character = game:GetService("Players").LocalPlayer.Character
+		local root = character and getRoot(character)
+	
+		if not (root and root.Parent) then return end
+	
+		for i = #items, 1, -1 do
+			local coin = items[i]
+			if not coin then
+				table.remove(items, i)
+				continue
+			end
+	
+			local pp = coin:FindFirstChildOfClass("ProximityPrompt")
+			local bp = coin:IsA("Model") and coin:FindFirstChildWhichIsA("BasePart") or coin
+	
+			if pp and bp then
+				local dist = (root.Position - bp.Position).Magnitude
+				local bitVal = plr.leaderstats.Bits
+				local maxDistance = pp.MaxActivationDistance + 6
+	
+				if dist <= maxDistance then
+					local greedFlag = false
+					for _, child in ipairs(coin:GetChildren()) do
+						if child:IsA("BoolValue") and child.Name:lower():find("greed") and child.Value == true then
+							greedFlag = true
+							break
 						end
 					end
-				else
-					table.remove(items, i)
+					if greedFlag then
+						continue
+					end
+	
+					local coinName = coin.Name:lower()
+	
+					if game.PlaceId == epicmode or game.PlaceId == EMArchive then
+						if (bitVal.Value >= 2500 and coinName ~= "bit") or (bitVal.Value < 2500) then
+							fireproximityprompt(pp, 1)
+						end
+					elseif game.PlaceId == classicED then
+						if coinName ~= "handle" then
+							fireproximityprompt(pp, 1)
+						end
+					else
+						fireproximityprompt(pp, 1)
+					end
 				end
+			else
+				table.remove(items, i)
 			end
 		end
 	end
 
-	wait(0.3)
+	task.wait(0.3)
 
 	local Rayfield = loadstring(game:HttpGet('https://raw.githubusercontent.com/ltseverydayyou/Rayfield-backup/main/Rayfield'))()
 
@@ -319,98 +413,35 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 	local rotation = true
 	local remoteThingy = false
 
-	task.spawn(function() -- idk why i even added this lol
-		game:GetService("Players").PlayerAdded:Connect(function(noob)
-			local h="somebody"
-			if noob.Name:lower() == noob.DisplayName:lower() then
-				h="@"..noob.Name
-			else
-				h=noob.DisplayName.." (@"..noob.Name..")"
-			end
+	task.spawn(function()
+		game:GetService("Players").PlayerAdded:Connect(function(player)
+			local name = player.Name
+			local displayName = player.DisplayName
+			local formatted = (name:lower() == displayName:lower()) and ("@"..name) or (displayName.." (@"..name..")")
+	
 			Rayfield:Notify({
 				Title = "Player Join Log",
-				Content = h.." Joined",
+				Content = formatted.." Joined",
 				Duration = 3,
 				Image = decalID,
 			})
 		end)
 	end)
+
 	task.spawn(function()
-		workspace.Game.Entities.ChildAdded:Connect(function(gj)
+		game:GetService("Workspace").Game.Entities.ChildAdded:Connect(function(gj)
 			if entityEsp then
-				check = gj:IsA("Model")
-				base = gj:IsA("BasePart")
-				if check then
-					local BillboardGui = Instance.new("BillboardGui")
-					local TextLabel = Instance.new("TextLabel")
-					BillboardGui.Adornee = gj:FindFirstChildOfClass("Part")
-					BillboardGui.Name = gj.Name
-					BillboardGui.Parent = gj
-					BillboardGui.Size = UDim2.new(0, 100, 0, 150)
-					BillboardGui.StudsOffset = Vector3.new(0, 1, 0)
-					BillboardGui.AlwaysOnTop = true
-					TextLabel.Parent = BillboardGui
-					TextLabel.BackgroundTransparency = 1
-					TextLabel.Position = UDim2.new(0, 0, 0, -50)
-					TextLabel.Size = UDim2.new(0, 100, 0, 100)
-					TextLabel.Font = Enum.Font.SourceSansSemibold
-					TextLabel.TextSize = 17
-					TextLabel.TextColor3 = Color3.new(1, 0, 0)
-					TextLabel.TextStrokeTransparency = 0.3
-					TextLabel.TextYAlignment = Enum.TextYAlignment.Bottom
-					TextLabel.Text = '['..gj.Name..']'
-					TextLabel.ZIndex = 10
-
-					local a = Instance.new("BoxHandleAdornment")
-					a.Name = gj.Name:lower().."_EndlessESP"
-					a.Parent = BillboardGui
-					a.Adornee = gj
-					a.AlwaysOnTop = true
-					a.ZIndex = 0
-					a.Transparency = 0.45
-					a.Color3 = Color3.new(1, 0, 0)
-				elseif base then
-					local BillboardGui = Instance.new("BillboardGui")
-					local TextLabel = Instance.new("TextLabel")
-					BillboardGui.Adornee = gj
-					BillboardGui.Name = gj.Name
-					BillboardGui.Parent = gj
-					BillboardGui.Size = UDim2.new(0, 100, 0, 150)
-					BillboardGui.StudsOffset = Vector3.new(0, 1, 0)
-					BillboardGui.AlwaysOnTop = true
-					TextLabel.Parent = BillboardGui
-					TextLabel.BackgroundTransparency = 1
-					TextLabel.Position = UDim2.new(0, 0, 0, -50)
-					TextLabel.Size = UDim2.new(0, 100, 0, 100)
-					TextLabel.Font = Enum.Font.SourceSansSemibold
-					TextLabel.TextSize = 17
-					TextLabel.TextColor3 = Color3.new(1, 0, 0)
-					TextLabel.TextStrokeTransparency = 0.3
-					TextLabel.TextYAlignment = Enum.TextYAlignment.Bottom
-					TextLabel.Text = '['..gj.Name..']'
-					TextLabel.ZIndex = 10
-
-					local a = Instance.new("BoxHandleAdornment")
-					a.Name = gj.Name:lower().."_EndlessESP"
-					a.Parent = BillboardGui
-					a.Adornee = gj
-					a.AlwaysOnTop = true
-					a.ZIndex = 0
-					a.Size = gj.Size
-					a.Transparency = 0.45
-					a.Color3 = Color3.new(1, 0, 0)
-				else
-				end
+				CreateESP(gj)
 				if entityNotif then
-					wait();
-					Rayfield:Notify({
-						Title = "Entity",
-						Content = gj.Name.." Has Spawned",
-						Duration = 3,
-						Image = decalID,
-					})
+					task.defer(function()
+						Rayfield:Notify({
+							Title = "Entity",
+							Content = gj.Name.." Has Spawned",
+							Duration = 3,
+							Image = decalID,
+						})
+					end)
 				end
-			else
 			end
 		end)
 	end)
@@ -418,177 +449,64 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 	task.spawn(function()
 		vals.MimicActivated:GetPropertyChangedSignal("Value"):Connect(function()
 			if entityNotif then
-				if workspace.Game.Values.MimicActivated.Value then
-					wait();
+				local text = game:GetService("Workspace").Game.Values.MimicActivated.Value and "Mimic Is Enabled" or "Mimic Is Disabled"
+				task.defer(function()
 					Rayfield:Notify({
 						Title = "Entity",
-						Content = "Mimic Is Enabled",
+						Content = text,
 						Duration = 3,
 						Image = decalID,
 					})
-				else
-					wait();
-					Rayfield:Notify({
-						Title = "Entity",
-						Content = "Mimic Is Disabled",
-						Duration = 3,
-						Image = decalID,
-					})
-				end
-			else
+				end)
 			end
 		end)
 	end)
 
 	task.spawn(function()
-		game:GetService'ReplicatedStorage'.Remotes:FindFirstChild("E_A",true).OnClientEvent:connect(function(ent)
-			if entityNotif then 
-				if ent:lower()=="greed" then
-					wait();
+		game:GetService("ReplicatedStorage").Remotes:FindFirstChild("E_A", true).OnClientEvent:Connect(function(ent)
+			if entityNotif and ent:lower() == "greed" then
+				task.defer(function()
 					Rayfield:Notify({
 						Title = "Entity",
 						Content = "Greed Spawned",
 						Duration = 3,
 						Image = decalID,
 					})
-				end
-			end 
+				end)
+			end
 			if remoteThingy then
-				wait();
-				Rayfield:Notify({
-					Title = "Remote Call",
-					Content = "Returned: "..ent,
-					Duration = 3,
-					Image = decalID,
-				})
+				task.defer(function()
+					Rayfield:Notify({
+						Title = "Remote Call",
+						Content = "Returned: "..ent,
+						Duration = 3,
+						Image = decalID,
+					})
+				end)
 			end
 		end)
 	end)
 
 	task.spawn(function()
-		workspace.Game.Rooms.DescendantAdded:Connect(function(roomkey)
-			if roomkey.Name:lower() == "roomkey" and roomkey.Parent.Name:lower() ~= "door" then
-				if keyESP then
-					base = roomkey:IsA("BasePart")
-					if base then
-						local BillboardGui = Instance.new("BillboardGui")
-						local TextLabel = Instance.new("TextLabel")
-						BillboardGui.Adornee = roomkey
-						BillboardGui.Name = roomkey.Name
-						BillboardGui.Parent = roomkey
-						BillboardGui.Size = UDim2.new(0, 100, 0, 150)
-						BillboardGui.StudsOffset = Vector3.new(0, 1, 0)
-						BillboardGui.AlwaysOnTop = true
-						TextLabel.Parent = BillboardGui
-						TextLabel.BackgroundTransparency = 1
-						TextLabel.Position = UDim2.new(0, 0, 0, -50)
-						TextLabel.Size = UDim2.new(0, 100, 0, 100)
-						TextLabel.Font = Enum.Font.SourceSansSemibold
-						TextLabel.TextSize = 17
-						TextLabel.TextColor3 = Color3.new(1, 1, 0)
-						TextLabel.TextStrokeTransparency = 0.3
-						TextLabel.TextYAlignment = Enum.TextYAlignment.Bottom
-						TextLabel.Text = "Key"
-						TextLabel.ZIndex = 10
-
-						local a = Instance.new("BoxHandleAdornment")
-						a.Name = roomkey.Name:lower().."_keyESP"
-						a.Parent = BillboardGui
-						a.Adornee = roomkey
-						a.AlwaysOnTop = true
-						a.ZIndex = 0
-						a.Size = roomkey.Size
-						a.Transparency = 0.45
-						a.Color3 = Color3.new(1, 1, 0)
-					else
-					end
-				end
+		game:GetService("Workspace").Game.Rooms.DescendantAdded:Connect(function(obj)
+			if keyESP and obj:IsA("BasePart") and obj.Name:lower() == "roomkey" and obj.Parent.Name:lower() ~= "door" then
+				CreateESP(obj, "Key", Color3.new(1, 1, 0))
 			end
 		end)
 	end)
 
 	task.spawn(function()
-		workspace.Game.Rooms.DescendantAdded:Connect(function(bits)
-			if bits.Name:lower() == "bit" then
-				if bitESP then
-					base = bits:IsA("BasePart")
-					if base then
-						local BillboardGui = Instance.new("BillboardGui")
-						local TextLabel = Instance.new("TextLabel")
-						BillboardGui.Adornee = bits
-						BillboardGui.Name = bits.Name
-						BillboardGui.Parent = bits
-						BillboardGui.Size = UDim2.new(0, 100, 0, 150)
-						BillboardGui.StudsOffset = Vector3.new(0, 1, 0)
-						BillboardGui.AlwaysOnTop = true
-						TextLabel.Parent = BillboardGui
-						TextLabel.BackgroundTransparency = 1
-						TextLabel.Position = UDim2.new(0, 0, 0, -50)
-						TextLabel.Size = UDim2.new(0, 100, 0, 100)
-						TextLabel.Font = Enum.Font.SourceSansSemibold
-						TextLabel.TextSize = 17
-						TextLabel.TextColor3 = Color3.new(1, 0.666667, 0)
-						TextLabel.TextStrokeTransparency = 0.3
-						TextLabel.TextYAlignment = Enum.TextYAlignment.Bottom
-						TextLabel.Text = bits.Name
-						TextLabel.ZIndex = 10
-
-						local a = Instance.new("BoxHandleAdornment")
-						a.Name = bits.Name:lower().."_bitESP"
-						a.Parent = BillboardGui
-						a.Adornee = bits
-						a.AlwaysOnTop = true
-						a.ZIndex = 0
-						a.Size = bits.Size
-						a.Transparency = 0.45
-						a.Color3 = Color3.new(1, 0.666667, 0)
-					else
-					end
-				else
-				end
+		game:GetService("Workspace").Game.Rooms.DescendantAdded:Connect(function(obj)
+			if bitESP and obj:IsA("BasePart") and obj.Name:lower() == "bit" then
+				CreateESP(obj, "Bit", Color3.new(1, 0.666667, 0))
 			end
 		end)
 	end)
 
 	task.spawn(function()
-		workspace.Game.Rooms.DescendantAdded:Connect(function(btry)
-			if btry.Name:lower() == "battery" then
-				if batteryESP then
-					base = btry:IsA("BasePart")
-					if base then
-						local BillboardGui = Instance.new("BillboardGui")
-						local TextLabel = Instance.new("TextLabel")
-						BillboardGui.Adornee = btry
-						BillboardGui.Name = btry.Name
-						BillboardGui.Parent = btry
-						BillboardGui.Size = UDim2.new(0, 100, 0, 150)
-						BillboardGui.StudsOffset = Vector3.new(0, 1, 0)
-						BillboardGui.AlwaysOnTop = true
-						TextLabel.Parent = BillboardGui
-						TextLabel.BackgroundTransparency = 1
-						TextLabel.Position = UDim2.new(0, 0, 0, -50)
-						TextLabel.Size = UDim2.new(0, 100, 0, 100)
-						TextLabel.Font = Enum.Font.SourceSansSemibold
-						TextLabel.TextSize = 17
-						TextLabel.TextColor3 = Color3.new(0, 0.666667, 0)
-						TextLabel.TextStrokeTransparency = 0.3
-						TextLabel.TextYAlignment = Enum.TextYAlignment.Bottom
-						TextLabel.Text = btry.Name
-						TextLabel.ZIndex = 10
-
-						local a = Instance.new("BoxHandleAdornment")
-						a.Name = btry.Name:lower().."_batteryESP"
-						a.Parent = BillboardGui
-						a.Adornee = btry
-						a.AlwaysOnTop = true
-						a.ZIndex = 0
-						a.Size = btry.Size
-						a.Transparency = 0.45
-						a.Color3 = Color3.new(0, 0.666667, 0)
-					else
-					end
-				else
-				end
+		game:GetService("Workspace").Game.Rooms.DescendantAdded:Connect(function(obj)
+			if batteryESP and obj:IsA("BasePart") and obj.Name:lower() == "battery" then
+				CreateESP(obj, "Battery", Color3.new(0, 0.666667, 0))
 			end
 		end)
 	end)
@@ -606,10 +524,16 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 	end)
 
 	task.spawn(function()
-		game:GetService"Players".LocalPlayer.PlayerGui.DescendantAdded:connect(function(txt)
-			if txt:IsA'TextLabel' and txt.Parent.Name:lower() == "hintframe" and (txt.Text:lower() == "cannot pick that up." or txt.Text:lower() == "you already have this") then
-				wait();
-				txt:Destroy()
+		game:GetService("Players").LocalPlayer.PlayerGui.DescendantAdded:Connect(function(txt)
+			if txt:IsA("TextLabel") and txt.Parent and txt.Parent.Name:lower() == "hintframe" then
+				local text = txt.Text:lower()
+				if text == "cannot pick that up." or text == "you already have this" then
+					task.defer(function()
+						if txt and txt.Parent then
+							txt:Destroy()
+						end
+					end)
+				end
 			end
 		end)
 	end)
@@ -656,20 +580,32 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 		Flag = "overSeer",
 		Callback = function(Value)
 			if Value then
-				manageOver = workspace.Game.DescendantAdded:Connect(function(seer)
-					if seer.Name:lower()=="overseer" then
-						wait()
-						seer:Destroy()
+				if manageOver then
+					manageOver:Disconnect()
+				end
+				manageOver = game:GetService("Workspace").Game.DescendantAdded:Connect(function(seer)
+					if seer.Name:lower() == "overseer" then
+						task.defer(function()
+							if seer and seer.Parent then
+								seer:Destroy()
+							end
+						end)
 					end
 				end)
-				for _,seerover in ipairs(workspace.Game.Entities:GetChildren()) do
-					if seerover.Name:lower()=="overseer" then
-						seerover:Destroy()
+	
+				for _, seerover in ipairs(game:GetService("Workspace").Game.Entities:GetChildren()) do
+					if seerover.Name:lower() == "overseer" then
+						task.defer(function()
+							if seerover and seerover.Parent then
+								seerover:Destroy()
+							end
+						end)
 					end
 				end
 			else
 				if manageOver then
 					manageOver:Disconnect()
+					manageOver = nil
 				end
 			end
 		end,
@@ -704,31 +640,39 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 		CurrentValue = false,
 		Flag = "brightLol",
 		Callback = function(Value)
+			local Lighting = game:GetService("Lighting")
+	
 			if Value then
-				function brightFunc()
-					game:GetService("Lighting").ClockTime = 14
-					game:GetService("Lighting").FogEnd = 10000000000
-					game:GetService("Lighting").FogStart = 0
-					game:GetService("Lighting").GlobalShadows = false
-					game:GetService("Lighting").OutdoorAmbient = Color3.fromRGB(128, 128, 128)
+				if brightLoop then
+					brightLoop:Disconnect()
 				end
-				game:GetService("Lighting").Brightness = 3
-				for i,v in pairs(game:GetService("Lighting"):GetDescendants()) do
+	
+				for _, v in ipairs(Lighting:GetDescendants()) do
 					if v:IsA("Atmosphere") then
 						v:Destroy()
 					end
 				end
-
-				brightLoop = game:GetService("RunService").RenderStepped:Connect(brightFunc)
+	
+				brightLoop = game:GetService("RunService").RenderStepped:Connect(function()
+					Lighting.ClockTime = 14
+					Lighting.FogEnd = 1e10
+					Lighting.FogStart = 0
+					Lighting.GlobalShadows = false
+					Lighting.OutdoorAmbient = Color3.fromRGB(128, 128, 128)
+					Lighting.Brightness = 3
+				end)
 			else
 				if brightLoop then
 					brightLoop:Disconnect()
-					game:GetService("Lighting").ClockTime = 0
-					game:GetService("Lighting").FogEnd = 100000
-					game:GetService("Lighting").GlobalShadows = false
-					game:GetService("Lighting").OutdoorAmbient = Color3.fromRGB(128, 128, 128)
-					game:GetService("Lighting").Brightness = 1
+					brightLoop = nil
 				end
+	
+				Lighting.ClockTime = 0
+				Lighting.FogEnd = 100000
+				Lighting.FogStart = 0
+				Lighting.GlobalShadows = false
+				Lighting.OutdoorAmbient = Color3.fromRGB(128, 128, 128)
+				Lighting.Brightness = 1
 			end
 		end,
 	})
@@ -740,9 +684,9 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 		Callback = function(Value)
 			if Value then
 				ANTIAFK = game:GetService("Players").LocalPlayer.Idled:connect(function()
-					game:GetService("VirtualUser"):Button2Down(Vector2.new(0,0),workspace.CurrentCamera.CFrame)
+					game:GetService("VirtualUser"):Button2Down(Vector2.new(0,0),game:GetService("Workspace").CurrentCamera.CFrame)
 					task.wait(1)
-					game:GetService("VirtualUser"):Button2Up(Vector2.new(0,0),workspace.CurrentCamera.CFrame)
+					game:GetService("VirtualUser"):Button2Up(Vector2.new(0,0),game:GetService("Workspace").CurrentCamera.CFrame)
 				end)
 			else
 				if ANTIAFK then
@@ -772,227 +716,119 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 		CurrentValue = false,
 		Flag = "entityESP",
 		Callback = function(Value)
-			entityEsp=Value
+			entityEsp = Value
+			local Entities = game:GetService("Workspace").Game.Entities
+	
 			if not Value then
-				for _,espRemove in ipairs(workspace.Game.Entities:GetDescendants()) do
-					if espRemove:IsA("BoxHandleAdornment") and espRemove.Name:sub(-11) == '_EndlessESP'  then
-						espRemove.Parent:Destroy()
+				for _, descendant in ipairs(Entities:GetDescendants()) do
+					if descendant:IsA("BoxHandleAdornment") and descendant.Name:sub(-7) == "_PEEPEE" then
+						local adornee = descendant.Adornee
+						if adornee then
+							for _, child in ipairs(adornee:GetChildren()) do
+								if child:IsA("BillboardGui") or child:IsA("BoxHandleAdornment") then
+									child:Destroy()
+								end
+							end
+						end
 					end
 				end
 			else
-				for _, gj in ipairs(workspace.Game.Entities:GetChildren()) do
-					check = gj:IsA("Model")
-					base = gj:IsA("BasePart")
-					if check then
-						local BillboardGui = Instance.new("BillboardGui")
-						local TextLabel = Instance.new("TextLabel")
-						BillboardGui.Adornee = gj:FindFirstChildOfClass("Part")
-						BillboardGui.Name = gj.Name
-						BillboardGui.Parent = gj
-						BillboardGui.Size = UDim2.new(0, 100, 0, 150)
-						BillboardGui.StudsOffset = Vector3.new(0, 1, 0)
-						BillboardGui.AlwaysOnTop = true
-						TextLabel.Parent = BillboardGui
-						TextLabel.BackgroundTransparency = 1
-						TextLabel.Position = UDim2.new(0, 0, 0, -50)
-						TextLabel.Size = UDim2.new(0, 100, 0, 100)
-						TextLabel.Font = Enum.Font.SourceSansSemibold
-						TextLabel.TextSize = 17
-						TextLabel.TextColor3 = Color3.new(1, 0, 0)
-						TextLabel.TextStrokeTransparency = 0.3
-						TextLabel.TextYAlignment = Enum.TextYAlignment.Bottom
-						TextLabel.Text = '['..gj.Name..']'
-						TextLabel.ZIndex = 10
-
-						local a = Instance.new("BoxHandleAdornment")
-						a.Name = gj.Name:lower().."_EndlessESP"
-						a.Parent = BillboardGui
-						a.Adornee = gj
-						a.AlwaysOnTop = true
-						a.ZIndex = 0
-						a.Transparency = 0.45
-						a.Color3 = Color3.new(1, 0, 0)
-					elseif base then
-						local BillboardGui = Instance.new("BillboardGui")
-						local TextLabel = Instance.new("TextLabel")
-						BillboardGui.Adornee = gj
-						BillboardGui.Name = gj.Name
-						BillboardGui.Parent = gj
-						BillboardGui.Size = UDim2.new(0, 100, 0, 150)
-						BillboardGui.StudsOffset = Vector3.new(0, 1, 0)
-						BillboardGui.AlwaysOnTop = true
-						TextLabel.Parent = BillboardGui
-						TextLabel.BackgroundTransparency = 1
-						TextLabel.Position = UDim2.new(0, 0, 0, -50)
-						TextLabel.Size = UDim2.new(0, 100, 0, 100)
-						TextLabel.Font = Enum.Font.SourceSansSemibold
-						TextLabel.TextSize = 17
-						TextLabel.TextColor3 = Color3.new(1, 0, 0)
-						TextLabel.TextStrokeTransparency = 0.3
-						TextLabel.TextYAlignment = Enum.TextYAlignment.Bottom
-						TextLabel.Text = '['..gj.Name..']'
-						TextLabel.ZIndex = 10
-
-						local a = Instance.new("BoxHandleAdornment")
-						a.Name = gj.Name:lower().."_EndlessESP"
-						a.Parent = BillboardGui
-						a.Adornee = gj
-						a.AlwaysOnTop = true
-						a.ZIndex = 0
-						a.Size = gj.Size
-						a.Transparency = 0.45
-						a.Color3 = Color3.new(1, 0, 0)
-					else
+				for _, entity in ipairs(Entities:GetChildren()) do
+					if entity:IsA("Model") or entity:IsA("BasePart") then
+						CreateESP(entity)
 					end
 				end
 			end
 		end,
 	})
-
+	
 	Tab1:CreateToggle({
 		Name = "Key Esp",
 		CurrentValue = false,
 		Flag = "KeyESP",
 		Callback = function(Value)
-			keyESP=Value
+			keyESP = Value
+			local Rooms = game:GetService("Workspace").Game.Rooms
+	
 			if not Value then
-				for _,espRemove in ipairs(workspace.Game.Rooms:GetDescendants()) do
-					if espRemove:IsA("BoxHandleAdornment") and espRemove.Name:sub(-7) == '_keyESP'  then
-						espRemove.Parent:Destroy()
+				for _, descendant in ipairs(Rooms:GetDescendants()) do
+					if descendant:IsA("BoxHandleAdornment") and descendant.Name:sub(-7) == "_PEEPEE" then
+						local adornee = descendant.Adornee
+						if adornee and adornee.Name:lower() == "roomkey" then
+							for _, child in ipairs(adornee:GetChildren()) do
+								if child:IsA("BillboardGui") or child:IsA("BoxHandleAdornment") then
+									child:Destroy()
+								end
+							end
+						end
 					end
 				end
 			else
-				for _,roomkey in ipairs(workspace.Game.Rooms:GetDescendants()) do
-					if roomkey.Name:lower() == "roomkey" and roomkey.Parent.Name:lower() ~= "door" and roomkey:IsA("BasePart") then
-						local BillboardGui = Instance.new("BillboardGui")
-						local TextLabel = Instance.new("TextLabel")
-						BillboardGui.Adornee = roomkey
-						BillboardGui.Name = roomkey.Name
-						BillboardGui.Parent = roomkey
-						BillboardGui.Size = UDim2.new(0, 100, 0, 150)
-						BillboardGui.StudsOffset = Vector3.new(0, 1, 0)
-						BillboardGui.AlwaysOnTop = true
-						TextLabel.Parent = BillboardGui
-						TextLabel.BackgroundTransparency = 1
-						TextLabel.Position = UDim2.new(0, 0, 0, -50)
-						TextLabel.Size = UDim2.new(0, 100, 0, 100)
-						TextLabel.Font = Enum.Font.SourceSansSemibold
-						TextLabel.TextSize = 17
-						TextLabel.TextColor3 = Color3.new(1, 1, 0)
-						TextLabel.TextStrokeTransparency = 0.3
-						TextLabel.TextYAlignment = Enum.TextYAlignment.Bottom
-						TextLabel.Text = "Key"
-						TextLabel.ZIndex = 10
-
-						local a = Instance.new("BoxHandleAdornment")
-						a.Name = roomkey.Name:lower().."_keyESP"
-						a.Parent = BillboardGui
-						a.Adornee = roomkey
-						a.AlwaysOnTop = true
-						a.ZIndex = 0
-						a.Size = roomkey.Size
-						a.Transparency = 0.45
-						a.Color3 = Color3.new(1, 1, 0)
+				for _, key in ipairs(Rooms:GetDescendants()) do
+					if key:IsA("BasePart") and key.Name:lower() == "roomkey" and key.Parent and key.Parent.Name:lower() ~= "door" then
+						CreateESP(key, "Key", Color3.new(1, 1, 0))
 					end
 				end
 			end
 		end,
 	})
-
+	
 	Tab1:CreateToggle({
 		Name = "Bits Esp",
 		CurrentValue = false,
 		Flag = "BitsESP",
 		Callback = function(Value)
-			bitESP=Value
+			bitESP = Value
+			local Rooms = game:GetService("Workspace").Game.Rooms
+	
 			if not Value then
-				for _,espRemove in ipairs(workspace.Game.Rooms:GetDescendants()) do
-					if espRemove:IsA("BoxHandleAdornment") and espRemove.Name:sub(-7) == '_bitESP'  then
-						espRemove.Parent:Destroy()
+				for _, descendant in ipairs(Rooms:GetDescendants()) do
+					if descendant:IsA("BoxHandleAdornment") and descendant.Name:sub(-7) == "_PEEPEE" then
+						local adornee = descendant.Adornee
+						if adornee and adornee.Name:lower() == "bit" then
+							for _, child in ipairs(adornee:GetChildren()) do
+								if child:IsA("BillboardGui") or child:IsA("BoxHandleAdornment") then
+									child:Destroy()
+								end
+							end
+						end
 					end
 				end
 			else
-				for _,bits in ipairs(workspace.Game.Rooms:GetDescendants()) do
-					if bits.Name:lower() == "bit" and bits:IsA("BasePart") then
-						local BillboardGui = Instance.new("BillboardGui")
-						local TextLabel = Instance.new("TextLabel")
-						BillboardGui.Adornee = bits
-						BillboardGui.Name = bits.Name
-						BillboardGui.Parent = bits
-						BillboardGui.Size = UDim2.new(0, 100, 0, 150)
-						BillboardGui.StudsOffset = Vector3.new(0, 1, 0)
-						BillboardGui.AlwaysOnTop = true
-						TextLabel.Parent = BillboardGui
-						TextLabel.BackgroundTransparency = 1
-						TextLabel.Position = UDim2.new(0, 0, 0, -50)
-						TextLabel.Size = UDim2.new(0, 100, 0, 100)
-						TextLabel.Font = Enum.Font.SourceSansSemibold
-						TextLabel.TextSize = 17
-						TextLabel.TextColor3 = Color3.new(1, 0.666667, 0)
-						TextLabel.TextStrokeTransparency = 0.3
-						TextLabel.TextYAlignment = Enum.TextYAlignment.Bottom
-						TextLabel.Text = bits.Name
-						TextLabel.ZIndex = 10
-
-						local a = Instance.new("BoxHandleAdornment")
-						a.Name = bits.Name:lower().."_bitESP"
-						a.Parent = BillboardGui
-						a.Adornee = bits
-						a.AlwaysOnTop = true
-						a.ZIndex = 0
-						a.Size = bits.Size
-						a.Transparency = 0.45
-						a.Color3 = Color3.new(1, 0.666667, 0)
+				for _, bit in ipairs(Rooms:GetDescendants()) do
+					if bit:IsA("BasePart") and bit.Name:lower() == "bit" then
+						CreateESP(bit, "Bit", Color3.new(1, 0.666667, 0))
 					end
 				end
 			end
 		end,
 	})
-
+	
 	Tab1:CreateToggle({
 		Name = "Battery Esp",
 		CurrentValue = false,
 		Flag = "BatteryESP",
 		Callback = function(Value)
-			batteryESP=Value
+			batteryESP = Value
+			local Rooms = game:GetService("Workspace").Game.Rooms
+	
 			if not Value then
-				for _,espRemove in ipairs(workspace.Game.Rooms:GetDescendants()) do
-					if espRemove:IsA("BoxHandleAdornment") and espRemove.Name:sub(-11) == '_batteryESP'  then
-						espRemove.Parent:Destroy()
+				for _, descendant in ipairs(Rooms:GetDescendants()) do
+					if descendant:IsA("BoxHandleAdornment") and descendant.Name:sub(-7) == "_PEEPEE" then
+						local adornee = descendant.Adornee
+						if adornee and adornee.Name:lower() == "battery" then
+							for _, child in ipairs(adornee:GetChildren()) do
+								if child:IsA("BillboardGui") or child:IsA("BoxHandleAdornment") then
+									child:Destroy()
+								end
+							end
+						end
 					end
 				end
 			else
-				for _,btry in ipairs(workspace.Game.Rooms:GetDescendants()) do
-					if btry.Name:lower() == "battery" and btry:IsA("BasePart") then
-						local BillboardGui = Instance.new("BillboardGui")
-						local TextLabel = Instance.new("TextLabel")
-						BillboardGui.Adornee = btry
-						BillboardGui.Name = btry.Name
-						BillboardGui.Parent = btry
-						BillboardGui.Size = UDim2.new(0, 100, 0, 150)
-						BillboardGui.StudsOffset = Vector3.new(0, 1, 0)
-						BillboardGui.AlwaysOnTop = true
-						TextLabel.Parent = BillboardGui
-						TextLabel.BackgroundTransparency = 1
-						TextLabel.Position = UDim2.new(0, 0, 0, -50)
-						TextLabel.Size = UDim2.new(0, 100, 0, 100)
-						TextLabel.Font = Enum.Font.SourceSansSemibold
-						TextLabel.TextSize = 17
-						TextLabel.TextColor3 = Color3.new(0, 0.666667, 0)
-						TextLabel.TextStrokeTransparency = 0.3
-						TextLabel.TextYAlignment = Enum.TextYAlignment.Bottom
-						TextLabel.Text = btry.Name
-						TextLabel.ZIndex = 10
-
-						local a = Instance.new("BoxHandleAdornment")
-						a.Name = btry.Name:lower().."_batteryESP"
-						a.Parent = BillboardGui
-						a.Adornee = btry
-						a.AlwaysOnTop = true
-						a.ZIndex = 0
-						a.Size = btry.Size
-						a.Transparency = 0.45
-						a.Color3 = Color3.new(0, 0.666667, 0)
+				for _, battery in ipairs(Rooms:GetDescendants()) do
+					if battery:IsA("BasePart") and battery.Name:lower() == "battery" then
+						CreateESP(battery, "Battery", Color3.new(0, 0.666667, 0))
 					end
 				end
 			end
@@ -1160,45 +996,41 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 		CurrentValue = false,
 		Flag = "infJP",
 		Callback = function(Value)
-			local InfiniteJumpEnabled = Value
-			local infinite=nil
-			local mobileInfinite=nil
-
-			if InfiniteJumpEnabled then
-				if infinite then
-					infinite:Disconnect()
-					infinite=nil
-				end
-				infinite = game:GetService("UserInputService").JumpRequest:Connect(function()
-					game:GetService("Players").LocalPlayer.Character:FindFirstChildOfClass("Humanoid"):ChangeState("Jumping")
-				end)
-				if IsOnMobile and game.PlaceId == renovation then
-					local controls = require(game:GetService("Players").LocalPlayer.PlayerScripts.PlayerModule):GetControls()
-					controls:Enable()
-					local cmdlp = game:GetService("Players").LocalPlayer
-					cmdlp.Character.Humanoid:SetStateEnabled(Enum.HumanoidStateType.Jumping, true)
-
-					local jumpbtn = cmdlp.PlayerGui.TouchControls.MobileControls.JumpButton
-					local run = false
-
-					if mobileInfinite then
-						mobileInfinite:Disconnect()
-						mobileInfinite=nil
+			local Players = game:GetService("Players")
+			local LocalPlayer = Players.LocalPlayer
+			local UserInputService = game:GetService("UserInputService")
+			local IsOnMobile = UserInputService.TouchEnabled
+		
+			if INFENDLESSJP then
+				INFENDLESSJP:Disconnect()
+				INFENDLESSJP = nil
+			end
+			if mobileInfinite then
+				mobileInfinite:Disconnect()
+				mobileInfinite = nil
+			end
+		
+			if Value then
+				INFENDLESSJP = UserInputService.JumpRequest:Connect(function()
+					local humanoid = LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+					if humanoid then
+						humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
 					end
-
-					mobileInfinite = jumpbtn.MouseButton1Click:Connect(function()
-						run = not run
-						game:GetService("Players").LocalPlayer.Character:FindFirstChildOfClass('Humanoid'):ChangeState("Jumping")
+				end)
+		
+				if IsOnMobile and game.PlaceId == renovation then
+					local humanoid = LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+					if humanoid then
+						humanoid:SetStateEnabled(Enum.HumanoidStateType.Jumping, true)
+					end
+		
+					local jumpButton = LocalPlayer.PlayerGui:WaitForChild("TouchControls"):WaitForChild("MobileControls"):WaitForChild("JumpButton")
+					mobileInfinite = jumpButton.MouseButton1Click:Connect(function()
+						local mobileHumanoid = LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+						if mobileHumanoid then
+							mobileHumanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+						end
 					end)
-				end
-			else
-				if infinite then
-					infinite:Disconnect()
-					infinite=nil
-				end
-				if mobileInfinite then
-					mobileInfinite:Disconnect()
-					mobileInfinite=nil
 				end
 			end
 		end,
@@ -1217,13 +1049,13 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 		Name = "Hide Value",
 		Callback = function()
 			game:GetService("Players").LocalPlayer.Character.Hiding.Value = not game:GetService("Players").LocalPlayer.Character.Hiding.Value
-		end    
+		end
 	})
 
 	Tab5:CreateButton({
 		Name = "Teleport to Door",
 		Callback = function()
-			spawn(teleporttodoor)
+			task.spawn(teleportToDoor)
 		end,
 	})
 
@@ -1235,7 +1067,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 
 			while getgenv().teletodoor and task.wait(.3) do
 				pcall(function()
-					spawn(teleporttodoor)
+					task.spawn(teleportToDoor)
 				end)
 			end
 		end,
@@ -1244,7 +1076,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 	Tab5:CreateButton({
 		Name = "Teleport to Key",
 		Callback = function()
-			spawn(teleporttokey)
+			task.spawn(teleportToKey)
 		end,
 	})
 
@@ -1254,9 +1086,9 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 		Callback = function(val)
 			getgenv().teletokey = val
 
-			while getgenv().teletokey and wait(.5) do
+			while getgenv().teletokey and task.wait(.5) do
 				pcall(function()
-					spawn(teleporttokey)
+					task.spawn(teleportToKey)
 				end)
 			end
 		end,
@@ -1265,7 +1097,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 	Tab5:CreateButton({
 		Name = "Teleport to Lever",
 		Callback = function()
-			spawn(teleporttolever)
+			task.spawn(teleportToLever)
 		end,
 	})
 
@@ -1275,9 +1107,9 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 		Callback = function(val)
 			getgenv().teletolever = val
 
-			while getgenv().teletolever and wait(.5) do
+			while getgenv().teletolever and task.wait(.5) do
 				pcall(function()
-					spawn(teleporttolever)
+					task.spawn(teleportToLever)
 				end)
 			end
 		end,
@@ -1397,11 +1229,11 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 	Rayfield:LoadConfiguration()
 
 	-- auras
-	task.spawn(function()
+	--[[task.spawn(function()
 		while task.wait() do
 			if getgenv().bits then
 				pcall(function()
-					for _, room in ipairs(workspace.Game.Rooms:GetChildren()) do
+					for _, room in ipairs(game:GetService("Workspace").Game.Rooms:GetChildren()) do
 						for _, v in pairs(room:GetDescendants()) do
 							local bitVal = game:GetService("Players").LocalPlayer.leaderstats.Bits
 							if (game.PlaceId == epicmode or game.PlaceId == EMArchive) and bitVal.Value >= 2500 then
@@ -1418,7 +1250,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 		while task.wait() do
 			if getgenv().Key then
 				pcall(function()
-					for _, room in ipairs(workspace.Game.Rooms:GetChildren()) do
+					for _, room in ipairs(game:GetService("Workspace").Game.Rooms:GetChildren()) do
 						for _, v in pairs(room:GetDescendants()) do
 							processObject(v, "roomkey")
 						end
@@ -1432,7 +1264,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 		while task.wait() do
 			if getgenv().Vita then
 				pcall(function()
-					for _, room in ipairs(workspace.Game.Rooms:GetChildren()) do
+					for _, room in ipairs(game:GetService("Workspace").Game.Rooms:GetChildren()) do
 						for _, v in pairs(room:GetDescendants()) do
 
 							processObject(v, "vitamins")
@@ -1442,11 +1274,11 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 			end
 		end
 	end)
-	task.spawn(function()	
+	task.spawn(function()
 		while task.wait() do
 			if getgenv().Band then
 				pcall(function()
-					for _, room in ipairs(workspace.Game.Rooms:GetChildren()) do
+					for _, room in ipairs(game:GetService("Workspace").Game.Rooms:GetChildren()) do
 						for _, v in pairs(room:GetDescendants()) do
 							processObject(v, "bandage")
 						end
@@ -1459,7 +1291,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 		while task.wait() do
 			if getgenv().LockPick then
 				pcall(function()
-					for _, room in ipairs(workspace.Game.Rooms:GetChildren()) do
+					for _, room in ipairs(game:GetService("Workspace").Game.Rooms:GetChildren()) do
 						for _, v in pairs(room:GetDescendants()) do
 							processObject(v, "lockpick")
 						end
@@ -1472,7 +1304,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 		while task.wait() do
 			if getgenv().SusKey then
 				pcall(function()
-					for _, room in ipairs(workspace.Game.Rooms:GetChildren()) do
+					for _, room in ipairs(game:GetService("Workspace").Game.Rooms:GetChildren()) do
 						for _, v in pairs(room:GetDescendants()) do
 							processObject(v, "mysterious key")
 						end
@@ -1485,18 +1317,18 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 		while task.wait() do
 			if getgenv().Crucifix then
 				pcall(function()
-					for _, v in pairs(workspace.Game.Rooms:GetDescendants()) do
+					for _, v in pairs(game:GetService("Workspace").Game.Rooms:GetDescendants()) do
 						processObject(v, "crucifix")
 					end
 				end)
 			end
 		end
-	end)
+	end)]]
 	task.spawn(function()
 		--[[while task.wait() do
 			if getgenv().chaos then
 				pcall(function()
-					for _, room in ipairs(workspace.Game.Rooms:GetChildren()) do
+					for _, room in ipairs(game:GetService("Workspace").Game.Rooms:GetChildren()) do
 						for _, v in ipairs(room:GetDescendants()) do
 							if v:IsA("ProximityPrompt") and v.Name == "ProximityPrompt" then
 								local bitVal = game:GetService("Players").LocalPlayer.leaderstats.Bits
@@ -1527,7 +1359,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 		game:GetService("RunService").RenderStepped:Connect(function()
 			if getgenv().chaos then
 				if getRoot(game:GetService("Players").LocalPlayer.Character) and getRoot(game:GetService("Players").LocalPlayer.Character).Parent then
-					spawn(fireItems)
+					task.spawn(fireItems)
 				end
 			end
 		end)
@@ -1538,37 +1370,42 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 	-- player stuff
 	task.spawn(function()
 		while task.wait() do
-			if getgenv().sped then
-				pcall(function()
-					game:GetService("Players").LocalPlayer.Character:FindFirstChildWhichIsA("Humanoid").WalkSpeed = getgenv().speed
-				end)
+			local humanoid = game:GetService("Players").LocalPlayer.Character and game:GetService("Players").LocalPlayer.Character:FindFirstChildWhichIsA("Humanoid")
+			if humanoid then
+				if getgenv().sped then
+					pcall(function()
+						humanoid.WalkSpeed = getgenv().speed
+					end)
+				end
+				if getgenv().jumpy then
+					pcall(function()
+						humanoid.JumpPower = getgenv().jump
+					end)
+				end
 			end
 		end
 	end)
 	task.spawn(function()
-		while task.wait() do
-			if getgenv().jumpy then
-				pcall(function()
-					game:GetService("Players").LocalPlayer.Character:FindFirstChildWhichIsA("Humanoid").JumpPower = getgenv().jump
-				end)
-			end
-		end
-	end)
-	task.spawn(function()
-		while task.wait() do
+		game:GetService("RunService").Heartbeat:Connect(function()
 			if getgenv().wide then
-				pcall(function()
-					num = (getgenv().fov or 70)
-					local hh=game:GetService("TweenService"):Create(workspace.CurrentCamera, TweenInfo.new(0, Enum.EasingStyle.Linear), {FieldOfView=tonumber(num)})
-					hh:Play()
-				end)
+				local targetFOV = tonumber(getgenv().fov) or 70
+				if game:GetService("Workspace").CurrentCamera.FieldOfView ~= targetFOV then
+					game:GetService("Workspace").CurrentCamera.FieldOfView = targetFOV
+				end
+			end
+		end)
+		
+		if getgenv().wide then
+			local targetFOV = tonumber(getgenv().fov) or 70
+			if game:GetService("Workspace").CurrentCamera.FieldOfView ~= targetFOV then
+				game:GetService("Workspace").CurrentCamera.FieldOfView = targetFOV
 			end
 		end
 	end)
 
-	for _, room in ipairs(workspace.Game.Rooms:GetDescendants()) do
+	for _, room in ipairs(game:GetService("Workspace").Game.Rooms:GetDescendants()) do
 		aC(room)
 	end
 
-	workspace.Game.Rooms.DescendantAdded:Connect(aC)
+	game:GetService("Workspace").Game.Rooms.DescendantAdded:Connect(aC)
 end
