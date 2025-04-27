@@ -512,7 +512,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 	end)
 
 	task.spawn(function()
-		while task.wait() do
+		game:GetService("RunService").Heartbeat:Connect(function()
 			if game.PlaceId==renovation then
 				if rotation then
 					charRotate(true)
@@ -520,7 +520,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 					charRotate(false)
 				end
 			end
-		end
+		end)
 	end)
 
 	task.spawn(function()
@@ -653,7 +653,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 					end
 				end
 	
-				brightLoop = game:GetService("RunService").RenderStepped:Connect(function()
+				brightLoop = game:GetService("RunService").Heartbeat:Connect(function()
 					Lighting.ClockTime = 14
 					Lighting.FogEnd = 1e10
 					Lighting.FogStart = 0
@@ -1059,6 +1059,20 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 		end,
 	})
 
+	Tab5:CreateButton({
+		Name = "Teleport to Key",
+		Callback = function()
+			task.spawn(teleportToKey)
+		end,
+	})
+
+	Tab5:CreateButton({
+		Name = "Teleport to Lever",
+		Callback = function()
+			task.spawn(teleportToLever)
+		end,
+	})
+
 	Tab5:CreateToggle({
 		Name = "Loop Teleport To Door",
 		CurrentValue = false,
@@ -1073,13 +1087,6 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 		end,
 	})
 
-	Tab5:CreateButton({
-		Name = "Teleport to Key",
-		Callback = function()
-			task.spawn(teleportToKey)
-		end,
-	})
-
 	Tab5:CreateToggle({
 		Name = "Loop Teleport To Key",
 		CurrentValue = false,
@@ -1091,13 +1098,6 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 					task.spawn(teleportToKey)
 				end)
 			end
-		end,
-	})
-
-	Tab5:CreateButton({
-		Name = "Teleport to Lever",
-		Callback = function()
-			task.spawn(teleportToLever)
 		end,
 	})
 
@@ -1356,7 +1356,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 				end)
 			end
 		end]]
-		game:GetService("RunService").RenderStepped:Connect(function()
+		game:GetService("RunService").Heartbeat:Connect(function()
 			if getgenv().chaos then
 				if getRoot(game:GetService("Players").LocalPlayer.Character) and getRoot(game:GetService("Players").LocalPlayer.Character).Parent then
 					task.spawn(fireItems)
