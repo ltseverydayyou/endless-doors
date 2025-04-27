@@ -1388,18 +1388,18 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 	task.spawn(function()
 		game:GetService("RunService").Heartbeat:Connect(function()
 			if getgenv().wide then
-				local targetFOV = tonumber(getgenv().fov) or 70
-				if game:GetService("Workspace").CurrentCamera.FieldOfView ~= targetFOV then
-					game:GetService("Workspace").CurrentCamera.FieldOfView = targetFOV
-				end
+				pcall(function()
+					num = tonumber(getgenv().fov) or 70
+					game:GetService("TweenService"):Create(game:GetService("Workspace").CurrentCamera, TweenInfo.new(0, Enum.EasingStyle.Linear), {FieldOfView=tonumber(num)}):Play()
+				end)
 			end
 		end)
 		
 		if getgenv().wide then
-			local targetFOV = tonumber(getgenv().fov) or 70
-			if game:GetService("Workspace").CurrentCamera.FieldOfView ~= targetFOV then
-				game:GetService("Workspace").CurrentCamera.FieldOfView = targetFOV
-			end
+			pcall(function()
+				num = tonumber(getgenv().fov) or 70
+				game:GetService("TweenService"):Create(game:GetService("Workspace").CurrentCamera, TweenInfo.new(0, Enum.EasingStyle.Linear), {FieldOfView=tonumber(num)}):Play()
+			end)
 		end
 	end)
 
