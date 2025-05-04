@@ -261,7 +261,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 	end
 	
 	function hasKEYY()
-		return doHASKEY=getValueSafe("Values", "HasKey")
+		doHASKEY=getValueSafe("Values", "HasKey")
 	end
 
 	function CreateESP(target, labelText, color)
@@ -1229,6 +1229,9 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 	task.spawn(function()
 		while task.wait() do
 			pcall(function()
+			task.spawn(function()
+			hasKEYY()
+			end)
 				rmtxt:Set("Rooms: "..playerRoom())
 				bittxt:Set("Bits: "..playerBits())
 				doubleBits:Set("Double Bits: "..x2bits())
