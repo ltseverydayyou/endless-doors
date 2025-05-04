@@ -108,7 +108,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 	end
 
 	function antiRagdoll()
-		plr.Character:FindFirstChild("RagdollTrigger") and plr.Character:FindFirstChild("RagdollTrigger").Value=false
+		plr.Character:FindFirstChild("RagdollTrigger").Value=false
 	end
 
 	function charRotate(val)
