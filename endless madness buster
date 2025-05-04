@@ -22,6 +22,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 	local renovation=17324650150
 	local EMArchive=17639491565
 	local classicED=17594182379
+	local doHASKEY = false
 
 	local decalID=17471548099
 	--local UIdecal="rbxassetid://"..decalID
@@ -86,7 +87,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 	end
 	
 	function teleportToKey()
-		if not hasKEYY() then return end
+		if doHASKEY then return end
 		local Players = SafeGetService("Players")
 		local Workspace = SafeGetService("Workspace")
 		local LocalPlayer = Players.LocalPlayer
@@ -260,7 +261,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 	end
 	
 	function hasKEYY()
-		return getValueSafe("Values", "HasKey")
+		return doHASKEY=getValueSafe("Values", "HasKey")
 	end
 
 	function CreateESP(target, labelText, color)
