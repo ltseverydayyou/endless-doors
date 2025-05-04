@@ -1,5 +1,22 @@
 if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 6023940812) and (game.PlaceId == 10891480658 or game.PlaceId == 16810788519 or game.PlaceId == 17324650150 or game.PlaceId == 17639491565 or game.PlaceId == 17594182379) then
 
+	function SafeGetService(name)
+		local service = game:GetService(name)
+		return if cloneref then cloneref(service) else service
+	end
+
+	function guiCHECKINGAHHHHH()
+		return (gethui and gethui()) or SafeGetService("CoreGui"):FindFirstChild("RobloxGui") or SafeGetService("CoreGui") or SafeGetService("Players").LocalPlayer:FindFirstChild("PlayerGui")
+	end
+
+	if not game:IsLoaded() then
+		local waiting = Instance.new("Message")
+		waiting.Parent = guiCHECKINGAHHHHH()
+		waiting.Text = 'waiting for the game to load'
+		game.Loaded:Wait()
+		waiting:Destroy()
+	end
+
 	local oldPlace=10891480658
 	local epicmode=16810788519
 	local renovation=17324650150
@@ -8,33 +25,41 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 
 	local decalID=17471548099
 	--local UIdecal="rbxassetid://"..decalID
-	local plr = game:GetService("Players").LocalPlayer
+	local plr = SafeGetService("Players").LocalPlayer
 	local char = plr.Character or plr.CharacterAdded:Wait()
-	local vals = game:GetService("Workspace"):FindFirstChild("Game"):FindFirstChild("Values")
-	local GetService = game.GetService
-	iamcore = game:GetService("CoreGui")
-	if not game:IsLoaded() then
-		local waiting = Instance.new("Message")
-		waiting.Parent = iamcore
-		waiting.Text = 'waiting for the game to load'
-		game.Loaded:Wait()
-		waiting:Destroy()
-	end
+	local vals = SafeGetService("Workspace"):FindFirstChild("Game"):FindFirstChild("Values")
 
 	local IsOnMobile = false
-	if game:GetService("UserInputService").TouchEnabled then
+	if SafeGetService("UserInputService").TouchEnabled then
 		IsOnMobile = true
 	end
 	local items = {}
 
+	function getCharacter()
+		return LocalPlayer and LocalPlayer.Character
+	end
+
 	function getRoot(char)
-		local root = char:FindFirstChild('HumanoidRootPart') or char:FindFirstChild('Torso') or char:FindFirstChild('UpperTorso')
-		return root
+		if char:IsA("Player") then char = char.Character end
+		return char:FindFirstChild("HumanoidRootPart") or char:FindFirstChild("Torso") or char:FindFirstChild("UpperTorso") or char:FindFirstChild("LowerTorso") or char:FindFirstChildWhichIsA("BasePart") or nil
+	end
+
+	function getValueSafe(containerName, childName)
+		local character = getCharacter()
+		if not character then return nil end
+	
+		local container = character:FindFirstChild(containerName)
+		if not container then return nil end
+	
+		local valueObject = container:FindFirstChild(childName)
+		if not valueObject then return nil end
+	
+		return tostring(valueObject.Value)
 	end
 
 	function teleportToDoor()
-		local Players = game:GetService("Players")
-		local Workspace = game:GetService("Workspace")
+		local Players = SafeGetService("Players")
+		local Workspace = SafeGetService("Workspace")
 		local LocalPlayer = Players.LocalPlayer
 		local Rooms = Workspace.Game.Rooms
 		local curRoom = vals.RoomsNumber.Value
@@ -48,8 +73,9 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 	end
 	
 	function teleportToKey()
-		local Players = game:GetService("Players")
-		local Workspace = game:GetService("Workspace")
+		if not hasKEYY() then return end
+		local Players = SafeGetService("Players")
+		local Workspace = SafeGetService("Workspace")
 		local LocalPlayer = Players.LocalPlayer
 		local Rooms = Workspace.Game.Rooms
 		local curRoom = vals.RoomsNumber.Value
@@ -65,8 +91,8 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 	end
 	
 	function teleportToLever()
-		local Players = game:GetService("Players")
-		local Workspace = game:GetService("Workspace")
+		local Players = SafeGetService("Players")
+		local Workspace = SafeGetService("Workspace")
 		local LocalPlayer = Players.LocalPlayer
 		local Rooms = Workspace.Game.Rooms
 		local curRoom = vals.RoomsNumber.Value
@@ -82,11 +108,11 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 	end
 
 	function antiRagdoll()
-		game:GetService("Players").LocalPlayer.Character:FindFirstChild("RagdollTrigger").Value=false
+		plr.Character:FindFirstChild("RagdollTrigger") and plr.Character:FindFirstChild("RagdollTrigger").Value=false
 	end
 
 	function charRotate(val)
-		game:GetService("Players").LocalPlayer.Character:FindFirstChild("CanRotate").Value=val
+		plr.Character:FindFirstChild("CanRotate").Value=val
 	end
 
 	--[[function processObject(v, itemName)
@@ -96,7 +122,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 			local proximityPrompt = v:FindFirstChildOfClass("ProximityPrompt")
 			if proximityPrompt then
 				local maxDistance = proximityPrompt.MaxActivationDistance
-				if (v.Position - getRoot(game:GetService("Players").LocalPlayer.Character).Position).Magnitude <= maxDistance then
+				if (v.Position - getRoot(plr.Character).Position).Magnitude <= maxDistance then
 					fireproximityprompt(proximityPrompt,1)
 				end
 			end
@@ -120,8 +146,8 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 	task.spawn(function()
 		while task.wait(2) do
 			pcall(function()
-				local PlayerGui = game:GetService("Players").LocalPlayer:FindFirstChild("PlayerGui")
-				local WorkspaceGame = game:GetService("Workspace"):FindFirstChild("Game")
+				local PlayerGui = plr:FindFirstChild("PlayerGui")
+				local WorkspaceGame = SafeGetService("Workspace"):FindFirstChild("Game")
 				
 				if PlayerGui then
 					local MainGUI = PlayerGui:FindFirstChild("MainGUI")
@@ -156,25 +182,25 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 	--Player Stats
 
 	function playerRoom()
-		return tostring(game:GetService("Players").LocalPlayer.leaderstats.Room.Value)
+		return tostring(plr.leaderstats.Room.Value)
 	end
 	function playerBits()
-		return tostring(game:GetService("Players").LocalPlayer.leaderstats.Bits.Value)
+		return tostring(plr.leaderstats.Bits.Value)
 	end
 	function x2bits()
-		return tostring(game:GetService("Players").LocalPlayer.Character:FindFirstChild("Values"):FindFirstChild("DoubleBits").Value)
+		return tostring(plr.Character:FindFirstChild("Values"):FindFirstChild("DoubleBits").Value)
 	end
 	function fame()
-		return tostring(game:GetService("Players").LocalPlayer:FindFirstChild("Fame").Value)
+		return tostring(plr:FindFirstChild("Fame").Value)
 	end
 	function deaths()
-		return tostring(game:GetService("Players").LocalPlayer:FindFirstChild("Deaths").Value)
+		return tostring(plr:FindFirstChild("Deaths").Value)
 	end
 	function rifted()
-		return tostring(game:GetService("Players").LocalPlayer:FindFirstChild("Rift").Value)
+		return tostring(plr:FindFirstChild("Rift").Value)
 	end
 	function inGroup()
-		return tostring(game:GetService("Players").LocalPlayer:FindFirstChild("JoinedGroup").Value)
+		return tostring(plr:FindFirstChild("JoinedGroup").Value)
 	end
 
 	--Game Info
@@ -201,19 +227,27 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 	--collectibles
 
 	function fuz()
-		return tostring(game:GetService("Players").LocalPlayer.Character:FindFirstChild("Collectibles").Fuzzi.Value)
+		return getValueSafe("Collectibles", "Fuzzi")
 	end
+	
 	function zavv()
-		return tostring(game:GetService("Players").LocalPlayer.Character:FindFirstChild("Collectibles").Zav.Value)
+		return getValueSafe("Collectibles", "Zav")
 	end
+	
 	function jaek()
-		return tostring(game:GetService("Players").LocalPlayer.Character:FindFirstChild("Collectibles").Jake.Value)
+		return getValueSafe("Collectibles", "Jake")
 	end
+	
 	function cyan()
-		return tostring(game:GetService("Players").LocalPlayer.Character:FindFirstChild("Collectibles").Blue.Value)
+		return getValueSafe("Collectibles", "Blue")
 	end
+	
 	function alen()
-		return tostring(game:GetService("Players").LocalPlayer.Character:FindFirstChild("Collectibles").Alan.Value)
+		return getValueSafe("Collectibles", "Alan")
+	end
+	
+	function hasKEYY()
+		return getValueSafe("Values", "HasKey")
 	end
 
 	function CreateESP(target, labelText, color)
@@ -257,7 +291,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 		end
 	end
 
-	game:GetService("ProximityPromptService").PromptButtonHoldBegan:Connect(function(prompt)
+	SafeGetService("ProximityPromptService").PromptButtonHoldBegan:Connect(function(prompt)
 		fireproximityprompt(prompt,1)
 	end)
 
@@ -276,7 +310,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 	}
 	
 	task.spawn(function()
-		repeat task.wait() until game:GetService("Players").LocalPlayer.Character
+		repeat task.wait() until plr.Character
 		task.wait(2)
 
 		for _, descendant in ipairs(game:GetDescendants()) do
@@ -299,7 +333,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 	end)
 
 	task.spawn(function()
-		game:GetService("Workspace").DescendantAdded:Connect(function(YESSS)
+		SafeGetService("Workspace").DescendantAdded:Connect(function(YESSS)
 			if (YESSS:IsA("Model") or YESSS:IsA("BasePart") or YESSS:IsA("ValueBase") or YESSS:IsA("LocalScript")) then
 				local name = YESSS.Name:lower()
 				if name == "brokenlamp" or name == "chasetrigger" or name == "abysskill" or name == "fdmg"
@@ -316,7 +350,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 	end)
 
 	task.spawn(function()
-		LOCALLLLPLAYERR=game:GetService("Players").LocalPlayer
+		LOCALLLLPLAYERR=plr
 		if LOCALLLLPLAYERR.Character then
 			local humanoid = LOCALLLLPLAYERR.Character:FindFirstChildWhichIsA("Humanoid")
 			if humanoid then
@@ -339,7 +373,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 	end
 
 	local function fireItems()
-		local character = game:GetService("Players").LocalPlayer.Character
+		local character = plr.Character
 		local root = character and getRoot(character)
 	
 		if not (root and root.Parent) then return end
@@ -414,7 +448,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 	local remoteThingy = false
 
 	task.spawn(function()
-		game:GetService("Players").PlayerAdded:Connect(function(player)
+		SafeGetService("Players").PlayerAdded:Connect(function(player)
 			local name = player.Name
 			local displayName = player.DisplayName
 			local formatted = (name:lower() == displayName:lower()) and ("@"..name) or (displayName.." (@"..name..")")
@@ -429,7 +463,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 	end)
 
 	task.spawn(function()
-		game:GetService("Workspace").Game.Entities.ChildAdded:Connect(function(gj)
+		SafeGetService("Workspace").Game.Entities.ChildAdded:Connect(function(gj)
 			if entityEsp then
 				CreateESP(gj)
 				if entityNotif then
@@ -449,7 +483,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 	task.spawn(function()
 		vals.MimicActivated:GetPropertyChangedSignal("Value"):Connect(function()
 			if entityNotif then
-				local text = game:GetService("Workspace").Game.Values.MimicActivated.Value and "Mimic Is Enabled" or "Mimic Is Disabled"
+				local text = SafeGetService("Workspace").Game.Values.MimicActivated.Value and "Mimic Is Enabled" or "Mimic Is Disabled"
 				task.defer(function()
 					Rayfield:Notify({
 						Title = "Entity",
@@ -463,7 +497,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 	end)
 
 	task.spawn(function()
-		game:GetService("ReplicatedStorage").Remotes:FindFirstChild("E_A", true).OnClientEvent:Connect(function(ent)
+		SafeGetService("ReplicatedStorage").Remotes:FindFirstChild("E_A", true).OnClientEvent:Connect(function(ent)
 			if entityNotif and ent:lower() == "greed" then
 				task.defer(function()
 					Rayfield:Notify({
@@ -488,7 +522,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 	end)
 
 	task.spawn(function()
-		game:GetService("Workspace").Game.Rooms.DescendantAdded:Connect(function(obj)
+		SafeGetService("Workspace").Game.Rooms.DescendantAdded:Connect(function(obj)
 			if keyESP and obj:IsA("BasePart") and obj.Name:lower() == "roomkey" and obj.Parent.Name:lower() ~= "door" then
 				CreateESP(obj, "Key", Color3.new(1, 1, 0))
 			end
@@ -496,7 +530,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 	end)
 
 	task.spawn(function()
-		game:GetService("Workspace").Game.Rooms.DescendantAdded:Connect(function(obj)
+		SafeGetService("Workspace").Game.Rooms.DescendantAdded:Connect(function(obj)
 			if bitESP and obj:IsA("BasePart") and obj.Name:lower() == "bit" then
 				CreateESP(obj, "Bit", Color3.new(1, 0.666667, 0))
 			end
@@ -504,7 +538,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 	end)
 
 	task.spawn(function()
-		game:GetService("Workspace").Game.Rooms.DescendantAdded:Connect(function(obj)
+		SafeGetService("Workspace").Game.Rooms.DescendantAdded:Connect(function(obj)
 			if batteryESP and obj:IsA("BasePart") and obj.Name:lower() == "battery" then
 				CreateESP(obj, "Battery", Color3.new(0, 0.666667, 0))
 			end
@@ -512,7 +546,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 	end)
 
 	task.spawn(function()
-		game:GetService("RunService").Heartbeat:Connect(function()
+		SafeGetService("RunService").Heartbeat:Connect(function()
 			if game.PlaceId==renovation then
 				if rotation then
 					charRotate(true)
@@ -524,7 +558,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 	end)
 
 	task.spawn(function()
-		game:GetService("Players").LocalPlayer.PlayerGui.DescendantAdded:Connect(function(txt)
+		plr.PlayerGui.DescendantAdded:Connect(function(txt)
 			if txt:IsA("TextLabel") and txt.Parent and txt.Parent.Name:lower() == "hintframe" then
 				local text = txt.Text:lower()
 				if text == "cannot pick that up." or text == "you already have this" then
@@ -563,7 +597,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 	Tab:CreateButton({
 		Name = "Infinite Flashlight",
 		Callback = function()
-			game:GetService("ReplicatedStorage").Remotes.FLASHLIGHT_TOGGLE:FireServer(false, 99999999999999)
+			SafeGetService("ReplicatedStorage").Remotes.FLASHLIGHT_TOGGLE:FireServer(false, 99999999999999)
 		end,
 	})
 
@@ -583,7 +617,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 				if manageOver then
 					manageOver:Disconnect()
 				end
-				manageOver = game:GetService("Workspace").Game.DescendantAdded:Connect(function(seer)
+				manageOver = SafeGetService("Workspace").Game.DescendantAdded:Connect(function(seer)
 					if seer.Name:lower() == "overseer" then
 						task.defer(function()
 							if seer and seer.Parent then
@@ -593,7 +627,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 					end
 				end)
 	
-				for _, seerover in ipairs(game:GetService("Workspace").Game.Entities:GetChildren()) do
+				for _, seerover in ipairs(SafeGetService("Workspace").Game.Entities:GetChildren()) do
 					if seerover.Name:lower() == "overseer" then
 						task.defer(function()
 							if seerover and seerover.Parent then
@@ -617,7 +651,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 		Flag = "fallenLook",
 		Callback = function(Value)
 			if game.PlaceId~=classicED then
-				game:GetService("Players").LocalPlayer.PlayerScripts:FindFirstChild("Looking").Enabled = not Value
+				plr.PlayerScripts:FindFirstChild("Looking").Enabled = not Value
 			else
 			end
 		end,
@@ -629,8 +663,8 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 		Flag = "camShaking",
 		Callback = function(Value)
 			if game.PlaceId == renovation then
-				game:GetService("Players").LocalPlayer.PlayerScripts:FindFirstChild("LocalShaking").Enabled = not Value
-				game:GetService("Players").LocalPlayer.PlayerScripts:FindFirstChild("CameraShake").Enabled = not Value
+				plr.PlayerScripts:FindFirstChild("LocalShaking").Enabled = not Value
+				plr.PlayerScripts:FindFirstChild("CameraShake").Enabled = not Value
 			end
 		end,
 	})
@@ -640,7 +674,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 		CurrentValue = false,
 		Flag = "brightLol",
 		Callback = function(Value)
-			local Lighting = game:GetService("Lighting")
+			local Lighting = SafeGetService("Lighting")
 	
 			if Value then
 				if brightLoop then
@@ -653,7 +687,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 					end
 				end
 	
-				brightLoop = game:GetService("RunService").Heartbeat:Connect(function()
+				brightLoop = SafeGetService("RunService").Heartbeat:Connect(function()
 					Lighting.ClockTime = 14
 					Lighting.FogEnd = 1e10
 					Lighting.FogStart = 0
@@ -683,10 +717,10 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 		Flag = "antiAFK",
 		Callback = function(Value)
 			if Value then
-				ANTIAFK = game:GetService("Players").LocalPlayer.Idled:connect(function()
-					game:GetService("VirtualUser"):Button2Down(Vector2.new(0,0),game:GetService("Workspace").CurrentCamera.CFrame)
+				ANTIAFK = plr.Idled:connect(function()
+					SafeGetService("VirtualUser"):Button2Down(Vector2.new(0,0),SafeGetService("Workspace").CurrentCamera.CFrame)
 					task.wait(1)
-					game:GetService("VirtualUser"):Button2Up(Vector2.new(0,0),game:GetService("Workspace").CurrentCamera.CFrame)
+					SafeGetService("VirtualUser"):Button2Up(Vector2.new(0,0),SafeGetService("Workspace").CurrentCamera.CFrame)
 				end)
 			else
 				if ANTIAFK then
@@ -699,14 +733,14 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 	Tab:CreateButton({
 		Name = "Play Again",
 		Callback = function()
-			game:GetService("ReplicatedStorage").Remotes.PLAY_AGAIN:FireServer()
+			SafeGetService("ReplicatedStorage").Remotes.PLAY_AGAIN:FireServer()
 		end,
 	})
 
 	Tab:CreateButton({
 		Name = "Buy Respawn",
 		Callback = function()
-			game:GetService("ReplicatedStorage").Remotes.BUY_RESPAWN:FireServer()
+			SafeGetService("ReplicatedStorage").Remotes.BUY_RESPAWN:FireServer()
 		end,
 	})
 
@@ -717,7 +751,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 		Flag = "entityESP",
 		Callback = function(Value)
 			entityEsp = Value
-			local Entities = game:GetService("Workspace").Game.Entities
+			local Entities = SafeGetService("Workspace").Game.Entities
 	
 			if not Value then
 				for _, descendant in ipairs(Entities:GetDescendants()) do
@@ -748,7 +782,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 		Flag = "KeyESP",
 		Callback = function(Value)
 			keyESP = Value
-			local Rooms = game:GetService("Workspace").Game.Rooms
+			local Rooms = SafeGetService("Workspace").Game.Rooms
 	
 			if not Value then
 				for _, descendant in ipairs(Rooms:GetDescendants()) do
@@ -779,7 +813,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 		Flag = "BitsESP",
 		Callback = function(Value)
 			bitESP = Value
-			local Rooms = game:GetService("Workspace").Game.Rooms
+			local Rooms = SafeGetService("Workspace").Game.Rooms
 	
 			if not Value then
 				for _, descendant in ipairs(Rooms:GetDescendants()) do
@@ -810,7 +844,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 		Flag = "BatteryESP",
 		Callback = function(Value)
 			batteryESP = Value
-			local Rooms = game:GetService("Workspace").Game.Rooms
+			local Rooms = SafeGetService("Workspace").Game.Rooms
 	
 			if not Value then
 				for _, descendant in ipairs(Rooms:GetDescendants()) do
@@ -996,9 +1030,9 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 		CurrentValue = false,
 		Flag = "infJP",
 		Callback = function(Value)
-			local Players = game:GetService("Players")
+			local Players = SafeGetService("Players")
 			local LocalPlayer = Players.LocalPlayer
-			local UserInputService = game:GetService("UserInputService")
+			local UserInputService = SafeGetService("UserInputService")
 			local IsOnMobile = UserInputService.TouchEnabled
 		
 			if INFENDLESSJP then
@@ -1048,7 +1082,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 	Tab5:CreateButton({
 		Name = "Hide Value",
 		Callback = function()
-			game:GetService("Players").LocalPlayer.Character.Hiding.Value = not game:GetService("Players").LocalPlayer.Character.Hiding.Value
+			plr.Character.Hiding.Value = not plr.Character.Hiding.Value
 		end
 	})
 
@@ -1233,9 +1267,9 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 		while task.wait() do
 			if getgenv().bits then
 				pcall(function()
-					for _, room in ipairs(game:GetService("Workspace").Game.Rooms:GetChildren()) do
+					for _, room in ipairs(SafeGetService("Workspace").Game.Rooms:GetChildren()) do
 						for _, v in pairs(room:GetDescendants()) do
-							local bitVal = game:GetService("Players").LocalPlayer.leaderstats.Bits
+							local bitVal = plr.leaderstats.Bits
 							if (game.PlaceId == epicmode or game.PlaceId == EMArchive) and bitVal.Value >= 2500 then
 							else
 								processObject(v, "bit")
@@ -1250,7 +1284,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 		while task.wait() do
 			if getgenv().Key then
 				pcall(function()
-					for _, room in ipairs(game:GetService("Workspace").Game.Rooms:GetChildren()) do
+					for _, room in ipairs(SafeGetService("Workspace").Game.Rooms:GetChildren()) do
 						for _, v in pairs(room:GetDescendants()) do
 							processObject(v, "roomkey")
 						end
@@ -1264,7 +1298,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 		while task.wait() do
 			if getgenv().Vita then
 				pcall(function()
-					for _, room in ipairs(game:GetService("Workspace").Game.Rooms:GetChildren()) do
+					for _, room in ipairs(SafeGetService("Workspace").Game.Rooms:GetChildren()) do
 						for _, v in pairs(room:GetDescendants()) do
 
 							processObject(v, "vitamins")
@@ -1278,7 +1312,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 		while task.wait() do
 			if getgenv().Band then
 				pcall(function()
-					for _, room in ipairs(game:GetService("Workspace").Game.Rooms:GetChildren()) do
+					for _, room in ipairs(SafeGetService("Workspace").Game.Rooms:GetChildren()) do
 						for _, v in pairs(room:GetDescendants()) do
 							processObject(v, "bandage")
 						end
@@ -1291,7 +1325,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 		while task.wait() do
 			if getgenv().LockPick then
 				pcall(function()
-					for _, room in ipairs(game:GetService("Workspace").Game.Rooms:GetChildren()) do
+					for _, room in ipairs(SafeGetService("Workspace").Game.Rooms:GetChildren()) do
 						for _, v in pairs(room:GetDescendants()) do
 							processObject(v, "lockpick")
 						end
@@ -1304,7 +1338,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 		while task.wait() do
 			if getgenv().SusKey then
 				pcall(function()
-					for _, room in ipairs(game:GetService("Workspace").Game.Rooms:GetChildren()) do
+					for _, room in ipairs(SafeGetService("Workspace").Game.Rooms:GetChildren()) do
 						for _, v in pairs(room:GetDescendants()) do
 							processObject(v, "mysterious key")
 						end
@@ -1317,7 +1351,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 		while task.wait() do
 			if getgenv().Crucifix then
 				pcall(function()
-					for _, v in pairs(game:GetService("Workspace").Game.Rooms:GetDescendants()) do
+					for _, v in pairs(SafeGetService("Workspace").Game.Rooms:GetDescendants()) do
 						processObject(v, "crucifix")
 					end
 				end)
@@ -1328,13 +1362,13 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 		--[[while task.wait() do
 			if getgenv().chaos then
 				pcall(function()
-					for _, room in ipairs(game:GetService("Workspace").Game.Rooms:GetChildren()) do
+					for _, room in ipairs(SafeGetService("Workspace").Game.Rooms:GetChildren()) do
 						for _, v in ipairs(room:GetDescendants()) do
 							if v:IsA("ProximityPrompt") and v.Name == "ProximityPrompt" then
-								local bitVal = game:GetService("Players").LocalPlayer.leaderstats.Bits
+								local bitVal = plr.leaderstats.Bits
 								local h = (game.PlaceId ~= renovation) and 6 or 0
 								local maxDistance = v.MaxActivationDistance + h
-								if (v.Parent.Position - getRoot(game:GetService("Players").LocalPlayer.Character).Position).Magnitude <= maxDistance then
+								if (v.Parent.Position - getRoot(plr.Character).Position).Magnitude <= maxDistance then
 									if (game.PlaceId == epicmode or game.PlaceId == EMArchive) then
 										if (bitVal.Value >= 2500 and v.Parent.Name:lower() ~= "bit") then
 											fireproximityprompt(v,1)
@@ -1356,9 +1390,9 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 				end)
 			end
 		end]]
-		game:GetService("RunService").Heartbeat:Connect(function()
+		SafeGetService("RunService").Heartbeat:Connect(function()
 			if getgenv().chaos then
-				if getRoot(game:GetService("Players").LocalPlayer.Character) and getRoot(game:GetService("Players").LocalPlayer.Character).Parent then
+				if getRoot(plr.Character) and getRoot(plr.Character).Parent then
 					task.spawn(fireItems)
 				end
 			end
@@ -1370,7 +1404,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 	-- player stuff
 	task.spawn(function()
 		while task.wait() do
-			local humanoid = game:GetService("Players").LocalPlayer.Character and game:GetService("Players").LocalPlayer.Character:FindFirstChildWhichIsA("Humanoid")
+			local humanoid = plr.Character and plr.Character:FindFirstChildWhichIsA("Humanoid")
 			if humanoid then
 				if getgenv().sped then
 					pcall(function()
@@ -1386,11 +1420,11 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 		end
 	end)
 	task.spawn(function()
-		game:GetService("RunService").Heartbeat:Connect(function()
+		SafeGetService("RunService").Heartbeat:Connect(function()
 			if getgenv().wide then
 				pcall(function()
 					num = tonumber(getgenv().fov) or 70
-					game:GetService("TweenService"):Create(game:GetService("Workspace").CurrentCamera, TweenInfo.new(0, Enum.EasingStyle.Linear), {FieldOfView=tonumber(num)}):Play()
+					SafeGetService("TweenService"):Create(SafeGetService("Workspace").CurrentCamera, TweenInfo.new(0, Enum.EasingStyle.Linear), {FieldOfView=tonumber(num)}):Play()
 				end)
 			end
 		end)
@@ -1398,14 +1432,14 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 		if getgenv().wide then
 			pcall(function()
 				num = tonumber(getgenv().fov) or 70
-				game:GetService("TweenService"):Create(game:GetService("Workspace").CurrentCamera, TweenInfo.new(0, Enum.EasingStyle.Linear), {FieldOfView=tonumber(num)}):Play()
+				SafeGetService("TweenService"):Create(SafeGetService("Workspace").CurrentCamera, TweenInfo.new(0, Enum.EasingStyle.Linear), {FieldOfView=tonumber(num)}):Play()
 			end)
 		end
 	end)
 
-	for _, room in ipairs(game:GetService("Workspace").Game.Rooms:GetDescendants()) do
+	for _, room in ipairs(SafeGetService("Workspace").Game.Rooms:GetDescendants()) do
 		aC(room)
 	end
 
-	game:GetService("Workspace").Game.Rooms.DescendantAdded:Connect(aC)
+	SafeGetService("Workspace").Game.Rooms.DescendantAdded:Connect(aC)
 end
