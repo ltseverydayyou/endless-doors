@@ -54,7 +54,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 		local valueObject = container:FindFirstChild(childName)
 		if not valueObject then return nil end
 	
-		return tostring(valueObject.Value)
+		return valueObject.Value
 	end
 
 	function teleportToDoor()
