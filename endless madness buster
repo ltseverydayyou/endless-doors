@@ -44,6 +44,19 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 		return char:FindFirstChild("HumanoidRootPart") or char:FindFirstChild("Torso") or char:FindFirstChild("UpperTorso") or char:FindFirstChild("LowerTorso") or char:FindFirstChildWhichIsA("BasePart") or nil
 	end
 
+	function getValueSafeString(containerName, childName)
+		local character = getCharacter()
+		if not character then return nil end
+	
+		local container = character:FindFirstChild(containerName)
+		if not container then return nil end
+	
+		local valueObject = container:FindFirstChild(childName)
+		if not valueObject then return nil end
+	
+		return tostring(valueObject.Value)
+	end
+
 	function getValueSafe(containerName, childName)
 		local character = getCharacter()
 		if not character then return nil end
@@ -54,7 +67,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 		local valueObject = container:FindFirstChild(childName)
 		if not valueObject then return nil end
 	
-		return valueObject.Value
+		return tostring(valueObject.Value)
 	end
 
 	function teleportToDoor()
@@ -227,23 +240,23 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 	--collectibles
 
 	function fuz()
-		return getValueSafe("Collectibles", "Fuzzi")
+		return getValueSafeString("Collectibles", "Fuzzi")
 	end
 	
 	function zavv()
-		return getValueSafe("Collectibles", "Zav")
+		return getValueSafeString("Collectibles", "Zav")
 	end
 	
 	function jaek()
-		return getValueSafe("Collectibles", "Jake")
+		return getValueSafeString("Collectibles", "Jake")
 	end
 	
 	function cyan()
-		return getValueSafe("Collectibles", "Blue")
+		return getValueSafeString("Collectibles", "Blue")
 	end
 	
 	function alen()
-		return getValueSafe("Collectibles", "Alan")
+		return getValueSafeString("Collectibles", "Alan")
 	end
 	
 	function hasKEYY()
