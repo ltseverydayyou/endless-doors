@@ -36,7 +36,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 	local items = {}
 
 	function getCharacter()
-		return LocalPlayer and LocalPlayer.Character
+		return plr and plr.Character
 	end
 
 	function getRoot(char)
