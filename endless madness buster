@@ -585,6 +585,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 	getgenv().fov = nil
 	local manageOver = nil
 	local flooOver = nil
+	local takerOver = nil
 	local abyssOver = nil
 	local chaseTrgOver = nil
 	local brightLoop = nil
@@ -953,21 +954,21 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 				if abyssOver then
 					abyssOver:Disconnect()
 				end
-				abyssOver = SafeGetService("Workspace"):FindFirstChild("Game").DescendantAdded:Connect(function(flowa)
-					if flowa.Name:lower() == "abysskill" then
+				abyssOver = SafeGetService("Workspace"):FindFirstChild("Game").DescendantAdded:Connect(function(void)
+					if void.Name:lower() == "abysskill" then
 						task.defer(function()
-							if flowa and flowa.Parent then
-								flowa:Destroy()
+							if void and void.Parent then
+								void:Destroy()
 							end
 						end)
 					end
 				end)
 	
-				for _, floover in ipairs(SafeGetService("Workspace"):FindFirstChild("Game"):GetDescendants()) do
-					if floover.Name:lower() == "abysskill" then
+				for _, abyssal in ipairs(SafeGetService("Workspace"):FindFirstChild("Game"):GetDescendants()) do
+					if abyssal.Name:lower() == "abysskill" then
 						task.defer(function()
-							if floover and floover.Parent then
-								floover:Destroy()
+							if abyssal and abyssal.Parent then
+								abyssal:Destroy()
 							end
 						end)
 					end
@@ -982,6 +983,43 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 	})
 
 	Tab69:CreateToggle({
+		Name = "Bypass Taker [HEIST MODIFIER]",
+		CurrentValue = false,
+		Flag = "TAKERRRRR",
+		Callback = function(Value)
+			if Value then
+				if takerOver then
+					takerOver:Disconnect()
+				end
+				takerOver = SafeGetService("Workspace"):FindFirstChild("Game").DescendantAdded:Connect(function(heist)
+					if heist.Name:lower() == "taker" then
+						task.defer(function()
+							if heist and heist.Parent then
+								heist:Destroy()
+							end
+						end)
+					end
+				end)
+	
+				for _, takee in ipairs(SafeGetService("Workspace"):FindFirstChild("Game"):GetDescendants()) do
+					if takee.Name:lower() == "taker" then
+						task.defer(function()
+							if takee and takee.Parent then
+								takee:Destroy()
+							end
+						end)
+					end
+				end
+			else
+				if takerOver then
+					takerOver:Disconnect()
+					takerOver = nil
+				end
+			end
+		end,
+	})
+
+	Tab69:CreateToggle({
 		Name = "Bypass ChaseTrigger [EPIC MODE]",
 		CurrentValue = false,
 		Flag = "chaseTrigger",
@@ -990,21 +1028,21 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 				if chaseTrgOver then
 					chaseTrgOver:Disconnect()
 				end
-				chaseTrgOver = SafeGetService("Workspace"):FindFirstChild("Game").DescendantAdded:Connect(function(flowa)
-					if flowa.Name:lower() == "chasetrigger" then
+				chaseTrgOver = SafeGetService("Workspace"):FindFirstChild("Game").DescendantAdded:Connect(function(slend)
+					if slend.Name:lower() == "chasetrigger" then
 						task.defer(function()
-							if flowa and flowa.Parent then
-								flowa:Destroy()
+							if slend and slend.Parent then
+								slend:Destroy()
 							end
 						end)
 					end
 				end)
 	
-				for _, floover in ipairs(SafeGetService("Workspace"):FindFirstChild("Game").Entities:GetChildren()) do
-					if floover.Name:lower() == "chasetrigger" then
+				for _, slender in ipairs(SafeGetService("Workspace"):FindFirstChild("Game").Entities:GetChildren()) do
+					if slender.Name:lower() == "chasetrigger" then
 						task.defer(function()
-							if floover and floover.Parent then
-								floover:Destroy()
+							if slender and slender.Parent then
+								slender:Destroy()
 							end
 						end)
 					end
