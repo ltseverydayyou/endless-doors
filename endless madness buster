@@ -343,7 +343,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 	end)
 
 	task.spawn(function()
-		SafeGetService("Workspace"):FindFirstChild("Game").DescendantAdded:Connect(function(YESSS)
+		SafeGetService("Workspace").DescendantAdded:Connect(function(YESSS)
 			if (YESSS:IsA("Model") or YESSS:IsA("BasePart") or YESSS:IsA("ValueBase") or YESSS:IsA("LocalScript")) then
 				local name = YESSS.Name:lower()
 				if name == "brokenlamp" or name == "fdmg" or name == "longcrate" or name == "crate" or name == "chair" or name == "sofa" or name == "fire" then
@@ -880,7 +880,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 				if manageOver then
 					manageOver:Disconnect()
 				end
-				manageOver = SafeGetService("Workspace"):FindFirstChild("Game").DescendantAdded:Connect(function(seer)
+				manageOver = SafeGetService("Workspace").DescendantAdded:Connect(function(seer)
 					if seer.Name:lower() == "overseer" then
 						task.defer(function()
 							if seer and seer.Parent then
@@ -890,7 +890,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 					end
 				end)
 	
-				for _, seerover in ipairs(SafeGetService("Workspace"):FindFirstChild("Game"):GetDescendants()) do
+				for _, seerover in ipairs(SafeGetService("Workspace"):GetDescendants()) do
 					if seerover.Name:lower() == "overseer" then
 						task.defer(function()
 							if seerover and seerover.Parent then
@@ -917,7 +917,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 				if flooOver then
 					flooOver:Disconnect()
 				end
-				flooOver = SafeGetService("Workspace"):FindFirstChild("Game").DescendantAdded:Connect(function(flowa)
+				flooOver = SafeGetService("Workspace").DescendantAdded:Connect(function(flowa)
 					if flowa.Name:lower() == "flowergrowth" then
 						task.defer(function()
 							if flowa and flowa.Parent then
@@ -927,7 +927,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 					end
 				end)
 	
-				for _, floover in ipairs(SafeGetService("Workspace"):FindFirstChild("Game"):GetDescendants()) do
+				for _, floover in ipairs(SafeGetService("Workspace"):GetDescendants()) do
 					if floover.Name:lower() == "flowergrowth" then
 						task.defer(function()
 							if floover and floover.Parent then
@@ -954,7 +954,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 				if abyssOver then
 					abyssOver:Disconnect()
 				end
-				abyssOver = SafeGetService("Workspace"):FindFirstChild("Game").DescendantAdded:Connect(function(void)
+				abyssOver = SafeGetService("Workspace").DescendantAdded:Connect(function(void)
 					if void.Name:lower() == "abysskill" then
 						task.defer(function()
 							if void and void.Parent then
@@ -964,7 +964,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 					end
 				end)
 	
-				for _, abyssal in ipairs(SafeGetService("Workspace"):FindFirstChild("Game"):GetDescendants()) do
+				for _, abyssal in ipairs(SafeGetService("Workspace"):GetDescendants()) do
 					if abyssal.Name:lower() == "abysskill" then
 						task.defer(function()
 							if abyssal and abyssal.Parent then
@@ -991,7 +991,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 				if takerOver then
 					takerOver:Disconnect()
 				end
-				takerOver = SafeGetService("Workspace"):FindFirstChild("Game").DescendantAdded:Connect(function(heist)
+				takerOver = SafeGetService("Workspace").DescendantAdded:Connect(function(heist)
 					if heist.Name:lower() == "taker" then
 						task.defer(function()
 							if heist and heist.Parent then
@@ -1001,7 +1001,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 					end
 				end)
 	
-				for _, takee in ipairs(SafeGetService("Workspace"):FindFirstChild("Game"):GetDescendants()) do
+				for _, takee in ipairs(SafeGetService("Workspace"):GetDescendants()) do
 					if takee.Name:lower() == "taker" then
 						task.defer(function()
 							if takee and takee.Parent then
@@ -1028,7 +1028,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 				if chaseTrgOver then
 					chaseTrgOver:Disconnect()
 				end
-				chaseTrgOver = SafeGetService("Workspace"):FindFirstChild("Game").DescendantAdded:Connect(function(slend)
+				chaseTrgOver = SafeGetService("Workspace").DescendantAdded:Connect(function(slend)
 					if slend.Name:lower() == "chasetrigger" then
 						task.defer(function()
 							if slend and slend.Parent then
@@ -1347,103 +1347,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 	end
 
 	Rayfield:LoadConfiguration()
-
-	-- auras
-	--[[task.spawn(function()
-		while task.wait() do
-			if getgenv().bits then
-				pcall(function()
-					for _, room in ipairs(SafeGetService("Workspace"):FindFirstChild("Game").Rooms:GetChildren()) do
-						for _, v in pairs(room:GetDescendants()) do
-							local bitVal = plr.leaderstats.Bits
-							if (game.PlaceId == epicmode or game.PlaceId == EMArchive) and bitVal.Value >= 2500 then
-							else
-								processObject(v, "bit")
-							end
-						end
-					end
-				end)
-			end
-		end
-	end)
-	task.spawn(function()
-		while task.wait() do
-			if getgenv().Key then
-				pcall(function()
-					for _, room in ipairs(SafeGetService("Workspace"):FindFirstChild("Game").Rooms:GetChildren()) do
-						for _, v in pairs(room:GetDescendants()) do
-							processObject(v, "roomkey")
-						end
-					end
-				end)
-
-			end
-		end
-	end)
-	task.spawn(function()
-		while task.wait() do
-			if getgenv().Vita then
-				pcall(function()
-					for _, room in ipairs(SafeGetService("Workspace"):FindFirstChild("Game").Rooms:GetChildren()) do
-						for _, v in pairs(room:GetDescendants()) do
-
-							processObject(v, "vitamins")
-						end
-					end
-				end)
-			end
-		end
-	end)
-	task.spawn(function()
-		while task.wait() do
-			if getgenv().Band then
-				pcall(function()
-					for _, room in ipairs(SafeGetService("Workspace"):FindFirstChild("Game").Rooms:GetChildren()) do
-						for _, v in pairs(room:GetDescendants()) do
-							processObject(v, "bandage")
-						end
-					end
-				end)
-			end
-		end
-	end)
-	task.spawn(function()
-		while task.wait() do
-			if getgenv().LockPick then
-				pcall(function()
-					for _, room in ipairs(SafeGetService("Workspace"):FindFirstChild("Game").Rooms:GetChildren()) do
-						for _, v in pairs(room:GetDescendants()) do
-							processObject(v, "lockpick")
-						end
-					end
-				end)
-			end
-		end
-	end)
-	task.spawn(function()
-		while task.wait() do
-			if getgenv().SusKey then
-				pcall(function()
-					for _, room in ipairs(SafeGetService("Workspace"):FindFirstChild("Game").Rooms:GetChildren()) do
-						for _, v in pairs(room:GetDescendants()) do
-							processObject(v, "mysterious key")
-						end
-					end
-				end)
-			end
-		end
-	end)
-	task.spawn(function()
-		while task.wait() do
-			if getgenv().Crucifix then
-				pcall(function()
-					for _, v in pairs(SafeGetService("Workspace"):FindFirstChild("Game").Rooms:GetDescendants()) do
-						processObject(v, "crucifix")
-					end
-				end)
-			end
-		end
-	end)]]
+	
 	task.spawn(function()
 		--[[while task.wait() do
 			if getgenv().chaos then
