@@ -24,7 +24,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 	local classicED=17594182379
 	local doHASKEY = false
 
-	local decalID=17471548099
+	local decalID=95434351872718
 	--local UIdecal="rbxassetid://"..decalID
 	local plr = SafeGetService("Players").LocalPlayer
 	local char = plr.Character or plr.CharacterAdded:Wait()
@@ -153,7 +153,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 
 	task.wait();
 
-	task.spawn(function()
+	--[[task.spawn(function()
 		while task.wait(2) do
 			pcall(function()
 				local PlayerGui = plr:FindFirstChild("PlayerGui")
@@ -187,7 +187,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 				end
 			end)
 		end
-	end)
+	end)]]
 
 	--Player Stats
 
@@ -308,12 +308,12 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 	local targets = {
 		fdmg = true,
 		brokenlamp = true,
-		abysskill = true,
-		flowergrowth = true,
+		--abysskill = true,
+		--flowergrowth = true,
 		longcrate = true,
 		crate = true,
-		chasetrigger = true,
-		spirit = true,
+		--chasetrigger = true,
+		--spirit = true,
 		chair = true,
 		sofa = true,
 		fire = true
@@ -343,12 +343,10 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 	end)
 
 	task.spawn(function()
-		SafeGetService("Workspace").DescendantAdded:Connect(function(YESSS)
+		SafeGetService("Workspace"):FindFirstChild("Game").DescendantAdded:Connect(function(YESSS)
 			if (YESSS:IsA("Model") or YESSS:IsA("BasePart") or YESSS:IsA("ValueBase") or YESSS:IsA("LocalScript")) then
 				local name = YESSS.Name:lower()
-				if name == "brokenlamp" or name == "chasetrigger" or name == "abysskill" or name == "fdmg"
-				or name == "flowergrowth" or name == "longcrate" or name == "crate"
-				or name == "spirit" or name == "chair" or name == "sofa" or name == "fire" then
+				if name == "brokenlamp" or name == "fdmg" or name == "longcrate" or name == "crate" or name == "chair" or name == "sofa" or name == "fire" then
 					task.defer(function()
 						if YESSS and YESSS.Parent then
 							YESSS:Destroy()
@@ -442,7 +440,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 	local Window = Rayfield:CreateWindow({
 		Name = txt,
 		LoadingTitle = txt,
-		LoadingSubtitle = "zav x fuzzi",
+		LoadingSubtitle = "zavaled loves KitaFuzzi",
 		ConfigurationSaving = {
 			Enabled = true,
 			FolderName = "Endless Doors",
@@ -473,7 +471,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 	end)
 
 	task.spawn(function()
-		SafeGetService("Workspace").Game.Entities.ChildAdded:Connect(function(gj)
+		SafeGetService("Workspace"):FindFirstChild("Game").Entities.ChildAdded:Connect(function(gj)
 			if entityEsp then
 				CreateESP(gj)
 				if entityNotif then
@@ -493,7 +491,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 	task.spawn(function()
 		vals.MimicActivated:GetPropertyChangedSignal("Value"):Connect(function()
 			if entityNotif then
-				local text = SafeGetService("Workspace").Game.Values.MimicActivated.Value and "Mimic Is Enabled" or "Mimic Is Disabled"
+				local text = SafeGetService("Workspace"):FindFirstChild("Game").Values.MimicActivated.Value and "Mimic Is Enabled" or "Mimic Is Disabled"
 				task.defer(function()
 					Rayfield:Notify({
 						Title = "Entity",
@@ -532,7 +530,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 	end)
 
 	task.spawn(function()
-		SafeGetService("Workspace").Game.Rooms.DescendantAdded:Connect(function(obj)
+		SafeGetService("Workspace"):FindFirstChild("Game").Rooms.DescendantAdded:Connect(function(obj)
 			if keyESP and obj:IsA("BasePart") and obj.Name:lower() == "roomkey" and obj.Parent.Name:lower() ~= "door" then
 				CreateESP(obj, "Key", Color3.new(1, 1, 0))
 			end
@@ -540,7 +538,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 	end)
 
 	task.spawn(function()
-		SafeGetService("Workspace").Game.Rooms.DescendantAdded:Connect(function(obj)
+		SafeGetService("Workspace"):FindFirstChild("Game").Rooms.DescendantAdded:Connect(function(obj)
 			if bitESP and obj:IsA("BasePart") and obj.Name:lower() == "bit" then
 				CreateESP(obj, "Bit", Color3.new(1, 0.666667, 0))
 			end
@@ -548,7 +546,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 	end)
 
 	task.spawn(function()
-		SafeGetService("Workspace").Game.Rooms.DescendantAdded:Connect(function(obj)
+		SafeGetService("Workspace"):FindFirstChild("Game").Rooms.DescendantAdded:Connect(function(obj)
 			if batteryESP and obj:IsA("BasePart") and obj.Name:lower() == "battery" then
 				CreateESP(obj, "Battery", Color3.new(0, 0.666667, 0))
 			end
@@ -586,6 +584,9 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 	getgenv().jump = nil
 	getgenv().fov = nil
 	local manageOver = nil
+	local flooOver = nil
+	local abyssOver = nil
+	local chaseTrgOver = nil
 	local brightLoop = nil
 	local ANTIAFK = nil
 
@@ -594,15 +595,15 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 
 	local Tab1 = Window:CreateTab("Toggles", 12544524983)
 
-	local Tab2 = Window:CreateTab("Auto", 69395121)
+	local Tab69 = Window:CreateTab("Bypass", 134304489249706)
+
+	--local Tab2 = Window:CreateTab("Auto", 69395121)
 
 	local Tab3 = Window:CreateTab("Player", 470645116)
 
-	local Tab5 = Window:CreateTab("Random Stuff", 16354254055)
+	local Tab5 = Window:CreateTab("Misc", 16354254055)
 
 	local Tab50 = Window:CreateTab("Info/Stats", 2246486837)
-
-	local Tab6 = Window:CreateTab("Trash", 15702284942)
 
 	Tab:CreateButton({
 		Name = "Infinite Flashlight",
@@ -619,46 +620,18 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 	})
 
 	Tab:CreateToggle({
-		Name = "Bypass Overseer",
+		Name = "Everything Aura | [WIP]",
 		CurrentValue = false,
-		Flag = "overSeer",
+		Flag = "AuraAll",
 		Callback = function(Value)
-			if Value then
-				if manageOver then
-					manageOver:Disconnect()
-				end
-				manageOver = SafeGetService("Workspace").Game.DescendantAdded:Connect(function(seer)
-					if seer.Name:lower() == "overseer" then
-						task.defer(function()
-							if seer and seer.Parent then
-								seer:Destroy()
-							end
-						end)
-					end
-				end)
-	
-				for _, seerover in ipairs(SafeGetService("Workspace").Game.Entities:GetChildren()) do
-					if seerover.Name:lower() == "overseer" then
-						task.defer(function()
-							if seerover and seerover.Parent then
-								seerover:Destroy()
-							end
-						end)
-					end
-				end
-			else
-				if manageOver then
-					manageOver:Disconnect()
-					manageOver = nil
-				end
-			end
+			getgenv().chaos = Value
 		end,
 	})
 
 	Tab:CreateToggle({
-		Name = "Disable Fallen Look Script",
+		Name = "Disable Look Script",
 		CurrentValue = false,
-		Flag = "fallenLook",
+		Flag = "lookerLook",
 		Callback = function(Value)
 			if game.PlaceId~=classicED then
 				plr.PlayerScripts:FindFirstChild("Looking").Enabled = not Value
@@ -761,7 +734,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 		Flag = "entityESP",
 		Callback = function(Value)
 			entityEsp = Value
-			local Entities = SafeGetService("Workspace").Game.Entities
+			local Entities = SafeGetService("Workspace"):FindFirstChild("Game").Entities
 	
 			if not Value then
 				for _, descendant in ipairs(Entities:GetDescendants()) do
@@ -792,7 +765,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 		Flag = "KeyESP",
 		Callback = function(Value)
 			keyESP = Value
-			local Rooms = SafeGetService("Workspace").Game.Rooms
+			local Rooms = SafeGetService("Workspace"):FindFirstChild("Game").Rooms
 	
 			if not Value then
 				for _, descendant in ipairs(Rooms:GetDescendants()) do
@@ -823,7 +796,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 		Flag = "BitsESP",
 		Callback = function(Value)
 			bitESP = Value
-			local Rooms = SafeGetService("Workspace").Game.Rooms
+			local Rooms = SafeGetService("Workspace"):FindFirstChild("Game").Rooms
 	
 			if not Value then
 				for _, descendant in ipairs(Rooms:GetDescendants()) do
@@ -854,7 +827,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 		Flag = "BatteryESP",
 		Callback = function(Value)
 			batteryESP = Value
-			local Rooms = SafeGetService("Workspace").Game.Rooms
+			local Rooms = SafeGetService("Workspace"):FindFirstChild("Game").Rooms
 	
 			if not Value then
 				for _, descendant in ipairs(Rooms:GetDescendants()) do
@@ -897,86 +870,157 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 		end,
 	})
 
-	--[[Tab2:CreateToggle({
-		Name = "Bit Aura",
+	Tab69:CreateToggle({
+		Name = "Bypass Overseer",
 		CurrentValue = false,
-		Flag = "bitAura",
+		Flag = "overSeer",
 		Callback = function(Value)
-			getgenv().bits = Value
+			if Value then
+				if manageOver then
+					manageOver:Disconnect()
+				end
+				manageOver = SafeGetService("Workspace"):FindFirstChild("Game").DescendantAdded:Connect(function(seer)
+					if seer.Name:lower() == "overseer" then
+						task.defer(function()
+							if seer and seer.Parent then
+								seer:Destroy()
+							end
+						end)
+					end
+				end)
+	
+				for _, seerover in ipairs(SafeGetService("Workspace"):FindFirstChild("Game"):GetDescendants()) do
+					if seerover.Name:lower() == "overseer" then
+						task.defer(function()
+							if seerover and seerover.Parent then
+								seerover:Destroy()
+							end
+						end)
+					end
+				end
+			else
+				if manageOver then
+					manageOver:Disconnect()
+					manageOver = nil
+				end
+			end
 		end,
 	})
 
-	Tab2:CreateToggle({
-		Name = "Key Aura",
+	Tab69:CreateToggle({
+		Name = "Bypass FlowerGrowth",
 		CurrentValue = false,
-		Flag = "keyAura",
+		Flag = "flowerGrowth",
 		Callback = function(Value)
-			getgenv().Key = Value
+			if Value then
+				if flooOver then
+					flooOver:Disconnect()
+				end
+				flooOver = SafeGetService("Workspace"):FindFirstChild("Game").DescendantAdded:Connect(function(flowa)
+					if flowa.Name:lower() == "flowergrowth" then
+						task.defer(function()
+							if flowa and flowa.Parent then
+								flowa:Destroy()
+							end
+						end)
+					end
+				end)
+	
+				for _, floover in ipairs(SafeGetService("Workspace"):FindFirstChild("Game"):GetDescendants()) do
+					if floover.Name:lower() == "flowergrowth" then
+						task.defer(function()
+							if floover and floover.Parent then
+								floover:Destroy()
+							end
+						end)
+					end
+				end
+			else
+				if flooOver then
+					flooOver:Disconnect()
+					flooOver = nil
+				end
+			end
 		end,
 	})
 
-	Tab2:CreateToggle({
-		Name = "Vitamin Aura",
+	Tab69:CreateToggle({
+		Name = "Bypass Abyss",
 		CurrentValue = false,
-		Flag = "VitaminAura",
+		Flag = "abyssKILL",
 		Callback = function(Value)
-			getgenv().Vita = Value
+			if Value then
+				if abyssOver then
+					abyssOver:Disconnect()
+				end
+				abyssOver = SafeGetService("Workspace"):FindFirstChild("Game").DescendantAdded:Connect(function(flowa)
+					if flowa.Name:lower() == "abysskill" then
+						task.defer(function()
+							if flowa and flowa.Parent then
+								flowa:Destroy()
+							end
+						end)
+					end
+				end)
+	
+				for _, floover in ipairs(SafeGetService("Workspace"):FindFirstChild("Game"):GetDescendants()) do
+					if floover.Name:lower() == "abysskill" then
+						task.defer(function()
+							if floover and floover.Parent then
+								floover:Destroy()
+							end
+						end)
+					end
+				end
+			else
+				if abyssOver then
+					abyssOver:Disconnect()
+					abyssOver = nil
+				end
+			end
 		end,
 	})
 
-	Tab2:CreateToggle({
-		Name = "Bandage Aura",
+	Tab69:CreateToggle({
+		Name = "Bypass ChaseTrigger [EPIC MODE]",
 		CurrentValue = false,
-		Flag = "BandageAura",
+		Flag = "chaseTrigger",
 		Callback = function(Value)
-			getgenv().Band = Value
+			if Value then
+				if chaseTrgOver then
+					chaseTrgOver:Disconnect()
+				end
+				chaseTrgOver = SafeGetService("Workspace"):FindFirstChild("Game").DescendantAdded:Connect(function(flowa)
+					if flowa.Name:lower() == "chasetrigger" then
+						task.defer(function()
+							if flowa and flowa.Parent then
+								flowa:Destroy()
+							end
+						end)
+					end
+				end)
+	
+				for _, floover in ipairs(SafeGetService("Workspace"):FindFirstChild("Game").Entities:GetChildren()) do
+					if floover.Name:lower() == "chasetrigger" then
+						task.defer(function()
+							if floover and floover.Parent then
+								floover:Destroy()
+							end
+						end)
+					end
+				end
+			else
+				if chaseTrgOver then
+					chaseTrgOver:Disconnect()
+					chaseTrgOver = nil
+				end
+			end
 		end,
 	})
-
-	Tab2:CreateToggle({
-		Name = "Lockpick Aura",
-		CurrentValue = false,
-		Flag = "LockpickAura",
-		Callback = function(Value)
-			getgenv().LockPick = Value
-		end,
-	})
-
-	Tab2:CreateToggle({
-		Name = "Mysterious Key Aura",
-		CurrentValue = false,
-		Flag = "MysteriousKeyAura",
-		Callback = function(Value)
-			getgenv().SusKey = Value
-		end,
-	})
-
-	Tab2:CreateToggle({
-		Name = "Crucifix Aura",
-		CurrentValue = false,
-		Flag = "CrucifixAura",
-		Callback = function(Value)
-			getgenv().Crucifix = Value
-		end,
-	})]]
-
-	Tab2:CreateSection("had to remove the other sections since they were broken and too buggy")
-	Tab2:CreateSection("Everything Aura will only work for items that are needed")
-
-	Tab2:CreateToggle({
-		Name = "Everything Aura | [WIP]",
-		CurrentValue = false,
-		Flag = "AuraAll",
-		Callback = function(Value)
-			getgenv().chaos = Value
-		end,
-	})
-
-
 
 	Tab3:CreateSlider({
 		Name = "Set WalkSpeed",
-		Range = {0, 50},
+		Range = (game.PlaceId==classicED) and {0, 35} or {0, 100},
 		Increment = 1,
 		CurrentValue = 16,
 		Flag = "WalkSpeedValue",
@@ -1255,13 +1299,6 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 		end
 	end)
 
-	Tab6:CreateButton({
-		Name = "Destroy Gui",
-		Callback = function()
-			Rayfield:Destroy()
-		end,
-	})
-
 	if game.PlaceId==classicED then
 		Rayfield:Notify({
 			Title = "Info",
@@ -1278,7 +1315,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 		while task.wait() do
 			if getgenv().bits then
 				pcall(function()
-					for _, room in ipairs(SafeGetService("Workspace").Game.Rooms:GetChildren()) do
+					for _, room in ipairs(SafeGetService("Workspace"):FindFirstChild("Game").Rooms:GetChildren()) do
 						for _, v in pairs(room:GetDescendants()) do
 							local bitVal = plr.leaderstats.Bits
 							if (game.PlaceId == epicmode or game.PlaceId == EMArchive) and bitVal.Value >= 2500 then
@@ -1295,7 +1332,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 		while task.wait() do
 			if getgenv().Key then
 				pcall(function()
-					for _, room in ipairs(SafeGetService("Workspace").Game.Rooms:GetChildren()) do
+					for _, room in ipairs(SafeGetService("Workspace"):FindFirstChild("Game").Rooms:GetChildren()) do
 						for _, v in pairs(room:GetDescendants()) do
 							processObject(v, "roomkey")
 						end
@@ -1309,7 +1346,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 		while task.wait() do
 			if getgenv().Vita then
 				pcall(function()
-					for _, room in ipairs(SafeGetService("Workspace").Game.Rooms:GetChildren()) do
+					for _, room in ipairs(SafeGetService("Workspace"):FindFirstChild("Game").Rooms:GetChildren()) do
 						for _, v in pairs(room:GetDescendants()) do
 
 							processObject(v, "vitamins")
@@ -1323,7 +1360,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 		while task.wait() do
 			if getgenv().Band then
 				pcall(function()
-					for _, room in ipairs(SafeGetService("Workspace").Game.Rooms:GetChildren()) do
+					for _, room in ipairs(SafeGetService("Workspace"):FindFirstChild("Game").Rooms:GetChildren()) do
 						for _, v in pairs(room:GetDescendants()) do
 							processObject(v, "bandage")
 						end
@@ -1336,7 +1373,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 		while task.wait() do
 			if getgenv().LockPick then
 				pcall(function()
-					for _, room in ipairs(SafeGetService("Workspace").Game.Rooms:GetChildren()) do
+					for _, room in ipairs(SafeGetService("Workspace"):FindFirstChild("Game").Rooms:GetChildren()) do
 						for _, v in pairs(room:GetDescendants()) do
 							processObject(v, "lockpick")
 						end
@@ -1349,7 +1386,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 		while task.wait() do
 			if getgenv().SusKey then
 				pcall(function()
-					for _, room in ipairs(SafeGetService("Workspace").Game.Rooms:GetChildren()) do
+					for _, room in ipairs(SafeGetService("Workspace"):FindFirstChild("Game").Rooms:GetChildren()) do
 						for _, v in pairs(room:GetDescendants()) do
 							processObject(v, "mysterious key")
 						end
@@ -1362,7 +1399,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 		while task.wait() do
 			if getgenv().Crucifix then
 				pcall(function()
-					for _, v in pairs(SafeGetService("Workspace").Game.Rooms:GetDescendants()) do
+					for _, v in pairs(SafeGetService("Workspace"):FindFirstChild("Game").Rooms:GetDescendants()) do
 						processObject(v, "crucifix")
 					end
 				end)
@@ -1373,7 +1410,7 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 		--[[while task.wait() do
 			if getgenv().chaos then
 				pcall(function()
-					for _, room in ipairs(SafeGetService("Workspace").Game.Rooms:GetChildren()) do
+					for _, room in ipairs(SafeGetService("Workspace"):FindFirstChild("Game").Rooms:GetChildren()) do
 						for _, v in ipairs(room:GetDescendants()) do
 							if v:IsA("ProximityPrompt") and v.Name == "ProximityPrompt" then
 								local bitVal = plr.leaderstats.Bits
@@ -1448,9 +1485,9 @@ if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 602
 		end
 	end)
 
-	for _, room in ipairs(SafeGetService("Workspace").Game.Rooms:GetDescendants()) do
+	for _, room in ipairs(SafeGetService("Workspace"):FindFirstChild("Game").Rooms:GetDescendants()) do
 		aC(room)
 	end
 
-	SafeGetService("Workspace").Game.Rooms.DescendantAdded:Connect(aC)
+	SafeGetService("Workspace"):FindFirstChild("Game").Rooms.DescendantAdded:Connect(aC)
 end
