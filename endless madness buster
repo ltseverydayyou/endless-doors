@@ -527,31 +527,63 @@ tabMc:CreateInput({Name="Notification Text",PlaceholderText="Text",RemoveTextAft
 tabMc:CreateButton({Name="Send Notification",Callback=function() task.defer(function() Rayfield:Notify({Title="Notification",Content=getgenv().Notifv1 or "Door",Duration=3,Image=decalID}) end) end})
 
 local tabI = Win:CreateTab("Info/Stats",2246486837)
-tabI:CreateLabel("Rooms: "..playerRoom())
-tabI:CreateLabel("Bits: "..playerBits())
-tabI:CreateLabel("Double Bits: "..doubleBits())
+rmtxt = tabI:CreateLabel("Rooms: "..playerRoom())
+bittxt = tabI:CreateLabel("Bits: "..playerBits())
+dblBits = tabI:CreateLabel("Double Bits: "..doubleBits())
 tabI:CreateSection("")
 if game.PlaceId==pRen then
-    tabI:CreateLabel("Fame: "..fame())
-    tabI:CreateLabel("Deaths: "..deaths())
-    tabI:CreateLabel("Rift: "..riftCount())
-    tabI:CreateLabel("Joined Group: "..inGroup())
+    fames = tabI:CreateLabel("Fame: "..fame())
+    dies = tabI:CreateLabel("Deaths: "..deaths())
+    inRift = tabI:CreateLabel("Rift: "..riftCount())
+    joinedGroup = tabI:CreateLabel("Joined Group: "..inGroup())
 	tabI:CreateSection("")
 end
-tabI:CreateLabel("Current Room: "..curRoom())
-tabI:CreateLabel("Phil Chance: "..philMeter())
-tabI:CreateLabel("Spider Chance: "..spiderChance())
-if game.PlaceId~=pClass then tabI:CreateLabel("Revive Price: "..revivePrice()) end
-tabI:CreateLabel("Players Alive: "..aliveCount())
-tabI:CreateLabel("Players In Game: "..inGameCount())
+curtxt = tabI:CreateLabel("Current Room: "..curRoom())
+phillMeter = tabI:CreateLabel("Phil Chance: "..philMeter())
+pooperChance = tabI:CreateLabel("Spider Chance: "..spiderChance())
+if game.PlaceId~=pClass then RevCount = tabI:CreateLabel("Revive Price: "..revivePrice()) end
+plrAlives = tabI:CreateLabel("Players Alive: "..aliveCount())
+plrInGame = tabI:CreateLabel("Players In Game: "..inGameCount())
 if game.PlaceId==pRen then
 	tabI:CreateSection("")
-    tabI:CreateLabel("Fuzzi: "..fuz())
-    tabI:CreateLabel("Zav: "..zav())
-    tabI:CreateLabel("Jake: "..jae())
-    tabI:CreateLabel("Blue: "..blu())
-    tabI:CreateLabel("Alan: "..al())
+    Fuzzi = tabI:CreateLabel("Fuzzi: "..fuz())
+    Zav = tabI:CreateLabel("Zav: "..zav())
+    Jake = tabI:CreateLabel("Jake: "..jae())
+    Blue = tabI:CreateLabel("Blue: "..blu())
+    Alan = tabI:CreateLabel("Alan: "..al())
 end
+
+task.spawn(function()
+    while task.wait() do
+        --pcall(function()
+            rmtxt:Set("Rooms: "..playerRoom())
+            bittxt:Set("Bits: "..playerBits())
+            dblBits:Set("Double Bits: "..doubleBits())
+
+            curtxt:Set("Current Room: "..curRoom())
+            phillMeter:Set("Phil Chance: "..philMeter())
+            pooperChance:Set("Spider Chance: "..spiderChance())
+            if game.PlaceId ~= pClass then
+                RevCount:Set("Revive Price: "..revivePrice())
+            end
+            plrAlives:Set("Players Alive: "..aliveCount())
+            plrInGame:Set("Players In Game: "..inGameCount())
+
+            if game.PlaceId == pRen then
+                fames:Set("Fame: "..fame())
+                dies:Set("Deaths: "..deaths())
+                inRift:Set("Rift: "..riftCount())
+                joinedGroup:Set("Joined Group: "..inGroup())
+
+                Fuzzi:Set("Fuzzi: "..fuz())
+                Zav:Set("Zav: "..zav())
+                Jake:Set("Jake: "..jae())
+                Blue:Set("Blue: "..blu())
+                Alan:Set("Alan: "..al())
+            end
+        --end)
+    end
+end)
 
 task.defer(function()
     Players.PlayerAdded:Connect(function(pl)
