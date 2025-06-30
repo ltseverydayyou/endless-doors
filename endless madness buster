@@ -292,7 +292,6 @@ tabM:CreateToggle({Name="Full Bright",CurrentValue=false,Flag="brightLol",Callba
     local L=S("Lighting")
     if v then
         if brightLoop then brightLoop:Disconnect() end
-        for _,a in ipairs(L:GetDescendants()) do if a:IsA("Atmosphere") then a:Destroy() end end
         brightLoop=S("RunService").Heartbeat:Connect(function()
             L.ClockTime=0;L.FogEnd=1e10;L.FogStart=0;L.GlobalShadows=false;L.OutdoorAmbient=Color3.fromRGB(128,128,128);L.Brightness=3
         end)
