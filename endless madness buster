@@ -555,7 +555,7 @@ end
 
 task.spawn(function()
     while task.wait() do
-        --pcall(function()
+        pcall(function()
             rmtxt:Set("Rooms: "..playerRoom())
             bittxt:Set("Bits: "..playerBits())
             dblBits:Set("Double Bits: "..doubleBits())
@@ -581,7 +581,7 @@ task.spawn(function()
                 Blue:Set("Blue: "..blu())
                 Alan:Set("Alan: "..al())
             end
-        --end)
+        end)
     end
 end)
 
