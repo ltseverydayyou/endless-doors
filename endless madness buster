@@ -1,1435 +1,661 @@
-if (game.GameId == 3927488489 or game.GameId == 5927366432 or game.GameId == 6023940812) and (game.PlaceId == 10891480658 or game.PlaceId == 16810788519 or game.PlaceId == 17324650150 or game.PlaceId == 17639491565 or game.PlaceId == 17594182379) then
-
-	function SafeGetService(name)
-		local service = game:GetService(name)
-		return if cloneref then cloneref(service) else service
-	end
-
-	function guiCHECKINGAHHHHH()
-		return (gethui and gethui()) or SafeGetService("CoreGui"):FindFirstChild("RobloxGui") or SafeGetService("CoreGui") or SafeGetService("Players").LocalPlayer:FindFirstChild("PlayerGui")
-	end
-
-	if not game:IsLoaded() then
-		local waiting = Instance.new("Message")
-		waiting.Parent = guiCHECKINGAHHHHH()
-		waiting.Text = 'waiting for the game to load'
-		game.Loaded:Wait()
-		waiting:Destroy()
-	end
-
-	local oldPlace=10891480658
-	local epicmode=16810788519
-	local renovation=17324650150
-	local EMArchive=17639491565
-	local classicED=17594182379
-	local doHASKEY = false
-
-	local decalID=95434351872718
-	--local UIdecal="rbxassetid://"..decalID
-	local plr = SafeGetService("Players").LocalPlayer
-	local char = plr.Character or plr.CharacterAdded:Wait()
-	local vals = SafeGetService("Workspace"):FindFirstChild("Game"):FindFirstChild("Values")
-
-	local IsOnMobile = false
-	if SafeGetService("UserInputService").TouchEnabled then
-		IsOnMobile = true
-	end
-	local items = {}
-
-	function getRoot(char)
-		if char:IsA("Player") then char = char.Character end
-		return char:FindFirstChild("HumanoidRootPart") or char:FindFirstChild("Torso") or char:FindFirstChild("UpperTorso") or char:FindFirstChild("LowerTorso") or char:FindFirstChildWhichIsA("BasePart") or nil
-	end
-
-	function getValueSafeString(containerName, childName)
-		local character = plr and plr.Character
-		if not character then return nil end
-	
-		local container = character:FindFirstChild(containerName)
-		if not container then return nil end
-	
-		local valueObject = container:FindFirstChild(childName)
-		if not valueObject then return nil end
-	
-		return tostring(valueObject.Value)
-	end
-
-	function getValueSafe(containerName, childName)
-		local character = plr and plr.Character
-		if not character then return nil end
-	
-		local container = character:FindFirstChild(containerName)
-		if not container then return nil end
-	
-		local valueObject = container:FindFirstChild(childName)
-		if not valueObject then return nil end
-	
-		return valueObject.Value
-	end
-
-	function teleportToDoor()
-		local Players = SafeGetService("Players")
-		local Workspace = SafeGetService("Workspace")
-		local LocalPlayer = Players.LocalPlayer
-		local Rooms = Workspace.Game.Rooms
-		local curRoom = vals.RoomsNumber.Value
-		local room = Rooms:FindFirstChild("Room"..curRoom)
-		if room then
-			local door = room:FindFirstChild("Door")
-			if door then
-				LocalPlayer.Character:PivotTo(door:GetPivot())
-			end
-		end
-	end
-	
-	function teleportToKey()
-		if doHASKEY then return end
-		local Players = SafeGetService("Players")
-		local Workspace = SafeGetService("Workspace")
-		local LocalPlayer = Players.LocalPlayer
-		local Rooms = Workspace.Game.Rooms
-		local curRoom = vals.RoomsNumber.Value
-		local room = Rooms:FindFirstChild("Room"..curRoom)
-		if room then
-			for _, descendant in ipairs(room:GetDescendants()) do
-				if descendant:IsA("BasePart") and descendant.Name:lower() == "roomkey" and descendant.Parent.Name:lower() ~= "door" then
-					LocalPlayer.Character:PivotTo(descendant:GetPivot())
-					break
-				end
-			end
-		end
-	end
-	
-	function teleportToLever()
-		local Players = SafeGetService("Players")
-		local Workspace = SafeGetService("Workspace")
-		local LocalPlayer = Players.LocalPlayer
-		local Rooms = Workspace.Game.Rooms
-		local curRoom = vals.RoomsNumber.Value
-		local room = Rooms:FindFirstChild("Room"..curRoom)
-		if room then
-			for _, descendant in ipairs(room:GetDescendants()) do
-				if (descendant:IsA("BasePart") or descendant:IsA("Model")) and descendant.Name:lower() == "gatelever" then
-					LocalPlayer.Character:PivotTo(descendant:GetPivot())
-					break
-				end
-			end
-		end
-	end
-
-	function antiRagdoll()
-		plr.Character:FindFirstChild("RagdollTrigger").Value=false
-	end
-
-	function charRotate(val)
-		plr.Character:FindFirstChild("CanRotate").Value=val
-	end
-
-	--[[function processObject(v, itemName)
-		if tick() - h > p then
-			h = tick()
-		if (v:IsA("BasePart") or v:IsA("Model") or v:IsA("Folder")) and v.Name:lower() == itemName then
-			local proximityPrompt = v:FindFirstChildOfClass("ProximityPrompt")
-			if proximityPrompt then
-				local maxDistance = proximityPrompt.MaxActivationDistance
-				if (v.Position - getRoot(plr.Character).Position).Magnitude <= maxDistance then
-					fireproximityprompt(proximityPrompt,1)
-				end
-			end
-		end
-	end
-	end]]
-
-	local placeNames = {
-		[oldPlace] = "Endless Doors [OLD]",
-		[epicmode] = "Endless Doors [OLD Epic Mode]",
-		[renovation] = "Endless Doors",
-		[EMArchive] = "Endless Doors [Epic Mode]",
-		[classicED] = "Endless Doors [Retro #classic]"
-	}
-	
-	local baseName = placeNames[game.PlaceId] or "unknown"
-	local txt = IsOnMobile and (baseName.." | Mobile") or baseName
-
-	task.wait();
-
-	--[[task.spawn(function()
-		while task.wait(2) do
-			pcall(function()
-				local PlayerGui = plr:FindFirstChild("PlayerGui")
-				local WorkspaceGame = SafeGetService("Workspace"):FindFirstChild("Game")
-				
-				if PlayerGui then
-					local MainGUI = PlayerGui:FindFirstChild("MainGUI")
-					if MainGUI then
-						local Values = MainGUI:FindFirstChild("Values")
-						if Values then
-							for _, val in ipairs(Values:GetDescendants()) do
-								if val:IsA("DoubleConstrainedValue") then
-									val.MaxValue = 999999
-									val.MinValue = 0
-								end
-							end
-						end
-					end
-				end
-	
-				if WorkspaceGame then
-					local GameValues = WorkspaceGame:FindFirstChild("Values")
-					if GameValues then
-						for _, val in ipairs(GameValues:GetDescendants()) do
-							if val:IsA("DoubleConstrainedValue") then
-								val.MaxValue = 999999
-								val.MinValue = 0
-							end
-						end
-					end
-				end
-			end)
-		end
-	end)]]
-
-	--Player Stats
-
-	function playerRoom()
-		return tostring(plr.leaderstats.Room.Value)
-	end
-	function playerBits()
-		return tostring(plr.leaderstats.Bits.Value)
-	end
-	function x2bits()
-		return tostring(plr.Character:FindFirstChild("Values"):FindFirstChild("DoubleBits").Value)
-	end
-	function fame()
-		return tostring(plr:FindFirstChild("Fame").Value)
-	end
-	function deaths()
-		return tostring(plr:FindFirstChild("Deaths").Value)
-	end
-	function rifted()
-		return tostring(plr:FindFirstChild("Rift").Value)
-	end
-	function inGroup()
-		return tostring(plr:FindFirstChild("JoinedGroup").Value)
-	end
-
-	--Game Info
-
-	function curRoom()
-		return tostring(vals.RoomsNumber.Value)
-	end
-	function philChance()
-		return tostring(vals.PhilMeter.Value)
-	end
-	function tamara()
-		return tostring(vals.SpiderChance.Value)
-	end
-	function revPrice()
-		return tostring(vals.RevivePrice.Value)
-	end
-	function AlivePlrs()
-		return tostring(vals.PlayersAlive.Value)
-	end
-	function inGamePlrs()
-		return tostring(vals.PlayersInGame.Value)
-	end
-
-	--collectibles
-
-	function fuz()
-		return getValueSafeString("Collectibles", "Fuzzi")
-	end
-	
-	function zavv()
-		return getValueSafeString("Collectibles", "Zav")
-	end
-	
-	function jaek()
-		return getValueSafeString("Collectibles", "Jake")
-	end
-	
-	function cyan()
-		return getValueSafeString("Collectibles", "Blue")
-	end
-	
-	function alen()
-		return getValueSafeString("Collectibles", "Alan")
-	end
-	
-	function hasKEYY()
-		doHASKEY=getValueSafe("Values", "HasKey")
-	end
-
-	function CreateESP(target, labelText, color)
-		local adornee = target:IsA("Model") and target:FindFirstChildWhichIsA("BasePart") or target
-		if not adornee then return end
-
-		local BillboardGui = Instance.new("BillboardGui")
-		BillboardGui.Name = "ESP_"..(labelText or adornee.Name)
-		BillboardGui.Adornee = adornee
-		BillboardGui.Parent = adornee
-		BillboardGui.Size = UDim2.new(0, 100, 0, 150)
-		BillboardGui.StudsOffset = Vector3.new(0, 1, 0)
-		BillboardGui.AlwaysOnTop = true
-	
-		local TextLabel = Instance.new("TextLabel")
-		TextLabel.Parent = BillboardGui
-		TextLabel.BackgroundTransparency = 1
-		TextLabel.Position = UDim2.new(0, 0, 0, -50)
-		TextLabel.Size = UDim2.new(0, 100, 0, 100)
-		TextLabel.Font = Enum.Font.SourceSansSemibold
-		TextLabel.TextSize = 17
-		TextLabel.TextColor3 = color or Color3.new(1, 0, 0)
-		TextLabel.TextStrokeTransparency = 0.3
-		TextLabel.TextYAlignment = Enum.TextYAlignment.Bottom
-		TextLabel.Text = "["..(labelText or adornee.Name).."]"
-		TextLabel.ZIndex = 10
-
-		local Box = Instance.new("BoxHandleAdornment")
-		Box.Name = adornee.Name:lower().."_PEEPEE"
-		Box.Adornee = adornee
-		Box.Parent = adornee
-		Box.AlwaysOnTop = true
-		Box.ZIndex = 0
-		Box.Transparency = 0.45
-		Box.Color3 = color or Color3.new(1, 0, 0)
-	
-		if adornee:IsA("BasePart") then
-			Box.Size = adornee.Size
-		else
-			Box.Size = Vector3.new(4, 4, 4)
-		end
-	end
-
-	SafeGetService("ProximityPromptService").PromptButtonHoldBegan:Connect(function(prompt)
-		fireproximityprompt(prompt,1)
-	end)
-
-	local targets = {
-		fdmg = true,
-		brokenlamp = true,
-		--abysskill = true,
-		--flowergrowth = true,
-		longcrate = true,
-		crate = true,
-		--chasetrigger = true,
-		--spirit = true,
-		chair = true,
-		sofa = true,
-		fire = true
-	}
-	
-	task.spawn(function()
-		repeat task.wait() until plr.Character
-		task.wait(2)
-
-		for _, descendant in ipairs(game:GetDescendants()) do
-			if targets[descendant.Name:lower()] then
-				task.defer(function()
-					if descendant and descendant.Parent then
-						descendant:Destroy()
-					end
-				end)
-			end
-		end
-	end)
-
-	task.spawn(function()
-		if game.PlaceId==renovation then
-			while task.wait() do
-				antiRagdoll()
-			end
-		end
-	end)
-
-	task.spawn(function()
-		SafeGetService("Workspace").DescendantAdded:Connect(function(YESSS)
-			if (YESSS:IsA("Model") or YESSS:IsA("BasePart") or YESSS:IsA("ValueBase") or YESSS:IsA("LocalScript")) then
-				local name = YESSS.Name:lower()
-				if name == "brokenlamp" or name == "fdmg" or name == "longcrate" or name == "crate" or name == "chair" or name == "sofa" or name == "fire" then
-					task.defer(function()
-						if YESSS and YESSS.Parent then
-							YESSS:Destroy()
-						end
-					end)
-				end
-			end
-		end)
-	end)
-
-	task.spawn(function()
-		LOCALLLLPLAYERR=plr
-		if LOCALLLLPLAYERR.Character then
-			local humanoid = LOCALLLLPLAYERR.Character:FindFirstChildWhichIsA("Humanoid")
-			if humanoid then
-				humanoid.AutoJumpEnabled = false
-			end
-		end
-		
-		LOCALLLLPLAYERR.CharacterAdded:Connect(function(character)
-			local humanoid = character:WaitForChild("Humanoid", 5)
-			if humanoid then
-				humanoid.AutoJumpEnabled = false
-			end
-		end)
-	end)
-
-	local function aC(p)
-		if p:IsA("ProximityPrompt") and p.Name == "ProximityPrompt" then
-			table.insert(items, p.Parent)
-		end
-	end
-
-	local function fireItems()
-		local character = plr.Character
-		local root = character and getRoot(character)
-	
-		if not (root and root.Parent) then return end
-	
-		for i = #items, 1, -1 do
-			local coin = items[i]
-			if not coin then
-				table.remove(items, i)
-				continue
-			end
-	
-			local pp = coin:FindFirstChildOfClass("ProximityPrompt")
-			local bp = coin:IsA("Model") and coin:FindFirstChildWhichIsA("BasePart") or coin
-	
-			if pp and bp then
-				local dist = (root.Position - bp.Position).Magnitude
-				local bitVal = plr.leaderstats.Bits
-				local maxDistance = pp.MaxActivationDistance + 6
-	
-				if dist <= maxDistance then
-					local greedFlag = false
-					for _, child in ipairs(coin:GetChildren()) do
-						if child:IsA("BoolValue") and child.Name:lower():find("greed") and child.Value == true then
-							greedFlag = true
-							break
-						end
-					end
-					if greedFlag then
-						continue
-					end
-	
-					local coinName = coin.Name:lower()
-	
-					if game.PlaceId == epicmode or game.PlaceId == EMArchive then
-						if (bitVal.Value >= 2500 and coinName ~= "bit") or (bitVal.Value < 2500) then
-							fireproximityprompt(pp, 1)
-						end
-					elseif game.PlaceId == classicED then
-						if coinName ~= "handle" then
-							fireproximityprompt(pp, 1)
-						end
-					else
-						fireproximityprompt(pp, 1)
-					end
-				end
-			else
-				table.remove(items, i)
-			end
-		end
-	end
-
-	task.wait(0.3)
-
-	local Rayfield = loadstring(game:HttpGet('https://raw.githubusercontent.com/ltseverydayyou/Rayfield-backup/main/Rayfield'))()
-
-	local Window = Rayfield:CreateWindow({
-		Name = txt,
-		LoadingTitle = txt,
-		LoadingSubtitle = "zavaled loves KitaFuzzi",
-		ConfigurationSaving = {
-			Enabled = true,
-			FolderName = "Endless Doors",
-			FileName = "RENOVATION"
-		}
-	})
-	local entityEsp = false
-	local entityNotif = false
-	local keyESP = false
-	local bitESP = false
-	local batteryESP = false
-	local rotation = true
-	local remoteThingy = false
-
-	task.spawn(function()
-		SafeGetService("Players").PlayerAdded:Connect(function(player)
-			local name = player.Name
-			local displayName = player.DisplayName
-			local formatted = (name:lower() == displayName:lower()) and ("@"..name) or (displayName.." (@"..name..")")
-	
-			Rayfield:Notify({
-				Title = "Player Join Log",
-				Content = formatted.." Joined",
-				Duration = 3,
-				Image = decalID,
-			})
-		end)
-	end)
-
-	task.spawn(function()
-		SafeGetService("Workspace"):FindFirstChild("Game").Entities.ChildAdded:Connect(function(gj)
-			if entityEsp then
-				CreateESP(gj)
-				if entityNotif then
-					task.defer(function()
-						Rayfield:Notify({
-							Title = "Entity",
-							Content = gj.Name.." Has Spawned",
-							Duration = 3,
-							Image = decalID,
-						})
-					end)
-				end
-			end
-		end)
-	end)
-
-	task.spawn(function()
-		vals.MimicActivated:GetPropertyChangedSignal("Value"):Connect(function()
-			if entityNotif then
-				local text = SafeGetService("Workspace"):FindFirstChild("Game").Values.MimicActivated.Value and "Mimic Is Enabled" or "Mimic Is Disabled"
-				task.defer(function()
-					Rayfield:Notify({
-						Title = "Entity",
-						Content = text,
-						Duration = 3,
-						Image = decalID,
-					})
-				end)
-			end
-		end)
-	end)
-
-	task.spawn(function()
-		SafeGetService("ReplicatedStorage").Remotes:FindFirstChild("E_A", true).OnClientEvent:Connect(function(ent)
-			if entityNotif and ent:lower() == "greed" then
-				task.defer(function()
-					Rayfield:Notify({
-						Title = "Entity",
-						Content = "Greed Spawned",
-						Duration = 3,
-						Image = decalID,
-					})
-				end)
-			end
-			if remoteThingy then
-				task.defer(function()
-					Rayfield:Notify({
-						Title = "Remote Call",
-						Content = "Returned: "..ent,
-						Duration = 3,
-						Image = decalID,
-					})
-				end)
-			end
-		end)
-	end)
-
-	task.spawn(function()
-		SafeGetService("Workspace"):FindFirstChild("Game").Rooms.DescendantAdded:Connect(function(obj)
-			if keyESP and obj:IsA("BasePart") and obj.Name:lower() == "roomkey" and obj.Parent.Name:lower() ~= "door" then
-				CreateESP(obj, "Key", Color3.new(1, 1, 0))
-			end
-		end)
-	end)
-
-	task.spawn(function()
-		SafeGetService("Workspace"):FindFirstChild("Game").Rooms.DescendantAdded:Connect(function(obj)
-			if bitESP and obj:IsA("BasePart") and obj.Name:lower() == "bit" then
-				CreateESP(obj, "Bit", Color3.new(1, 0.666667, 0))
-			end
-		end)
-	end)
-
-	task.spawn(function()
-		SafeGetService("Workspace"):FindFirstChild("Game").Rooms.DescendantAdded:Connect(function(obj)
-			if batteryESP and obj:IsA("BasePart") and obj.Name:lower() == "battery" then
-				CreateESP(obj, "Battery", Color3.new(0, 0.666667, 0))
-			end
-		end)
-	end)
-
-	task.spawn(function()
-		SafeGetService("RunService").Heartbeat:Connect(function()
-			if game.PlaceId==renovation then
-				if rotation then
-					charRotate(true)
-				else
-					charRotate(false)
-				end
-			end
-		end)
-	end)
-
-	task.spawn(function()
-		plr.PlayerGui.DescendantAdded:Connect(function(txt)
-			if txt:IsA("TextLabel") and txt.Parent and txt.Parent.Name:lower() == "hintframe" then
-				local text = txt.Text:lower()
-				if text == "cannot pick that up." or text == "you already have this" then
-					task.defer(function()
-						if txt and txt.Parent then
-							txt:Destroy()
-						end
-					end)
-				end
-			end
-		end)
-	end)
-
-	getgenv().speed = nil
-	getgenv().jump = nil
-	getgenv().fov = nil
-	local manageOver = nil
-	local flooOver = nil
-	local takerOver = nil
-	local abyssOver = nil
-	local chaseTrgOver = nil
-	local brightLoop = nil
-	local ANTIAFK = nil
-
-
-	local Tab = Window:CreateTab("Main", decalID)
-
-	local Tab1 = Window:CreateTab("Toggles", 12544524983)
-
-	local Tab69 = Window:CreateTab("Bypass", 134304489249706)
-
-	--local Tab2 = Window:CreateTab("Auto", 69395121)
-
-	local Tab3 = Window:CreateTab("Player", 470645116)
-
-	local Tab5 = Window:CreateTab("Misc", 16354254055)
-
-	local Tab50 = Window:CreateTab("Info/Stats", 2246486837)
-
-	Tab:CreateButton({
-		Name = "Infinite Flashlight",
-		Callback = function()
-			SafeGetService("ReplicatedStorage").Remotes.FLASHLIGHT_TOGGLE:FireServer(false, 99999999999999)
-		end,
-	})
-
-	Tab:CreateButton({
-		Name = "God Mode [WIP]",
-		Callback = function()
-			loadstring(game:HttpGet("https://raw.githubusercontent.com/ltseverydayyou/endless-doors/main/ED%20god"))()
-		end,
-	})
-
-	Tab:CreateToggle({
-		Name = "Everything Aura | [WIP]",
-		CurrentValue = false,
-		Flag = "AuraAll",
-		Callback = function(Value)
-			getgenv().chaos = Value
-		end,
-	})
-
-	Tab:CreateToggle({
-		Name = "Disable Look Script",
-		CurrentValue = false,
-		Flag = "lookerLook",
-		Callback = function(Value)
-			if game.PlaceId~=classicED then
-				plr.PlayerScripts:FindFirstChild("Looking").Enabled = not Value
-			else
-			end
-		end,
-	})
-
-	Tab:CreateToggle({
-		Name = "Disable Camera Shaking",
-		CurrentValue = false,
-		Flag = "camShaking",
-		Callback = function(Value)
-			if game.PlaceId == renovation then
-				plr.PlayerScripts:FindFirstChild("LocalShaking").Enabled = not Value
-				plr.PlayerScripts:FindFirstChild("CameraShake").Enabled = not Value
-			end
-		end,
-	})
-
-	Tab:CreateToggle({
-		Name = "Full Bright",
-		CurrentValue = false,
-		Flag = "brightLol",
-		Callback = function(Value)
-			local Lighting = SafeGetService("Lighting")
-	
-			if Value then
-				if brightLoop then
-					brightLoop:Disconnect()
-				end
-	
-				for _, v in ipairs(Lighting:GetDescendants()) do
-					if v:IsA("Atmosphere") then
-						v:Destroy()
-					end
-				end
-	
-				brightLoop = SafeGetService("RunService").Heartbeat:Connect(function()
-					Lighting.ClockTime = 14
-					Lighting.FogEnd = 1e10
-					Lighting.FogStart = 0
-					Lighting.GlobalShadows = false
-					Lighting.OutdoorAmbient = Color3.fromRGB(128, 128, 128)
-					Lighting.Brightness = 3
-				end)
-			else
-				if brightLoop then
-					brightLoop:Disconnect()
-					brightLoop = nil
-				end
-	
-				Lighting.ClockTime = 0
-				Lighting.FogEnd = 100000
-				Lighting.FogStart = 0
-				Lighting.GlobalShadows = false
-				Lighting.OutdoorAmbient = Color3.fromRGB(128, 128, 128)
-				Lighting.Brightness = 1
-			end
-		end,
-	})
-
-	Tab:CreateToggle({
-		Name = "Anti AFK",
-		CurrentValue = false,
-		Flag = "antiAFK",
-		Callback = function(Value)
-			if Value then
-				ANTIAFK = plr.Idled:connect(function()
-					SafeGetService("VirtualUser"):Button2Down(Vector2.new(0,0),SafeGetService("Workspace").CurrentCamera.CFrame)
-					task.wait(1)
-					SafeGetService("VirtualUser"):Button2Up(Vector2.new(0,0),SafeGetService("Workspace").CurrentCamera.CFrame)
-				end)
-			else
-				if ANTIAFK then
-					ANTIAFK:Disconnect()
-				end
-			end
-		end,
-	})
-
-	Tab:CreateButton({
-		Name = "Play Again",
-		Callback = function()
-			SafeGetService("ReplicatedStorage").Remotes.PLAY_AGAIN:FireServer()
-		end,
-	})
-
-	Tab:CreateButton({
-		Name = "Buy Respawn",
-		Callback = function()
-			SafeGetService("ReplicatedStorage").Remotes.BUY_RESPAWN:FireServer()
-		end,
-	})
-
-
-	Tab1:CreateToggle({
-		Name = "Entity Esp",
-		CurrentValue = false,
-		Flag = "entityESP",
-		Callback = function(Value)
-			entityEsp = Value
-			local Entities = SafeGetService("Workspace"):FindFirstChild("Game").Entities
-	
-			if not Value then
-				for _, descendant in ipairs(Entities:GetDescendants()) do
-					if descendant:IsA("BoxHandleAdornment") and descendant.Name:sub(-7) == "_PEEPEE" then
-						local adornee = descendant.Adornee
-						if adornee then
-							for _, child in ipairs(adornee:GetChildren()) do
-								if child:IsA("BillboardGui") or child:IsA("BoxHandleAdornment") then
-									child:Destroy()
-								end
-							end
-						end
-					end
-				end
-			else
-				for _, entity in ipairs(Entities:GetChildren()) do
-					if entity:IsA("Model") or entity:IsA("BasePart") then
-						CreateESP(entity)
-					end
-				end
-			end
-		end,
-	})
-	
-	Tab1:CreateToggle({
-		Name = "Key Esp",
-		CurrentValue = false,
-		Flag = "KeyESP",
-		Callback = function(Value)
-			keyESP = Value
-			local Rooms = SafeGetService("Workspace"):FindFirstChild("Game").Rooms
-	
-			if not Value then
-				for _, descendant in ipairs(Rooms:GetDescendants()) do
-					if descendant:IsA("BoxHandleAdornment") and descendant.Name:sub(-7) == "_PEEPEE" then
-						local adornee = descendant.Adornee
-						if adornee and adornee.Name:lower() == "roomkey" then
-							for _, child in ipairs(adornee:GetChildren()) do
-								if child:IsA("BillboardGui") or child:IsA("BoxHandleAdornment") then
-									child:Destroy()
-								end
-							end
-						end
-					end
-				end
-			else
-				for _, key in ipairs(Rooms:GetDescendants()) do
-					if key:IsA("BasePart") and key.Name:lower() == "roomkey" and key.Parent and key.Parent.Name:lower() ~= "door" then
-						CreateESP(key, "Key", Color3.new(1, 1, 0))
-					end
-				end
-			end
-		end,
-	})
-	
-	Tab1:CreateToggle({
-		Name = "Bits Esp",
-		CurrentValue = false,
-		Flag = "BitsESP",
-		Callback = function(Value)
-			bitESP = Value
-			local Rooms = SafeGetService("Workspace"):FindFirstChild("Game").Rooms
-	
-			if not Value then
-				for _, descendant in ipairs(Rooms:GetDescendants()) do
-					if descendant:IsA("BoxHandleAdornment") and descendant.Name:sub(-7) == "_PEEPEE" then
-						local adornee = descendant.Adornee
-						if adornee and adornee.Name:lower() == "bit" then
-							for _, child in ipairs(adornee:GetChildren()) do
-								if child:IsA("BillboardGui") or child:IsA("BoxHandleAdornment") then
-									child:Destroy()
-								end
-							end
-						end
-					end
-				end
-			else
-				for _, bit in ipairs(Rooms:GetDescendants()) do
-					if bit:IsA("BasePart") and bit.Name:lower() == "bit" then
-						CreateESP(bit, "Bit", Color3.new(1, 0.666667, 0))
-					end
-				end
-			end
-		end,
-	})
-	
-	Tab1:CreateToggle({
-		Name = "Battery Esp",
-		CurrentValue = false,
-		Flag = "BatteryESP",
-		Callback = function(Value)
-			batteryESP = Value
-			local Rooms = SafeGetService("Workspace"):FindFirstChild("Game").Rooms
-	
-			if not Value then
-				for _, descendant in ipairs(Rooms:GetDescendants()) do
-					if descendant:IsA("BoxHandleAdornment") and descendant.Name:sub(-7) == "_PEEPEE" then
-						local adornee = descendant.Adornee
-						if adornee and adornee.Name:lower() == "battery" then
-							for _, child in ipairs(adornee:GetChildren()) do
-								if child:IsA("BillboardGui") or child:IsA("BoxHandleAdornment") then
-									child:Destroy()
-								end
-							end
-						end
-					end
-				end
-			else
-				for _, battery in ipairs(Rooms:GetDescendants()) do
-					if battery:IsA("BasePart") and battery.Name:lower() == "battery" then
-						CreateESP(battery, "Battery", Color3.new(0, 0.666667, 0))
-					end
-				end
-			end
-		end,
-	})
-
-	Tab1:CreateToggle({
-		Name = "Entity Remote Logger",
-		CurrentValue = false,
-		Flag = "entRem",
-		Callback = function(Value)
-			remoteThingy = Value
-		end,
-	})
-
-	Tab1:CreateToggle({
-		Name = "Entity Notifier",
-		CurrentValue = false,
-		Flag = "entityNotifs",
-		Callback = function(Value)
-			entityNotif = Value
-		end,
-	})
-
-	Tab69:CreateToggle({
-		Name = "Bypass Overseer",
-		CurrentValue = false,
-		Flag = "overSeer",
-		Callback = function(Value)
-			if Value then
-				if manageOver then
-					manageOver:Disconnect()
-				end
-				manageOver = SafeGetService("Workspace").DescendantAdded:Connect(function(seer)
-					if seer.Name:lower() == "overseer" then
-						task.defer(function()
-							if seer and seer.Parent then
-								seer:Destroy()
-							end
-						end)
-					end
-				end)
-	
-				for _, seerover in ipairs(SafeGetService("Workspace"):GetDescendants()) do
-					if seerover.Name:lower() == "overseer" then
-						task.defer(function()
-							if seerover and seerover.Parent then
-								seerover:Destroy()
-							end
-						end)
-					end
-				end
-			else
-				if manageOver then
-					manageOver:Disconnect()
-					manageOver = nil
-				end
-			end
-		end,
-	})
-
-	Tab69:CreateToggle({
-		Name = "Bypass FlowerGrowth",
-		CurrentValue = false,
-		Flag = "flowerGrowth",
-		Callback = function(Value)
-			if Value then
-				if flooOver then
-					flooOver:Disconnect()
-				end
-				flooOver = SafeGetService("Workspace").DescendantAdded:Connect(function(flowa)
-					if flowa.Name:lower() == "flowergrowth" then
-						task.defer(function()
-							if flowa and flowa.Parent then
-								flowa:Destroy()
-							end
-						end)
-					end
-				end)
-	
-				for _, floover in ipairs(SafeGetService("Workspace"):GetDescendants()) do
-					if floover.Name:lower() == "flowergrowth" then
-						task.defer(function()
-							if floover and floover.Parent then
-								floover:Destroy()
-							end
-						end)
-					end
-				end
-			else
-				if flooOver then
-					flooOver:Disconnect()
-					flooOver = nil
-				end
-			end
-		end,
-	})
-
-	Tab69:CreateToggle({
-		Name = "Bypass Abyss",
-		CurrentValue = false,
-		Flag = "abyssKILL",
-		Callback = function(Value)
-			if Value then
-				if abyssOver then
-					abyssOver:Disconnect()
-				end
-				abyssOver = SafeGetService("Workspace").DescendantAdded:Connect(function(void)
-					if void.Name:lower() == "abysskill" then
-						task.defer(function()
-							if void and void.Parent then
-								void:Destroy()
-							end
-						end)
-					end
-				end)
-	
-				for _, abyssal in ipairs(SafeGetService("Workspace"):GetDescendants()) do
-					if abyssal.Name:lower() == "abysskill" then
-						task.defer(function()
-							if abyssal and abyssal.Parent then
-								abyssal:Destroy()
-							end
-						end)
-					end
-				end
-			else
-				if abyssOver then
-					abyssOver:Disconnect()
-					abyssOver = nil
-				end
-			end
-		end,
-	})
-
-	Tab69:CreateToggle({
-		Name = "Bypass Taker [HEIST MODIFIER]",
-		CurrentValue = false,
-		Flag = "TAKERRRRR",
-		Callback = function(Value)
-			if Value then
-				if takerOver then
-					takerOver:Disconnect()
-				end
-				takerOver = SafeGetService("Workspace").DescendantAdded:Connect(function(heist)
-					if heist.Name:lower() == "taker" then
-						task.defer(function()
-							if heist and heist.Parent then
-								heist:Destroy()
-							end
-						end)
-					end
-				end)
-	
-				for _, takee in ipairs(SafeGetService("Workspace"):GetDescendants()) do
-					if takee.Name:lower() == "taker" then
-						task.defer(function()
-							if takee and takee.Parent then
-								takee:Destroy()
-							end
-						end)
-					end
-				end
-			else
-				if takerOver then
-					takerOver:Disconnect()
-					takerOver = nil
-				end
-			end
-		end,
-	})
-
-	Tab69:CreateToggle({
-		Name = "Bypass ChaseTrigger [EPIC MODE]",
-		CurrentValue = false,
-		Flag = "chaseTrigger",
-		Callback = function(Value)
-			if Value then
-				if chaseTrgOver then
-					chaseTrgOver:Disconnect()
-				end
-				chaseTrgOver = SafeGetService("Workspace").DescendantAdded:Connect(function(slend)
-					if slend.Name:lower() == "chasetrigger" then
-						task.defer(function()
-							if slend and slend.Parent then
-								slend:Destroy()
-							end
-						end)
-					end
-				end)
-	
-				for _, slender in ipairs(SafeGetService("Workspace"):FindFirstChild("Game").Entities:GetChildren()) do
-					if slender.Name:lower() == "chasetrigger" then
-						task.defer(function()
-							if slender and slender.Parent then
-								slender:Destroy()
-							end
-						end)
-					end
-				end
-			else
-				if chaseTrgOver then
-					chaseTrgOver:Disconnect()
-					chaseTrgOver = nil
-				end
-			end
-		end,
-	})
-
-	Tab3:CreateSlider({
-		Name = "Set WalkSpeed",
-		Range = (game.PlaceId==classicED) and {0, 35} or {0, 100},
-		Increment = 1,
-		CurrentValue = 16,
-		Flag = "WalkSpeedValue",
-		Callback = function(v)
-			getgenv().speed = v
-		end,
-	})
-
-	Tab3:CreateToggle({
-		Name = "Toggle WalkSpeed",
-		CurrentValue = false,
-		Flag = "WSspeed",
-		Callback = function(Value)
-			getgenv().sped = Value
-		end,
-	})
-
-	Tab3:CreateSlider({
-		Name = "Set JumpPower",
-		Range = {0, 100},
-		Increment = 1,
-		CurrentValue = 30,
-		Flag = "JumpPowerValue",
-		Callback = function(val)
-			getgenv().jump = val
-		end,
-	})
-
-	Tab3:CreateToggle({
-		Name = "Toggle JumpPower",
-		CurrentValue = false,
-		Flag = "JPtgl",
-		Callback = function(Value)
-			getgenv().jumpy = Value
-		end,
-	})
-
-	Tab3:CreateSlider({
-		Name = "Set FOV",
-		Range = {0, 120},
-		Increment = 1,
-		CurrentValue = 60,
-		Flag = "FieldOfViewValue",
-		Callback = function(fov)
-			getgenv().fov = fov
-		end,
-	})
-
-	Tab3:CreateToggle({
-		Name = "Toggle FOV",
-		CurrentValue = false,
-		Flag = "FovTgl",
-		Callback = function(Value)
-			getgenv().wide = Value
-		end,
-	})
-
-
-	Tab3:CreateToggle({
-		Name = "Infinite Jump",
-		CurrentValue = false,
-		Flag = "infJP",
-		Callback = function(Value)
-			local Players = SafeGetService("Players")
-			local LocalPlayer = Players.LocalPlayer
-			local UserInputService = SafeGetService("UserInputService")
-			local IsOnMobile = UserInputService.TouchEnabled
-		
-			if INFENDLESSJP then
-				INFENDLESSJP:Disconnect()
-				INFENDLESSJP = nil
-			end
-			if mobileInfinite then
-				mobileInfinite:Disconnect()
-				mobileInfinite = nil
-			end
-		
-			if Value then
-				INFENDLESSJP = UserInputService.JumpRequest:Connect(function()
-					local humanoid = LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
-					if humanoid then
-						humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
-					end
-				end)
-		
-				if IsOnMobile and game.PlaceId == renovation then
-					local humanoid = LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
-					if humanoid then
-						humanoid:SetStateEnabled(Enum.HumanoidStateType.Jumping, true)
-					end
-		
-					local jumpButton = LocalPlayer.PlayerGui:WaitForChild("TouchControls"):WaitForChild("MobileControls"):WaitForChild("JumpButton")
-					mobileInfinite = jumpButton.MouseButton1Click:Connect(function()
-						local mobileHumanoid = LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
-						if mobileHumanoid then
-							mobileHumanoid:ChangeState(Enum.HumanoidStateType.Jumping)
-						end
-					end)
-				end
-			end
-		end,
-	})
-
-	Tab3:CreateToggle({
-		Name = "Character Rotation",
-		CurrentValue = true,
-		Flag = "charRotate",
-		Callback = function(Value)
-			rotation=Value
-		end,
-	})
-
-	Tab5:CreateButton({
-		Name = "Hide Value",
-		Callback = function()
-			plr.Character.Hiding.Value = not plr.Character.Hiding.Value
-		end
-	})
-
-	Tab5:CreateButton({
-		Name = "Teleport to Door",
-		Callback = function()
-			task.spawn(teleportToDoor)
-		end,
-	})
-
-	Tab5:CreateButton({
-		Name = "Teleport to Key",
-		Callback = function()
-			task.spawn(teleportToKey)
-		end,
-	})
-
-	Tab5:CreateButton({
-		Name = "Teleport to Lever",
-		Callback = function()
-			task.spawn(teleportToLever)
-		end,
-	})
-
-	Tab5:CreateToggle({
-		Name = "Loop Teleport To Door",
-		CurrentValue = false,
-		Callback = function(val)
-			getgenv().teletodoor = val
-
-			while getgenv().teletodoor and task.wait(.3) do
-				pcall(function()
-					task.spawn(teleportToDoor)
-				end)
-			end
-		end,
-	})
-
-	Tab5:CreateToggle({
-		Name = "Loop Teleport To Key",
-		CurrentValue = false,
-		Callback = function(val)
-			getgenv().teletokey = val
-
-			while getgenv().teletokey and task.wait(.5) do
-				pcall(function()
-					task.spawn(teleportToKey)
-				end)
-			end
-		end,
-	})
-
-	Tab5:CreateToggle({
-		Name = "Loop Teleport To Lever",
-		CurrentValue = false,
-		Callback = function(val)
-			getgenv().teletolever = val
-
-			while getgenv().teletolever and task.wait(.5) do
-				pcall(function()
-					task.spawn(teleportToLever)
-				end)
-			end
-		end,
-	})
-
-	Tab5:CreateSection("")
-	Tab5:CreateSection("idk why i even added this")
-
-
-
-	getgenv().Notifv1 = "Door"
-
-	Tab5:CreateInput({
-		Name = "Notification Text",
-		PlaceholderText = "Text",
-		RemoveTextAfterFocusLost = false,
-		Callback = function(Text)
-			getgenv().Notifv1 = Text
-		end,
-	})
-
-	Tab5:CreateButton({
-		Name = "Send Notification",
-		Callback = function()
-			Rayfield:Notify({
-				Title = "Notification",
-				Content = getgenv().Notifv1,
-				Duration = 3,
-				Image = decalID,
-			})
-		end,
-	})
-
-	Tab50:CreateSection("Player Stats")
-
-	rmtxt = Tab50:CreateLabel("Rooms: "..playerRoom())
-	bittxt = Tab50:CreateLabel("Bits: "..playerBits())
-	doubleBits = Tab50:CreateLabel("Double Bits: "..x2bits())
-	if game.PlaceId == renovation then
-		fames = Tab50:CreateLabel("Fame: "..fame())
-		dies = Tab50:CreateLabel("Deaths: "..deaths())
-		inRift = Tab50:CreateLabel("Rift: "..rifted())
-		joinedGroup = Tab50:CreateLabel("Joined Group: "..inGroup())
-	end
-
-	Tab50:CreateSection("")
-
-	Tab50:CreateSection("Game Info")
-
-	curtxt = Tab50:CreateLabel("Current Room: "..curRoom())
-	philMeter = Tab50:CreateLabel("Phil Chance: "..philChance())
-	spiderChance = Tab50:CreateLabel("Spider Chance: "..tamara())
-	if game.PlaceId ~= classicED then
-		RevCount = Tab50:CreateLabel("Revive Price: "..revPrice())
-	end
-	plrAlives = Tab50:CreateLabel("Players Alive: "..AlivePlrs())
-	plrInGame = Tab50:CreateLabel("Players In Game: "..inGamePlrs())
-	if game.PlaceId == renovation then
-		Tab50:CreateSection("")
-		Tab50:CreateSection("Collectibles")
-
-		Fuzzi = Tab50:CreateLabel("Fuzzi: "..fuz())
-		Zav = Tab50:CreateLabel("Zav: "..zavv())
-		Jake = Tab50:CreateLabel("Jake: "..jaek())
-		Blue = Tab50:CreateLabel("Blue: "..cyan())
-		Alan = Tab50:CreateLabel("Alan: "..alen())
-	end
-
-	task.spawn(function()
-		while task.wait() do
-			pcall(function()
-				rmtxt:Set("Rooms: "..playerRoom())
-				bittxt:Set("Bits: "..playerBits())
-				doubleBits:Set("Double Bits: "..x2bits())
-
-				curtxt:Set("Current Room: "..curRoom())
-				philMeter:Set("Phil Chance: "..philChance())
-				spiderChance:Set("Spider Chance: "..tamara())
-				if game.PlaceId ~= classicED then
-					RevCount:Set("Revive Price: "..revPrice())
-				end
-				plrAlives:Set("Players Alive: "..AlivePlrs())
-				plrInGame:Set("Players In Game: "..inGamePlrs())
-
-				if game.PlaceId == renovation  then
-					fames:Set("Fame: "..fame())
-					dies:Set("Deaths: "..deaths())
-					inRift:Set("Rift: "..rifted())
-					joinedGroup:Set("Joined Group: "..inGroup())
-
-					Fuzzi:Set("Fuzzi: "..fuz())
-					Zav:Set("Zav: "..zavv())
-					Jake:Set("Jake: "..jaek())
-					Blue:Set("Blue: "..cyan())
-					Alan:Set("Alan: "..alen())
-				end
-				task.spawn(hasKEYY)
-			end)
-		end
-	end)
-
-	if game.PlaceId==classicED then
-		Rayfield:Notify({
-			Title = "Info",
-			Content = "Door Aura has been disabled on this mode due to tamara",
-			Duration = 7,
-			Image = decalID,
-		})
-	end
-
-	Rayfield:LoadConfiguration()
-	
-	task.spawn(function()
-		--[[while task.wait() do
-			if getgenv().chaos then
-				pcall(function()
-					for _, room in ipairs(SafeGetService("Workspace"):FindFirstChild("Game").Rooms:GetChildren()) do
-						for _, v in ipairs(room:GetDescendants()) do
-							if v:IsA("ProximityPrompt") and v.Name == "ProximityPrompt" then
-								local bitVal = plr.leaderstats.Bits
-								local h = (game.PlaceId ~= renovation) and 6 or 0
-								local maxDistance = v.MaxActivationDistance + h
-								if (v.Parent.Position - getRoot(plr.Character).Position).Magnitude <= maxDistance then
-									if (game.PlaceId == epicmode or game.PlaceId == EMArchive) then
-										if (bitVal.Value >= 2500 and v.Parent.Name:lower() ~= "bit") then
-											fireproximityprompt(v,1)
-										elseif bitVal.Value < 2500 then
-											fireproximityprompt(v,1)
-										end
-									elseif game.PlaceId==classicED then
-										if v.Parent.Name:lower() == "handle" then
-										else
-											fireproximityprompt(v,1)
-										end
-									else
-										fireproximityprompt(v,1)
-									end
-								end
-							end
-						end
-					end
-				end)
-			end
-		end]]
-		SafeGetService("RunService").Heartbeat:Connect(function()
-			if getgenv().chaos then
-				if getRoot(plr.Character) and getRoot(plr.Character).Parent then
-					task.spawn(fireItems)
-				end
-			end
-		end)
-	end)
-
-
-
-	-- player stuff
-	task.spawn(function()
-		while task.wait() do
-			local humanoid = plr.Character and plr.Character:FindFirstChildWhichIsA("Humanoid")
-			if humanoid then
-				if getgenv().sped then
-					pcall(function()
-						humanoid.WalkSpeed = getgenv().speed
-					end)
-				end
-				if getgenv().jumpy then
-					pcall(function()
-						humanoid.JumpPower = getgenv().jump
-					end)
-				end
-			end
-		end
-	end)
-	task.spawn(function()
-		SafeGetService("RunService").Heartbeat:Connect(function()
-			if getgenv().wide then
-				pcall(function()
-					num = tonumber(getgenv().fov) or 70
-					SafeGetService("TweenService"):Create(SafeGetService("Workspace").CurrentCamera, TweenInfo.new(0, Enum.EasingStyle.Linear), {FieldOfView=tonumber(num)}):Play()
-				end)
-			end
-		end)
-		
-		if getgenv().wide then
-			pcall(function()
-				num = tonumber(getgenv().fov) or 70
-				SafeGetService("TweenService"):Create(SafeGetService("Workspace").CurrentCamera, TweenInfo.new(0, Enum.EasingStyle.Linear), {FieldOfView=tonumber(num)}):Play()
-			end)
-		end
-	end)
-
-	for _, room in ipairs(SafeGetService("Workspace"):FindFirstChild("Game").Rooms:GetDescendants()) do
-		aC(room)
-	end
-
-	SafeGetService("Workspace"):FindFirstChild("Game").Rooms.DescendantAdded:Connect(aC)
+local S = function(n)
+    local s = game:GetService(n)
+    return if cloneref then cloneref(s) else s
 end
+
+local games = {3927488489,5927366432,6023940812}
+local places = {10891480658,16810788519,17324650150,17639491565,17594182379}
+if not (table.find(games,game.GameId) and table.find(places,game.PlaceId)) then return end
+
+local GameFolder  = workspace:WaitForChild("Game")
+local Values      = GameFolder:WaitForChild("Values")
+local Rooms       = GameFolder:WaitForChild("Rooms")
+local Entities    = GameFolder:WaitForChild("Entities")
+local Players     = S("Players")
+local LocalPlayer = Players.LocalPlayer
+local isMobile    = S("UserInputService").TouchEnabled
+
+local pOld,pEpic,pRen,pEMArc,pClass = 10891480658,16810788519,17324650150,17639491565,17594182379
+local hasKey,greedActive = false,false
+local decalID = 95434351872718
+
+local function gUI()
+    return (gethui and gethui())
+        or S("CoreGui"):FindFirstChild("RobloxGui")
+        or S("CoreGui")
+        or LocalPlayer:WaitForChild("PlayerGui")
+end
+
+if not game:IsLoaded() then
+    local m = Instance.new("Message", gUI())
+    m.Text = "waiting for the game to load"
+    game.Loaded:Wait()
+    m:Destroy()
+end
+
+local function getRoot(c)
+    if c:IsA("Player") then c = c.Character end
+    return c:FindFirstChild("HumanoidRootPart")
+        or c:FindFirstChild("Torso")
+        or c:FindFirstChild("UpperTorso")
+        or c:FindFirstChild("LowerTorso")
+        or c:FindFirstChildWhichIsA("BasePart")
+end
+
+local function getValStr(ctn,nm)
+    local c = LocalPlayer.Character
+    local o = c and c:FindFirstChild(ctn) and c[ctn]:FindFirstChild(nm)
+    return o and tostring(o.Value)
+end
+
+local function getVal(ctn,nm)
+    local c = LocalPlayer.Character
+    local o = c and c:FindFirstChild(ctn) and c[ctn]:FindFirstChild(nm)
+    return o and o.Value
+end
+
+local function tpDoor()
+    local r = Rooms:FindFirstChild("Room"..Values.RoomsNumber.Value)
+    if r and r:FindFirstChild("Door") then
+        LocalPlayer.Character:PivotTo(r.Door:GetPivot())
+    end
+end
+
+local function tpKey()
+    local char = LocalPlayer.Character
+    local hk = char and char:FindFirstChild("Values") and char.Values:FindFirstChild("HasKey")
+    if hk and hk.Value then return end
+    local r = Rooms:FindFirstChild("Room"..Values.RoomsNumber.Value)
+    if not r then return end
+    for _,d in ipairs(r:GetDescendants()) do
+        if d:IsA("BasePart") and d.Name:lower()=="roomkey" and d.Parent.Name:lower()~="door" then
+            LocalPlayer.Character:PivotTo(d:GetPivot())
+            break
+        end
+    end
+end
+
+local function tpLever()
+    local r = Rooms:FindFirstChild("Room"..Values.RoomsNumber.Value)
+    if not r then return end
+    for _,d in ipairs(r:GetDescendants()) do
+        if (d:IsA("BasePart") or d:IsA("Model")) and d.Name:lower()=="gatelever" then
+            LocalPlayer.Character:PivotTo(d:GetPivot())
+            break
+        end
+    end
+end
+
+local function disableRagdoll()
+	local trigger= LocalPlayer.Character:FindFirstChild("RagdollTrigger")
+    if trigger then trigger.Value = false end
+end
+
+local function setRotation(v)
+	local canRot=LocalPlayer.Character:FindFirstChild("CanRotate")
+    if canRot then canRot.Value = v end
+end
+
+local placeNames = {
+    [pOld]    = "Endless Doors [OLD]",
+    [pEpic]   = "Endless Doors [OLD Epic Mode]",
+    [pRen]    = "Endless Doors",
+    [pEMArc]  = "Endless Doors [Epic Mode]",
+    [pClass]  = "Endless Doors [Retro #classic]"
+}
+local version = "v2.0"
+local baseName = placeNames[game.PlaceId] or "unknown"
+local title    = baseName..(isMobile and" | Mobile "or" ")..version
+
+task.wait()
+
+function playerRoom()   return tostring(LocalPlayer.leaderstats.Room.Value) end
+function playerBits()   return tostring(LocalPlayer.leaderstats.Bits.Value) end
+function doubleBits()   return tostring(LocalPlayer.Character.Values.DoubleBits.Value) end
+function fame()         return tostring(LocalPlayer.Fame.Value) end
+function deaths()       return tostring(LocalPlayer.Deaths.Value) end
+function riftCount()    return tostring(LocalPlayer.Rift.Value) end
+function inGroup()      return tostring(LocalPlayer.JoinedGroup.Value) end
+
+function curRoom()      return tostring(Values.RoomsNumber.Value) end
+function philMeter()    return tostring(Values.PhilMeter.Value) end
+function spiderChance() return tostring(Values.SpiderChance.Value) end
+function revivePrice()  return tostring(Values.RevivePrice.Value) end
+function aliveCount()   return tostring(Values.PlayersAlive.Value) end
+function inGameCount()  return tostring(Values.PlayersInGame.Value) end
+
+function fuz() return getValStr("Collectibles","Fuzzi") end
+function zav() return getValStr("Collectibles","Zav") end
+function jae() return getValStr("Collectibles","Jake") end
+function blu() return getValStr("Collectibles","Blue") end
+function al()  return getValStr("Collectibles","Alan") end
+
+function CreateESP(part, color, txt)
+	pcall(function()
+		local box = Instance.new("BoxHandleAdornment")
+		box.Name = part.Name:lower().."_ENDLESSESP"
+		box.Parent = part
+		box.Adornee = part
+		box.AlwaysOnTop = true
+		box.ZIndex = 0
+		if part:IsA("BasePart") then
+		box.Size = part.Size + Vector3.new(0.1, 0.1, 0.1)
+		elseif part:FindFirstChildWhichIsA("BasePart") then
+			box.Size = part:FindFirstChildWhichIsA("BasePart").Size + Vector3.new(0.1, 0.1, 0.1)
+		else
+			box.Size = Vector3.new(4, 4, 4)
+		end
+		box.Transparency = 0.45
+		box.Color3 = color or Color3.new(1, 0, 0)
+
+		local billboard = Instance.new("BillboardGui")
+		billboard.Name = part.Name:lower().."_LABEL"
+		billboard.Parent = part
+		billboard.Adornee = part
+		billboard.Size = UDim2.new(0, 100, 0, 30)
+		billboard.StudsOffset = Vector3.new(0, 2, 0)
+		billboard.AlwaysOnTop = true
+
+		local textLabel = Instance.new("TextLabel")
+		textLabel.Parent = billboard
+		textLabel.Size = UDim2.new(1, 0, 1, 0)
+		textLabel.BackgroundTransparency = 1
+		textLabel.TextColor3 = color or Color3.new(1, 0, 0)
+		textLabel.Text = txt or part.Name
+		textLabel.Font = Enum.Font.SourceSansBold
+		textLabel.TextSize = 14
+		textLabel.TextStrokeTransparency = 0.5
+
+		return box
+	end)
+end
+
+local function removeESP(part)
+	pcall(function()
+		for _,child in ipairs(part:GetChildren()) do
+			if child:IsA("BoxHandleAdornment") or child:IsA("BillboardGui") or child:IsA("Highlight") then child:Destroy() end
+		end
+	end)
+end
+
+S("ProximityPromptService").PromptButtonHoldBegan:Connect(function(p)
+    task.defer(function() fireproximityprompt(p,1) end)
+end)
+
+local junk={fdmg=true,brokenlamp=true,longcrate=true,crate=true,chair=true,sofa=true,fire=true}
+task.defer(function()
+    repeat task.wait() until LocalPlayer.Character
+    task.wait(2)
+    for _,d in ipairs(game:GetDescendants()) do
+        if junk[d.Name:lower()] then
+            task.defer(function() if d and d.Parent then d:Destroy() end end)
+        end
+    end
+end)
+
+task.defer(function()
+    if game.PlaceId==pRen then
+        while task.wait() do disableRagdoll() end
+    end
+end)
+
+workspace.DescendantAdded:Connect(function(o)
+    if junk[o.Name:lower()] then
+        task.defer(function() if o and o.Parent then o:Destroy() end end)
+    end
+end)
+
+task.defer(function()
+    local function bJ(h) if h then h.AutoJumpEnabled=false end end
+    bJ(LocalPlayer.Character:FindFirstChildWhichIsA("Humanoid"))
+    LocalPlayer.CharacterAdded:Connect(function(ch)
+        bJ(ch:WaitForChild("Humanoid",5))
+    end)
+end)
+
+local prompts = {}
+for _,o in ipairs(Rooms:GetDescendants()) do
+    if o:IsA("ProximityPrompt") then prompts[#prompts+1] = o.Parent end
+end
+Rooms.DescendantAdded:Connect(function(o)
+    if o:IsA("ProximityPrompt") then prompts[#prompts+1] = o.Parent end
+end)
+
+do
+    local lastHandle = 0
+    function fireItems()
+        local root = getRoot(LocalPlayer.Character)
+        if not (root and root.Parent) then return end
+        local bitsStat = LocalPlayer.leaderstats.Bits
+        for i = #prompts, 1, -1 do
+            local coin = prompts[i]
+            if not coin then
+                table.remove(prompts, i)
+            else
+                local pp = coin:FindFirstChildOfClass("ProximityPrompt")
+                local bp = coin:IsA("Model") and coin:FindFirstChildWhichIsA("BasePart") or coin
+                if pp and bp then
+                    local d = (root.Position - bp.Position).Magnitude
+                    if d <= pp.MaxActivationDistance + 6 then
+                        local nm = coin.Name:lower()
+                        local skip = false
+                        for _, c in ipairs(coin:GetChildren()) do
+                            if c:IsA("BoolValue") and c.Name:lower():find("greed") and c.Value then
+                                skip = true
+                                break
+                            end
+                        end
+                        if not skip and not (nm == "handle" and greedActive) then
+                            if game.PlaceId == pEpic or game.PlaceId == pEMArc then
+                                if (bitsStat.Value >= 2500 and nm ~= "bit") or bitsStat.Value < 2500 then
+                                    fireproximityprompt(pp, 1)
+                                end
+                            elseif game.PlaceId == pClass then
+                                if nm == "handle" then
+                                    local now = tick()
+                                    if now - lastHandle >= 0.4 then
+                                        fireproximityprompt(pp, 1)
+                                        lastHandle = now
+                                    end
+                                else
+                                    fireproximityprompt(pp, 1)
+                                end
+                            else
+                                fireproximityprompt(pp, 1)
+                            end
+                        end
+                    end
+                else
+                    table.remove(prompts, i)
+                end
+            end
+        end
+    end
+end
+
+task.wait(0.3)
+local Rayfield = loadstring(game:HttpGet('https://raw.githubusercontent.com/ltseverydayyou/Rayfield-backup/main/Rayfield'))()
+local Win = Rayfield:CreateWindow({
+    Name = title,
+    LoadingTitle = title,
+    LoadingSubtitle = "zavaled loves KitaFuzzi",
+    ConfigurationSaving = {Enabled=true,FolderName="Endless Doors",FileName="RENOVATION"}
+})
+
+local tabM = Win:CreateTab("Main",decalID)
+tabM:CreateButton({Name="Infinite Flashlight",Callback=function() task.defer(function() S("ReplicatedStorage").Remotes.FLASHLIGHT_TOGGLE:FireServer(false,1e14) end) end})
+tabM:CreateButton({Name="God Mode [WIP]",Callback=function() task.defer(function() loadstring(game:HttpGet("https://raw.githubusercontent.com/ltseverydayyou/endless-doors/main/ED%20god"))() end) end})
+tabM:CreateToggle({Name="Everything Aura | [WIP]",CurrentValue=false,Flag="AuraAll",Callback=function(v) task.defer(function() getgenv().chaos=v end) end})
+tabM:CreateToggle({Name="Disable Look Script",CurrentValue=false,Flag="lookerLook",Callback=function(v) task.defer(function() if game.PlaceId~=pClass then LocalPlayer.PlayerScripts:FindFirstChild("Looking").Enabled=not v end end) end})
+tabM:CreateToggle({Name="Disable Camera Shaking",CurrentValue=false,Flag="camShaking",Callback=function(v) task.defer(function() if game.PlaceId==pRen then LocalPlayer.PlayerScripts:FindFirstChild("LocalShaking").Enabled=not v LocalPlayer.PlayerScripts:FindFirstChild("CameraShake").Enabled=not v end end) end})
+tabM:CreateToggle({Name="Full Bright",CurrentValue=false,Flag="brightLol",Callback=function(v) task.defer(function()
+    local L=S("Lighting")
+    if v then
+        if brightLoop then brightLoop:Disconnect() end
+        for _,a in ipairs(L:GetDescendants()) do if a:IsA("Atmosphere") then a:Destroy() end end
+        brightLoop=S("RunService").Heartbeat:Connect(function()
+            L.ClockTime=0;L.FogEnd=1e10;L.FogStart=0;L.GlobalShadows=false;L.OutdoorAmbient=Color3.fromRGB(128,128,128);L.Brightness=3
+        end)
+    else
+        if brightLoop then brightLoop:Disconnect();brightLoop=nil end
+        L.ClockTime=0;L.FogEnd=100000;L.FogStart=0;L.GlobalShadows=false;L.OutdoorAmbient=Color3.fromRGB(128,128,128);L.Brightness=1
+    end
+end) end})
+tabM:CreateToggle({Name="Anti AFK",CurrentValue=false,Flag="antiAFK",Callback=function(v) task.defer(function()
+    if v then
+		if ANTIAFK then ANTIAFK:Disconnect() end
+        ANTIAFK = LocalPlayer.Idled:Connect(function()
+            S("VirtualUser"):Button2Down(Vector2.new(),workspace.CurrentCamera.CFrame)
+            task.wait(1)
+            S("VirtualUser"):Button2Up(Vector2.new(),workspace.CurrentCamera.CFrame)
+        end)
+    else
+        if ANTIAFK then ANTIAFK:Disconnect() end
+    end
+end) end})
+tabM:CreateButton({Name="Play Again",Callback=function() task.defer(function() S("ReplicatedStorage").Remotes.PLAY_AGAIN:FireServer() end) end})
+tabM:CreateButton({Name="Buy Respawn",Callback=function() task.defer(function() S("ReplicatedStorage").Remotes.BUY_RESPAWN:FireServer() end) end})
+tabM:CreateButton({Name="Die",Callback=function() task.defer(function() S("ReplicatedStorage").Remotes.F_DMG:FireServer(1000) end) end})
+
+local tabT=Win:CreateTab("Toggles",12544524983)
+tabT:CreateToggle({Name="Entity Esp",CurrentValue=false,Flag="entityESP",Callback=function(v) task.defer(function()
+    getgenv().entityEsp = v
+    if not v then
+        for _,e in ipairs(Entities:GetDescendants()) do
+            removeESP(e)
+        end
+    else
+        for _,e in ipairs(Entities:GetChildren()) do CreateESP(e) end
+    end
+end) end})
+tabT:CreateToggle({Name="Key Esp",CurrentValue=false,Flag="KeyESP",Callback=function(v) task.defer(function()
+    getgenv().keyESP = v
+    if not v then
+        for _,p in ipairs(Rooms:GetDescendants()) do
+            if p:IsA("BasePart") and p.Name:lower()=="roomkey" and p.Parent.Name:lower()~="door" then
+                removeESP(p)
+            end
+        end
+    else
+        for _,p in ipairs(Rooms:GetDescendants()) do
+            if p:IsA("BasePart") and p.Name:lower()=="roomkey" and p.Parent.Name:lower()~="door" then
+                CreateESP(p,Color3.new(1,1,0),"Key")
+            end
+        end
+    end
+end) end})
+tabT:CreateToggle({Name="Bits Esp",CurrentValue=false,Flag="BitsESP",Callback=function(v) task.defer(function()
+    getgenv().bitESP = v
+    if not v then
+        for _,p in ipairs(Rooms:GetDescendants()) do
+            if p:IsA("BasePart") and p.Name:lower()=="bit" then removeESP(p) end
+        end
+    else
+        for _,p in ipairs(Rooms:GetDescendants()) do
+            if p:IsA("BasePart") and p.Name:lower()=="bit" then CreateESP(p,Color3.new(1,0.666667,0)) end
+        end
+    end
+end) end})
+tabT:CreateToggle({Name="Lever Esp",CurrentValue=false,Flag="LeverESP",Callback=function(v) task.defer(function()
+    getgenv().leverESP = v
+    if not v then
+        for _,p in ipairs(Rooms:GetDescendants()) do
+            if p:IsA("BasePart") and p.Name:lower()=="lever" then removeESP(p) end
+        end
+    else
+        for _,p in ipairs(Rooms:GetDescendants()) do
+            if p:IsA("BasePart") and p.Name:lower()=="lever" then CreateESP(p,Color3.fromRGB(139, 145, 165)) end
+        end
+    end
+end) end})
+tabT:CreateToggle({Name="Battery Esp",CurrentValue=false,Flag="BatteryESP",Callback=function(v) task.defer(function()
+    getgenv().batteryESP = v
+    if not v then
+        for _,p in ipairs(Rooms:GetDescendants()) do
+            if p:IsA("BasePart") and p.Name:lower()=="battery" then removeESP(p) end
+        end
+    else
+        for _,p in ipairs(Rooms:GetDescendants()) do
+            if p:IsA("BasePart") and p.Name:lower()=="battery" then CreateESP(p,Color3.new(0,0.666667,0)) end
+        end
+    end
+end) end})
+tabT:CreateToggle({Name="Entity Remote Logger",CurrentValue=false,Flag="entRem",Callback=function(v) task.defer(function() getgenv().remoteThingy=v end) end})
+tabT:CreateToggle({Name="Entity Notifier",CurrentValue=false,Flag="entityNotifs",Callback=function(v) task.defer(function() getgenv().entityNotif=v end) end})
+
+local tabB=Win:CreateTab("Bypass",11862656458)
+tabB:CreateToggle({Name="Bypass Overseer",CurrentValue=false,Flag="overSeer",Callback=function(v) task.defer(function()
+    if v then
+        if overCon then overCon:Disconnect() end
+        overCon = workspace.DescendantAdded:Connect(function(o)
+            if o.Name:lower()=="overseer" then task.defer(function() if o and o.Parent then o:Destroy() end end) end
+        end)
+        for _,o in ipairs(workspace:GetDescendants()) do
+            if o.Name:lower()=="overseer" then task.defer(function() if o and o.Parent then o:Destroy() end end) end
+        end
+    else
+        if overCon then overCon:Disconnect() overCon=nil end
+    end
+end) end})
+tabB:CreateToggle({Name="Bypass Lurker",CurrentValue=false,Flag="lurkER",Callback=function(v) task.defer(function()
+    if v then
+        if lurkCon then lurkCon:Disconnect() end
+        lurkCon = workspace.DescendantAdded:Connect(function(o)
+            if o.Name:lower()=="lurker" then task.defer(function() if o and o.Parent then o:Destroy() end end) end
+        end)
+        for _,o in ipairs(workspace:GetDescendants()) do
+            if o.Name:lower()=="lurker" then task.defer(function() if o and o.Parent then o:Destroy() end end) end
+        end
+    else
+        if lurkCon then lurkCon:Disconnect() lurkCon=nil end
+    end
+end) end})
+tabB:CreateToggle({Name="Bypass Watchbane",CurrentValue=false,Flag="watcherBANE",Callback=function(v) task.defer(function()
+    if v then
+        if watchCon then watchCon:Disconnect() end
+        watchCon = workspace.DescendantAdded:Connect(function(o)
+            if o.Name:lower()=="watchbane" then task.defer(function() if o and o.Parent then o:Destroy() end end) end
+        end)
+        for _,o in ipairs(workspace:GetDescendants()) do
+            if o.Name:lower()=="watchbane" then task.defer(function() if o and o.Parent then o:Destroy() end end) end
+        end
+    else
+        if watchCon then watchCon:Disconnect() watchCon=nil end
+    end
+end) end})
+tabB:CreateToggle({Name="Bypass FlowerGrowth",CurrentValue=false,Flag="flowerGrowth",Callback=function(v) task.defer(function()
+    if v then
+        if flowCon then flowCon:Disconnect() end
+        flowCon = workspace.DescendantAdded:Connect(function(o)
+            if o.Name:lower()=="flowergrowth" then task.defer(function() if o and o.Parent then o:Destroy() end end) end
+        end)
+        for _,o in ipairs(workspace:GetDescendants()) do
+            if o.Name:lower()=="flowergrowth" then task.defer(function() if o and o.Parent then o:Destroy() end end) end
+        end
+    else
+        if flowCon then flowCon:Disconnect() flowCon=nil end
+    end
+end) end})
+tabB:CreateToggle({Name="Bypass Abyss",CurrentValue=false,Flag="abyssKILL",Callback=function(v) task.defer(function()
+    if v then
+        if abyssCon then abyssCon:Disconnect() end
+        abyssCon = workspace.DescendantAdded:Connect(function(o)
+            if o.Name:lower()=="abysskill" then task.defer(function() if o and o.Parent then o:Destroy() end end) end
+        end)
+        for _,o in ipairs(workspace:GetDescendants()) do
+            if o.Name:lower()=="abysskill" then task.defer(function() if o and o.Parent then o:Destroy() end end) end
+        end
+    else
+        if abyssCon then abyssCon:Disconnect() abyssCon=nil end
+    end
+end) end})
+tabB:CreateToggle({Name="Bypass Taker [HEIST MODIFIER]",CurrentValue=false,Flag="TAKERRRRR",Callback=function(v) task.defer(function()
+    if v then
+        if takerCon then takerCon:Disconnect() end
+        takerCon = workspace.DescendantAdded:Connect(function(o)
+            if o.Name:lower()=="taker" then task.defer(function() if o and o.Parent then o:Destroy() end end) end
+        end)
+        for _,o in ipairs(workspace:GetDescendants()) do
+            if o.Name:lower()=="taker" then task.defer(function() if o and o.Parent then o:Destroy() end end) end
+        end
+    else
+        if takerCon then takerCon:Disconnect() takerCon=nil end
+    end
+end) end})
+tabB:CreateToggle({Name="Bypass ChaseTrigger [EPIC MODE]",CurrentValue=false,Flag="chaseTrigger",Callback=function(v) task.defer(function()
+    if v then
+        if chaseCon then chaseCon:Disconnect() end
+        chaseCon = workspace.DescendantAdded:Connect(function(o)
+            if o.Name:lower()=="chasetrigger" then task.defer(function() if o and o.Parent then o:Destroy() end end) end
+        end)
+        for _,o in ipairs(workspace:GetDescendants()) do
+            if o.Name:lower()=="chasetrigger" then task.defer(function() if o and o.Parent then o:Destroy() end end) end
+        end
+    else
+        if chaseCon then chaseCon:Disconnect() chaseCon=nil end
+    end
+end) end})
+
+local tabP = Win:CreateTab("Player",470645116)
+tabP:CreateSlider({Name="Set WalkSpeed",Range=(game.PlaceId==pClass)and{0,35}or{0,100},Increment=1,CurrentValue=16,Flag="WalkSpeedValue",Callback=function(v) task.defer(function() getgenv().speed=v end) end})
+tabP:CreateToggle({Name="Toggle WalkSpeed",CurrentValue=false,Flag="WSspeed",Callback=function(v) task.defer(function() getgenv().sped=v end) end})
+tabP:CreateSlider({Name="Set JumpPower",Range={0,100},Increment=1,CurrentValue=30,Flag="JumpPowerValue",Callback=function(v) task.defer(function() getgenv().jump=v end) end})
+tabP:CreateToggle({Name="Toggle JumpPower",CurrentValue=false,Flag="JPtgl",Callback=function(v) task.defer(function() getgenv().jumpy=v end) end})
+tabP:CreateSlider({Name="Set FOV",Range={0,120},Increment=1,CurrentValue=60,Flag="FieldOfViewValue",Callback=function(v) task.defer(function() getgenv().fov=v end) end})
+tabP:CreateToggle({Name="Toggle FOV",CurrentValue=false,Flag="FovTgl",Callback=function(v) task.defer(function() getgenv().wide=v end) end})
+tabP:CreateToggle({Name="Infinite Jump",CurrentValue=false,Flag="infJP",Callback=function(v) task.defer(function()
+    if INFcon then INFcon:Disconnect() INFcon=nil end
+    if mobCon then mobCon:Disconnect() mobCon=nil end
+    if v then
+        INFcon = S("UserInputService").JumpRequest:Connect(function()
+            local h = LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+            if h then h:ChangeState(Enum.HumanoidStateType.Jumping) end
+        end)
+        if isMobile and game.PlaceId==pRen then
+            local h = LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+            if h then h:SetStateEnabled(Enum.HumanoidStateType.Jumping,true) end
+            local jb = LocalPlayer.PlayerGui:WaitForChild("TouchControls"):WaitForChild("MobileControls"):WaitForChild("JumpButton")
+            mobCon = jb.MouseButton1Click:Connect(function()
+                local mh = LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+                if mh then mh:ChangeState(Enum.HumanoidStateType.Jumping) end
+            end)
+        end
+    end
+end) end})
+tabP:CreateToggle({Name="Character Rotation",CurrentValue=true,Flag="charRotate",Callback=function(v) task.defer(function() rotation=v end) end})
+
+local tabMc = Win:CreateTab("Misc",16354254055)
+tabMc:CreateButton({Name="Hide Value",Callback=function() task.defer(function() LocalPlayer.Character.Hiding.Value = not LocalPlayer.Character.Hiding.Value end) end})
+tabMc:CreateButton({Name="Teleport to Door",Callback=function() task.defer(tpDoor) end})
+tabMc:CreateButton({Name="Teleport to Key",Callback=function() task.defer(tpKey) end})
+tabMc:CreateButton({Name="Teleport to Lever",Callback=function() task.defer(tpLever) end})
+tabMc:CreateToggle({Name="Loop Teleport To Door",CurrentValue=false,Callback=function(v) task.defer(function()
+    getgenv().teletodoor = v
+    while getgenv().teletodoor and task.wait(.3) do pcall(tpDoor) end
+end) end})
+tabMc:CreateToggle({Name="Loop Teleport To Key",CurrentValue=false,Callback=function(v) task.defer(function()
+    getgenv().teletokey = v
+    while getgenv().teletokey and task.wait(.5) do pcall(tpKey) end
+end) end})
+tabMc:CreateToggle({Name="Loop Teleport To Lever",CurrentValue=false,Callback=function(v) task.defer(function()
+    getgenv().teletolever = v
+    while getgenv().teletolever and task.wait(.5) do pcall(tpLever) end
+end) end})
+tabMc:CreateSection("")
+tabMc:CreateSection("idk why i even added this")
+tabMc:CreateInput({Name="Notification Text",PlaceholderText="Text",RemoveTextAfterFocusLost=false,Callback=function(t) task.defer(function() getgenv().Notifv1 = t end) end})
+tabMc:CreateButton({Name="Send Notification",Callback=function() task.defer(function() Rayfield:Notify({Title="Notification",Content=getgenv().Notifv1 or "Door",Duration=3,Image=decalID}) end) end})
+
+local tabI = Win:CreateTab("Info/Stats",2246486837)
+tabI:CreateLabel("Rooms: "..playerRoom())
+tabI:CreateLabel("Bits: "..playerBits())
+tabI:CreateLabel("Double Bits: "..doubleBits())
+tabI:CreateSection("")
+if game.PlaceId==pRen then
+    tabI:CreateLabel("Fame: "..fame())
+    tabI:CreateLabel("Deaths: "..deaths())
+    tabI:CreateLabel("Rift: "..riftCount())
+    tabI:CreateLabel("Joined Group: "..inGroup())
+	tabI:CreateSection("")
+end
+tabI:CreateLabel("Current Room: "..curRoom())
+tabI:CreateLabel("Phil Chance: "..philMeter())
+tabI:CreateLabel("Spider Chance: "..spiderChance())
+if game.PlaceId~=pClass then tabI:CreateLabel("Revive Price: "..revivePrice()) end
+tabI:CreateLabel("Players Alive: "..aliveCount())
+tabI:CreateLabel("Players In Game: "..inGameCount())
+if game.PlaceId==pRen then
+	tabI:CreateSection("")
+    tabI:CreateLabel("Fuzzi: "..fuz())
+    tabI:CreateLabel("Zav: "..zav())
+    tabI:CreateLabel("Jake: "..jae())
+    tabI:CreateLabel("Blue: "..blu())
+    tabI:CreateLabel("Alan: "..al())
+end
+
+task.defer(function()
+    Players.PlayerAdded:Connect(function(pl)
+        task.defer(function()
+            local n = pl.Name
+            local d = pl.DisplayName
+            local f = (n:lower()==d:lower()) and ("@"..n) or (d.." (@"..n..")")
+            Rayfield:Notify({Title="Player Join Log",Content=f.." Joined",Duration=3,Image=decalID})
+        end)
+    end)
+end)
+
+task.spawn(function()
+    local pg = LocalPlayer:WaitForChild("PlayerGui", 5)
+    if not pg then return end
+    pg.DescendantAdded:Connect(function(txt)
+        if not txt:IsA("TextLabel") then return end
+        local parent = txt.Parent
+        if not parent or parent.Name:lower() ~= "hintframe" then return end
+        local t = txt.Text:lower()
+        if t:find("cannot pick that up") or t:find("you already have this") then
+            task.defer(function()
+                if txt and txt.Parent then
+                    txt:Destroy()
+                end
+            end)
+        end
+    end)
+end)
+
+Entities.ChildAdded:Connect(function(ent)
+	if getgenv().entityEsp then
+		task.defer(function()
+			CreateESP(ent)
+			Rayfield:Notify({Title="Entity",Content=ent.Name.." Has Spawned",Duration=3,Image=decalID})
+		end)
+	end
+end)
+
+Values.MimicActivated:GetPropertyChangedSignal("Value"):Connect(function()
+    if getgenv().entityNotif then
+        task.defer(function()
+            local txt = Values.MimicActivated.Value and "Mimic Is Enabled" or "Mimic Is Disabled"
+            Rayfield:Notify({Title="Entity",Content=txt,Duration=3,Image=decalID})
+        end)
+    end
+end)
+
+S("ReplicatedStorage").Remotes:FindFirstChild("E_A",true).OnClientEvent:Connect(function(ent)
+    if ent:lower()=="greed" then
+        task.defer(function()
+            greedActive = true
+            task.wait(9)
+            greedActive = false
+        end)
+        Rayfield:Notify({Title="Entity",Content="Greed Spawned",Duration=3,Image=decalID})
+    end
+    if getgenv().remoteThingy then
+        task.defer(function()
+            Rayfield:Notify({Title="Remote Call",Content="Returned: "..ent,Duration=3,Image=decalID})
+        end)
+    end
+end)
+
+Rooms.DescendantAdded:Connect(function(o)
+    if getgenv().keyESP and o:IsA("BasePart") and o.Name:lower()=="roomkey" and o.Parent.Name:lower()~="door" then
+        task.defer(function() CreateESP(o,Color3.new(1,1,0),"Key") end)
+    end
+end)
+Rooms.DescendantAdded:Connect(function(o)
+    if getgenv().bitESP and o:IsA("BasePart") and o.Name:lower()=="bit" then
+        task.defer(function() CreateESP(o,Color3.new(1,0.666667,0)) end)
+    end
+end)
+Rooms.DescendantAdded:Connect(function(o)
+	if getgenv().leverESP and o:IsA("BasePart") and o.Name:lower()=="lever" then
+		task.defer(function() CreateESP(o,Color3.fromRGB(139, 145, 165)) end)
+	end
+end)
+Rooms.DescendantAdded:Connect(function(o)
+    if getgenv().batteryESP and o:IsA("BasePart") and o.Name:lower()=="battery" then
+        task.defer(function() CreateESP(o,Color3.new(0,0.666667,0)) end)
+    end
+end)
+
+Rayfield:LoadConfiguration()
+
+S("RunService").Heartbeat:Connect(function()
+    if getgenv().chaos then fireItems() end
+    if rotation then setRotation(true) else setRotation(false) end
+    if getgenv().wide then
+        task.defer(function()
+            local f = tonumber(getgenv().fov) or 60
+            S("TweenService"):Create(workspace.CurrentCamera,TweenInfo.new(0),{FieldOfView=f}):Play()
+        end)
+    end
+end)
+
+task.defer(function()
+    while task.wait() do
+        local h=LocalPlayer.Character and LocalPlayer.Character:FindFirstChildWhichIsA("Humanoid")
+        if h then
+            if getgenv().sped then h.WalkSpeed=getgenv().speed end
+            if getgenv().jumpy then h.JumpPower=getgenv().jump end
+        end
+    end
+end)
