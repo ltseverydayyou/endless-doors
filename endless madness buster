@@ -91,10 +91,10 @@ local function disableRagdoll()
     if trigger then trigger.Value = false end
 end
 
-local function setRotation(v)
+--[[local function setRotation(v)
 	local canRot=LocalPlayer.Character:FindFirstChild("CanRotate")
     if canRot then canRot.Value = v end
-end
+end]]
 
 local placeNames = {
     [pOld]    = "Endless Doors [OLD]",
@@ -501,7 +501,7 @@ tabP:CreateToggle({Name="Infinite Jump",CurrentValue=false,Flag="infJP",Callback
         end
     end
 end) end})
-tabP:CreateToggle({Name="Character Rotation",CurrentValue=true,Flag="charRotate",Callback=function(v) task.defer(function() rotation=v end) end})
+--tabP:CreateToggle({Name="Character Rotation",CurrentValue=true,Flag="charRotate",Callback=function(v) rotation=v end})
 
 local tabMc = Win:CreateTab("Misc",16354254055)
 tabMc:CreateButton({Name="Hide Value",Callback=function() task.defer(function() LocalPlayer.Character.Hiding.Value = not LocalPlayer.Character.Hiding.Value end) end})
@@ -617,7 +617,9 @@ Entities.ChildAdded:Connect(function(ent)
 	if getgenv().entityEsp then
 		task.defer(function()
 			CreateESP(ent)
-			Rayfield:Notify({Title="Entity",Content=ent.Name.." Has Spawned",Duration=3,Image=decalID})
+            if getgenv().entityNotif then
+				Rayfield:Notify({Title="Entity",Content=ent.Name.." Has Spawned",Duration=3,Image=decalID})
+			end
 		end)
 	end
 end)
@@ -638,7 +640,9 @@ S("ReplicatedStorage").Remotes:FindFirstChild("E_A",true).OnClientEvent:Connect(
             task.wait(9)
             greedActive = false
         end)
-        Rayfield:Notify({Title="Entity",Content="Greed Spawned",Duration=3,Image=decalID})
+        if getgenv().entityNotif then
+            Rayfield:Notify({Title="Entity",Content="Greed Spawned",Duration=3,Image=decalID})
+        end
     end
     if getgenv().remoteThingy then
         task.defer(function()
@@ -670,9 +674,8 @@ end)
 
 Rayfield:LoadConfiguration()
 
-S("RunService").Heartbeat:Connect(function()
+S("RunService").Stepped:Connect(function()
     if getgenv().chaos then fireItems() end
-    if rotation then setRotation(true) else setRotation(false) end
     if getgenv().wide then
         task.defer(function()
             local f = tonumber(getgenv().fov) or 60
