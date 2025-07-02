@@ -591,10 +591,7 @@ tabP:CreateToggle({Name="Infinite Jump", CurrentValue=false, Flag="infJP", Callb
                 local h = LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
                 if h then h:SetStateEnabled(Enum.HumanoidStateType.Jumping, true) end
 
-                local jb = LocalPlayer.PlayerGui
-                              :WaitForChild("TouchControls")
-                              :WaitForChild("MobileControls")
-                              :WaitForChild("JumpButton")
+                local jb = LocalPlayer.PlayerGui:WaitForChild("TouchControls"):WaitForChild("MobileControls"):WaitForChild("JumpButton")
 
                 local function startHold()
                     if mobHoldConn then return end
