@@ -12,6 +12,8 @@ local Values      = GameFolder:WaitForChild("Values")
 local Rooms       = GameFolder:WaitForChild("Rooms")
 local Entities    = GameFolder:WaitForChild("Entities")
 local Players     = S("Players")
+local TweenService = S("TweenService")
+local RunService = S("RunService")
 local LocalPlayer = Players.LocalPlayer
 local isMobile    = S("UserInputService").TouchEnabled
 
@@ -130,44 +132,88 @@ function jae() return getValStr("Collectibles","Jake") end
 function blu() return getValStr("Collectibles","Blue") end
 function al()  return getValStr("Collectibles","Alan") end
 
-function CreateESP(part, color, txt)
-	pcall(function()
-		local box = Instance.new("BoxHandleAdornment")
-		box.Name = part.Name:lower().."_ENDLESSESP"
-		box.Parent = part
-		box.Adornee = part
-		box.AlwaysOnTop = true
-		box.ZIndex = 0
-		if part:IsA("BasePart") then
-		box.Size = part.Size + Vector3.new(0.1, 0.1, 0.1)
-		elseif part:FindFirstChildWhichIsA("BasePart") then
-			box.Size = part:FindFirstChildWhichIsA("BasePart").Size + Vector3.new(0.1, 0.1, 0.1)
-		else
-			box.Size = Vector3.new(4, 4, 4)
-		end
-		box.Transparency = 0.45
-		box.Color3 = color or Color3.new(1, 0, 0)
+local function getBasePart(obj)
+    if obj:IsA("BasePart") then
+        return obj
+    elseif obj:IsA("Model") then
+        if obj.PrimaryPart then
+            return obj.PrimaryPart
+        else
+            return obj:FindFirstChildWhichIsA("BasePart")
+        end
+    end
+    return nil
+end
 
-		local billboard = Instance.new("BillboardGui")
-		billboard.Name = part.Name:lower().."_LABEL"
-		billboard.Parent = part
-		billboard.Adornee = part
-		billboard.Size = UDim2.new(0, 100, 0, 30)
-		billboard.StudsOffset = Vector3.new(0, 2, 0)
-		billboard.AlwaysOnTop = true
+function CreateESP(part, color3, labelText)
+    local basePart = getBasePart(part)
+    if not basePart then return end
+    local bc = color3 or Color3.new(1,0,0)
+    local h,s,v = Color3.toHSV(bc)
+    local off = 0.5
+    local dv = math.clamp(v - off, 0, 1)
+    local lv = math.clamp(v + off, 0, 1)
+    local darkC = Color3.fromHSV(h, s, dv)
+    local litC = Color3.fromHSV(h, s, lv)
+    local alpha = 0.45
 
-		local textLabel = Instance.new("TextLabel")
-		textLabel.Parent = billboard
-		textLabel.Size = UDim2.new(1, 0, 1, 0)
-		textLabel.BackgroundTransparency = 1
-		textLabel.TextColor3 = color or Color3.new(1, 0, 0)
-		textLabel.Text = txt or part.Name
-		textLabel.Font = Enum.Font.SourceSansBold
-		textLabel.TextSize = 14
-		textLabel.TextStrokeTransparency = 0.5
+    local box = Instance.new("BoxHandleAdornment")
+    box.Name = part.Name:lower().."_ESP"
+    box.Adornee = basePart
+    box.Parent = part
+    box.AlwaysOnTop = true
+    box.ZIndex = 0
+    box.Transparency = alpha
+    box.Color3 = litC
 
-		return box
-	end)
+    if part:IsA("Model") then
+        local _, size = part:GetBoundingBox()
+        box.Size = size + Vector3.new(0.1,0.1,0.1)
+    else
+        box.Size = basePart.Size + Vector3.new(0.1,0.1,0.1)
+    end
+
+    local tween = TweenService:Create(box, TweenInfo.new(1, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut, math.huge, true), {Color3 = darkC})
+    tween:Play()
+
+    local bb = Instance.new("BillboardGui")
+    bb.Name = part.Name:lower().."_LABEL"
+    bb.Parent = part
+    bb.Adornee = basePart
+    bb.Size = UDim2.new(0,100,0,30)
+    bb.StudsOffset = Vector3.new(0, box.Size.Y/2 + 0.2, 0)
+    bb.AlwaysOnTop = true
+    bb.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+
+    local tl = Instance.new("TextLabel")
+    tl.Parent = bb
+    tl.Size = UDim2.new(1,0,1,0)
+    tl.BackgroundTransparency = 1
+    tl.Font = Enum.Font.SourceSansBold
+    tl.Text = labelText or part.Name
+    tl.TextSize = 14
+    tl.TextColor3 = Color3.new(1,1,1)
+    tl.TextStrokeTransparency = 0.5
+
+    local grad = Instance.new("UIGradient")
+    grad.Color = ColorSequence.new(darkC, litC)
+    grad.Parent = tl
+
+    local conn
+    conn = RunService.RenderStepped:Connect(function()
+        if not box.Parent then
+            tween:Cancel()
+            conn:Disconnect()
+            return
+        end
+        local root = getRoot(LocalPlayer.Character)
+        if root then
+            local distance = (root.Position - basePart.Position).Magnitude
+            tl.Text = string.format("%s | %.1f", labelText or part.Name, distance)
+        end
+    end)
+
+    return box
 end
 
 local function removeESP(part)
@@ -292,7 +338,7 @@ tabM:CreateToggle({Name="Full Bright",CurrentValue=false,Flag="brightLol",Callba
     local L=S("Lighting")
     if v then
         if brightLoop then brightLoop:Disconnect() end
-        brightLoop=S("RunService").Heartbeat:Connect(function()
+        brightLoop=RunService.Stepped:Connect(function()
             L.ClockTime=0;L.FogEnd=1e10;L.FogStart=0;L.GlobalShadows=false;L.OutdoorAmbient=Color3.fromRGB(128,128,128);L.Brightness=3
         end)
     else
@@ -674,12 +720,12 @@ end)
 
 Rayfield:LoadConfiguration()
 
-S("RunService").Stepped:Connect(function()
+RunService.Stepped:Connect(function()
     if getgenv().chaos then fireItems() end
     if getgenv().wide then
         task.defer(function()
             local f = tonumber(getgenv().fov) or 60
-            S("TweenService"):Create(workspace.CurrentCamera,TweenInfo.new(0),{FieldOfView=f}):Play()
+            TweenService:Create(workspace.CurrentCamera,TweenInfo.new(0),{FieldOfView=f}):Play()
         end)
     end
 end)
