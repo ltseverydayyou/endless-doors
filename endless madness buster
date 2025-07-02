@@ -17,8 +17,14 @@ local RunService = S("RunService")
 local LocalPlayer = Players.LocalPlayer
 local isMobile    = S("UserInputService").TouchEnabled
 
+local currentCamera = workspace.CurrentCamera
+local fovLockConn
+local cameraChangeConn
+
+local INFcon, mobConDown, mobConUp, mobHoldConn
+
 local pOld,pEpic,pRen,pEMArc,pClass = 10891480658,16810788519,17324650150,17639491565,17594182379
-local hasKey,greedActive = false,false
+local hasKey,greedActive,fovLockConn = false,false,nil
 local decalID = 95434351872718
 
 local function gUI()
@@ -91,6 +97,19 @@ end
 local function disableRagdoll()
 	local trigger= LocalPlayer.Character:FindFirstChild("RagdollTrigger")
     if trigger then trigger.Value = false end
+end
+
+local function bindFOV(cam)
+    if fovLockConn then
+        fovLockConn:Disconnect()
+        fovLockConn = nil
+    end
+    cam.FieldOfView = tonumber(getgenv().fov) or 70
+    fovLockConn = cam:GetPropertyChangedSignal("FieldOfView"):Connect(function()
+        if getgenv().wide and cam.FieldOfView ~= tonumber(getgenv().fov) then
+            cam.FieldOfView = tonumber(getgenv().fov)
+        end
+    end)
 end
 
 --[[local function setRotation(v)
@@ -526,23 +545,66 @@ tabP:CreateSlider({Name="Set WalkSpeed",Range=(game.PlaceId==pClass)and{0,35}or{
 tabP:CreateToggle({Name="Toggle WalkSpeed",CurrentValue=false,Flag="WSspeed",Callback=function(v) task.defer(function() getgenv().sped=v end) end})
 tabP:CreateSlider({Name="Set JumpPower",Range={0,100},Increment=1,CurrentValue=30,Flag="JumpPowerValue",Callback=function(v) task.defer(function() getgenv().jump=v end) end})
 tabP:CreateToggle({Name="Toggle JumpPower",CurrentValue=false,Flag="JPtgl",Callback=function(v) task.defer(function() getgenv().jumpy=v end) end})
-tabP:CreateSlider({Name="Set FOV",Range={0,120},Increment=1,CurrentValue=60,Flag="FieldOfViewValue",Callback=function(v) task.defer(function() getgenv().fov=v end) end})
-tabP:CreateToggle({Name="Toggle FOV",CurrentValue=false,Flag="FovTgl",Callback=function(v) task.defer(function() getgenv().wide=v end) end})
-tabP:CreateToggle({Name="Infinite Jump",CurrentValue=false,Flag="infJP",Callback=function(v) task.defer(function()
-    if INFcon then INFcon:Disconnect() INFcon=nil end
-    if mobCon then mobCon:Disconnect() mobCon=nil end
+tabP:CreateSlider({
+    Name         = "Set FOV",
+    Range        = {0,120},
+    Increment    = 1,
+    CurrentValue = tonumber(getgenv().fov) or 70,
+    Flag         = "FieldOfViewValue",
+    Callback     = function(v)
+        getgenv().fov = v
+        if getgenv().wide then
+            workspace.CurrentCamera.FieldOfView = v
+        end
+    end
+})
+tabP:CreateToggle({
+    Name         = "Toggle FOV",
+    CurrentValue = false,
+    Flag         = "FovTgl",
+    Callback     = function(enabled)
+        getgenv().wide = enabled
+        if enabled then
+            bindFOV(workspace.CurrentCamera)
+        else
+            if fovLockConn then
+                fovLockConn:Disconnect()
+                fovLockConn = nil
+            end
+        end
+    end
+})
+tabP:CreateToggle({Name="Infinite Jump", CurrentValue=false, Flag="infJP", Callback=function(v) task.defer(function()
+    if INFcon then INFcon:Disconnect() INFcon = nil end
+    if mobConDown then mobConDown:Disconnect() mobConDown = nil end
+    if mobConUp   then mobConUp:Disconnect()   mobConUp   = nil end
+    if mobHoldConn then mobHoldConn:Disconnect() mobHoldConn = nil end
+
     if v then
         INFcon = S("UserInputService").JumpRequest:Connect(function()
             local h = LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
             if h then h:ChangeState(Enum.HumanoidStateType.Jumping) end
         end)
-        if isMobile and game.PlaceId==pRen then
+
+        if isMobile and game.PlaceId == pRen then
             local h = LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
-            if h then h:SetStateEnabled(Enum.HumanoidStateType.Jumping,true) end
-            local jb = LocalPlayer.PlayerGui:WaitForChild("TouchControls"):WaitForChild("MobileControls"):WaitForChild("JumpButton")
-            mobCon = jb.MouseButton1Click:Connect(function()
-                local mh = LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
-                if mh then mh:ChangeState(Enum.HumanoidStateType.Jumping) end
+            if h then h:SetStateEnabled(Enum.HumanoidStateType.Jumping, true) end
+
+            local jb = LocalPlayer.PlayerGui
+                          :WaitForChild("TouchControls")
+                          :WaitForChild("MobileControls")
+                          :WaitForChild("JumpButton")
+
+            mobConDown = jb.MouseButton1Down:Connect(function()
+                if mobHoldConn then mobHoldConn:Disconnect() mobHoldConn = nil end
+                mobHoldConn = RunService.Heartbeat:Connect(function()
+                    local mh = LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+                    if mh then mh:ChangeState(Enum.HumanoidStateType.Jumping) end
+                end)
+            end)
+
+            mobConUp = jb.MouseButton1Up:Connect(function()
+                if mobHoldConn then mobHoldConn:Disconnect() mobHoldConn = nil end
             end)
         end
     end
@@ -721,12 +783,15 @@ end)
 Rayfield:LoadConfiguration()
 
 RunService.Stepped:Connect(function()
-    if getgenv().chaos then fireItems() end
+    if getgenv().chaos then
+        fireItems()
+    end
+end)
+
+cameraChangeConn = workspace:GetPropertyChangedSignal("CurrentCamera"):Connect(function()
+    currentCamera = workspace.CurrentCamera
     if getgenv().wide then
-        task.defer(function()
-            local f = tonumber(getgenv().fov) or 60
-            TweenService:Create(workspace.CurrentCamera,TweenInfo.new(0),{FieldOfView=f}):Play()
-        end)
+        bindFOV(currentCamera)
     end
 end)
 
