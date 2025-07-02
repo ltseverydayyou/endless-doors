@@ -574,41 +574,58 @@ tabP:CreateToggle({
         end
     end
 })
-tabP:CreateToggle({Name="Infinite Jump", CurrentValue=false, Flag="infJP", Callback=function(v) task.defer(function()
-    if INFcon then INFcon:Disconnect() INFcon = nil end
-    if mobConDown then mobConDown:Disconnect() mobConDown = nil end
-    if mobConUp   then mobConUp:Disconnect()   mobConUp   = nil end
-    if mobHoldConn then mobHoldConn:Disconnect() mobHoldConn = nil end
+tabP:CreateToggle({Name="Infinite Jump", CurrentValue=false, Flag="infJP", Callback=function(v)
+    task.defer(function()
+        if INFcon then INFcon:Disconnect() INFcon = nil end
+        if mobConDown then mobConDown:Disconnect() mobConDown = nil end
+        if mobConUp   then mobConUp:Disconnect()   mobConUp   = nil end
+        if mobHoldConn then mobHoldConn:Disconnect() mobHoldConn = nil end
 
-    if v then
-        INFcon = S("UserInputService").JumpRequest:Connect(function()
-            local h = LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
-            if h then h:ChangeState(Enum.HumanoidStateType.Jumping) end
-        end)
+        if v then
+            INFcon = S("UserInputService").JumpRequest:Connect(function()
+                local h = LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+                if h then h:ChangeState(Enum.HumanoidStateType.Jumping) end
+            end)
 
-        if isMobile and game.PlaceId == pRen then
-            local h = LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
-            if h then h:SetStateEnabled(Enum.HumanoidStateType.Jumping, true) end
+            if isMobile and game.PlaceId == pRen then
+                local h = LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+                if h then h:SetStateEnabled(Enum.HumanoidStateType.Jumping, true) end
 
-            local jb = LocalPlayer.PlayerGui
-                          :WaitForChild("TouchControls")
-                          :WaitForChild("MobileControls")
-                          :WaitForChild("JumpButton")
+                local jb = LocalPlayer.PlayerGui
+                              :WaitForChild("TouchControls")
+                              :WaitForChild("MobileControls")
+                              :WaitForChild("JumpButton")
 
-            mobConDown = jb.MouseButton1Down:Connect(function()
-                if mobHoldConn then mobHoldConn:Disconnect() mobHoldConn = nil end
-                mobHoldConn = RunService.Heartbeat:Connect(function()
-                    local mh = LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
-                    if mh then mh:ChangeState(Enum.HumanoidStateType.Jumping) end
+                local function startHold()
+                    if mobHoldConn then return end
+                    mobHoldConn = RunService.Heartbeat:Connect(function()
+                        local mh = LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+                        if mh then mh:ChangeState(Enum.HumanoidStateType.Jumping) end
+                    end)
+                end
+
+                local function endHold()
+                    if mobHoldConn then
+                        mobHoldConn:Disconnect()
+                        mobHoldConn = nil
+                    end
+                end
+
+                mobConDown = jb.InputBegan:Connect(function(input)
+                    if input.UserInputType == Enum.UserInputType.Touch then
+                        startHold()
+                    end
                 end)
-            end)
 
-            mobConUp = jb.MouseButton1Up:Connect(function()
-                if mobHoldConn then mobHoldConn:Disconnect() mobHoldConn = nil end
-            end)
+                mobConUp = jb.InputEnded:Connect(function(input)
+                    if input.UserInputType == Enum.UserInputType.Touch then
+                        endHold()
+                    end
+                end)
+            end
         end
-    end
-end) end})
+    end)
+end})
 --tabP:CreateToggle({Name="Character Rotation",CurrentValue=true,Flag="charRotate",Callback=function(v) rotation=v end})
 
 local tabMc = Win:CreateTab("Misc",16354254055)
