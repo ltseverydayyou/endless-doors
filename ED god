@@ -48,7 +48,7 @@ local k = function(d)
 		for _ = 1, A do
 			task.wait(0.05)
 			local p = d:FindFirstChild("Handle"):FindFirstChildOfClass("ProximityPrompt")
-			if p then fireproximityprompt(p, 1) end
+			if p then fireproximityprompt(p) end
 		end
 	end)
 end

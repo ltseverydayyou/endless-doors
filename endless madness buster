@@ -186,7 +186,7 @@ local function RemoveESP(p)
 	end)
 end
 
-PPromptService.PromptButtonHoldBegan:Connect(function(p)task.defer(function()fireproximityprompt(p,1)end)end)
+PPromptService.PromptButtonHoldBegan:Connect(function(p)task.defer(function()fireproximityprompt(p)end)end)
 
 local junk={fdmg=true,brokenlamp=true,longcrate=true,crate=true,chair=true,sofa=true,fire=true}
 task.spawn(function()
@@ -282,16 +282,16 @@ local function firePrompts()
 						if not skip and not (nm=="handle" and greedActive) then
 							if game.PlaceId==pEPIC or game.PlaceId==pEMARC then
 								local b=(bitsStat and bitsStat.Value) or 0
-								if (b>=2500 and nm~="bit") or b<2500 then fireproximityprompt(pp,1) end
+								if (b>=2500 and nm~="bit") or b<2500 then fireproximityprompt(pp) end
 							elseif game.PlaceId==pCLASS then
 								if nm=="handle" then
 									local now=tick()
-									if now-lastHandle>=0.4 then fireproximityprompt(pp,1) lastHandle=now end
+									if now-lastHandle>=0.4 then fireproximityprompt(pp) lastHandle=now end
 								else
-									fireproximityprompt(pp,1)
+									fireproximityprompt(pp)
 								end
 							else
-								fireproximityprompt(pp,1)
+								fireproximityprompt(pp)
 							end
 						end
 					end
