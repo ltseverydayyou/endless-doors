@@ -13,7 +13,17 @@ local UIS=S("UserInputService")
 local PPromptService=S("ProximityPromptService")
 
 local LocalPlayer=Players.LocalPlayer
-local isMobile=UIS.TouchEnabled
+
+local IsOnMobile=(function()
+	local platform=UIS:GetPlatform()
+	if platform==Enum.Platform.IOS or platform==Enum.Platform.Android or platform==Enum.Platform.AndroidTV or platform==Enum.Platform.Chromecast or platform==Enum.Platform.MetaOS then
+		return true
+	end
+	if platform==Enum.Platform.None then
+		return UIS.TouchEnabled and not (UIS.KeyboardEnabled or UIS.MouseEnabled)
+	end
+	return false
+end)()
 
 local GameFolder=workspace:WaitForChild("Game")
 local Values=GameFolder:WaitForChild("Values")
@@ -94,7 +104,7 @@ local function bindFOV(cam)
 end
 
 local PLACE_NAME=({[pOLD]="Endless Doors [OLD]",[pEPIC]="Endless Doors [OLD Epic Mode]",[pREN]="Endless Doors",[pEMARC]="Endless Doors [Epic Mode]",[pCLASS]="Endless Doors [Retro #classic]"})[game.PlaceId] or "unknown"
-local TITLE=PLACE_NAME..(isMobile and " | Mobile " or " ").."v2.2"
+local TITLE=PLACE_NAME..(IsOnMobile and " | Mobile " or " ").."v2.2"
 
 local function playerRoom()return tostring(LocalPlayer.leaderstats.Room.Value)end
 local function playerBits()return tostring(LocalPlayer.leaderstats.Bits.Value)end
@@ -530,7 +540,7 @@ tabPlayer:CreateToggle({Name="Infinite Jump",CurrentValue=false,Flag="infJP",Cal
 			local h=LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
 			if h then h:ChangeState(Enum.HumanoidStateType.Jumping) end
 		end)
-		if isMobile and game.PlaceId==pREN then
+		if IsOnMobile and game.PlaceId==pREN then
 			local h=LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
 			if h then h:SetStateEnabled(Enum.HumanoidStateType.Jumping,true) end
 			local jb=LocalPlayer.PlayerGui:WaitForChild("TouchControls"):WaitForChild("MobileControls"):WaitForChild("JumpButton")
