@@ -51,13 +51,12 @@ local function trackConnection(conn)
 	end;
 	return conn;
 end;
-local g = getgenv();
-g.speed = tonumber(g.speed) or 16;
-g.jump = tonumber(g.jump) or 30;
-g.fov = tonumber(g.fov) or 70;
-g.promptDelay = tonumber(g.promptDelay) or 0;
-g.autoFarm = true;
-g.autoHeal = g.autoHeal or false;
+(getgenv()).speed = tonumber((getgenv()).speed) or 16;
+(getgenv()).jump = tonumber((getgenv()).jump) or 30;
+(getgenv()).fov = tonumber((getgenv()).fov) or 70;
+(getgenv()).promptDelay = tonumber((getgenv()).promptDelay) or 0;
+(getgenv()).autoFarm = (getgenv()).autoFarm or false;
+(getgenv()).autoHeal = (getgenv()).autoHeal or false;
 local decalID = 95434351872718;
 local function GuiRoot()
 	return gethui and gethui() or (S("CoreGui")):FindFirstChild("RobloxGui") or S("CoreGui") or LocalPlayer:WaitForChild("PlayerGui");
