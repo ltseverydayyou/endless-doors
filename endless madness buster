@@ -51,10 +51,13 @@ local function trackConnection(conn)
 	end;
 	return conn;
 end;
-(getgenv()).speed = tonumber((getgenv()).speed) or 16;
-(getgenv()).jump = tonumber((getgenv()).jump) or 30;
-(getgenv()).fov = tonumber((getgenv()).fov) or 70;
-(getgenv()).promptDelay = tonumber((getgenv()).promptDelay) or 0;
+local g = getgenv();
+g.speed = tonumber(g.speed) or 16;
+g.jump = tonumber(g.jump) or 30;
+g.fov = tonumber(g.fov) or 70;
+g.promptDelay = tonumber(g.promptDelay) or 0;
+g.autoFarm = true;
+g.autoHeal = g.autoHeal or false;
 local decalID = 95434351872718;
 local function GuiRoot()
 	return gethui and gethui() or (S("CoreGui")):FindFirstChild("RobloxGui") or S("CoreGui") or LocalPlayer:WaitForChild("PlayerGui");
@@ -78,9 +81,26 @@ local function charValStr(ctn, nm)
 end;
 local function tpToDoor()
 	local r = Rooms:FindFirstChild("Room" .. Values.RoomsNumber.Value);
-	if r and r:FindFirstChild("Door") then
-		LocalPlayer.Character:PivotTo(r.Door:GetPivot());
+	if not (r and r:FindFirstChild("Door")) then
+		return;
 	end;
+	if greedActive then
+		local dist, tendRoot = nearestTendrilsDistance();
+		if dist < SAFE_TENDRILS_DIST then
+			local ch = LocalPlayer.Character;
+			local myRoot = rootOf(ch);
+			if myRoot and tendRoot then
+				local dir = myRoot.Position - tendRoot.Position;
+				if dir.Magnitude > 0 then
+					dir = dir.Unit;
+					local offset = dir * (SAFE_TENDRILS_DIST + 5);
+					ch:PivotTo(CFrame.new(tendRoot.Position + offset));
+				end;
+			end;
+			return;
+		end;
+	end;
+	LocalPlayer.Character:PivotTo(r.Door:GetPivot());
 end;
 local function tpToKey()
 	local ch = LocalPlayer.Character;
@@ -202,18 +222,143 @@ local function getBasePart(o)
 		if o.PrimaryPart then
 			return o.PrimaryPart;
 		end;
-		return o:FindFirstChildWhichIsA("BasePart");
+		return o:FindFirstChildWhichIsA("BasePart", true);
 	end;
+end;
+local SAFE_TENDRILS_DIST = 30;
+local tendrilsRoots = {};
+local function addTendrils(m)
+	if not (m and m:IsA("Model") and m.Name:lower() == "tendrils") then
+		return;
+	end;
+	local root = m:FindFirstChild("Root") or m:FindFirstChildWhichIsA("BasePart", true);
+	if root and root:IsA("BasePart") then
+		tendrilsRoots[(#tendrilsRoots) + 1] = root;
+	end;
+end;
+local function cleanTendrils(inst)
+	for i = #tendrilsRoots, 1, -1 do
+		local r = tendrilsRoots[i];
+		if r == inst or (not (r and r.Parent and r:IsDescendantOf(Entities))) then
+			table.remove(tendrilsRoots, i);
+		end;
+	end;
+end;
+for _, m in ipairs(Entities:GetChildren()) do
+	addTendrils(m);
+end;
+trackConnection(Entities.ChildAdded:Connect(addTendrils));
+trackConnection(Entities.DescendantRemoving:Connect(cleanTendrils));
+nearestTendrilsDistance = function()
+	local root = rootOf(LocalPlayer.Character);
+	if not (root and root.Parent) then
+		return math.huge, nil;
+	end;
+	local closest = math.huge;
+	local closestRoot = nil;
+	for i = #tendrilsRoots, 1, -1 do
+		local r = tendrilsRoots[i];
+		if not (r and r.Parent and r:IsDescendantOf(Entities)) then
+			table.remove(tendrilsRoots, i);
+		else
+			local d = (root.Position - r.Position).Magnitude;
+			if d < closest then
+				closest = d;
+				closestRoot = r;
+			end;
+		end;
+	end;
+	return closest, closestRoot;
+end;
+local healNames = {
+	vitamins = true,
+	bandage = true,
+	["health tonic"] = true
+};
+local lastHealTick = 0;
+local HEAL_COOLDOWN = 3;
+local healing = false;
+local function tryAutoHeal(h)
+	if not (getgenv()).autoHeal then
+		return;
+	end;
+	if not h or h.Health <= 0 then
+		return;
+	end;
+	if healing then
+		return;
+	end;
+	local max = h.MaxHealth > 0 and h.MaxHealth or 100;
+	if h.Health > max * 0.5 then
+		return;
+	end;
+	local now = tick();
+	if now - lastHealTick < HEAL_COOLDOWN then
+		return;
+	end;
+	local bp = LocalPlayer:FindFirstChildOfClass("Backpack");
+	if not bp then
+		return;
+	end;
+	for _, tool in ipairs(bp:GetChildren()) do
+		if tool:IsA("Tool") then
+			local n = tool.Name:lower();
+			if healNames[n] then
+				lastHealTick = now;
+				healing = true;
+				tool.Parent = LocalPlayer.Character;
+				task.spawn(function()
+					pcall(function()
+						tool:Activate();
+					end);
+					task.wait(1.3);
+					healing = false;
+				end);
+				break;
+			end;
+		end;
+	end;
+end;
+local espItems = {};
+local espConn;
+local function ensureEspLoop()
+	if espConn then
+		return;
+	end;
+	espConn = RunService.RenderStepped:Connect(function()
+		local root = rootOf(LocalPlayer.Character);
+		for inst, data in pairs(espItems) do
+			if not (inst and inst.Parent and data.base and data.base.Parent and data.box and data.box.Parent and data.label and data.label.Parent) then
+				if data.box then
+					data.box:Destroy();
+				end;
+				if data.billboard then
+					data.billboard:Destroy();
+				end;
+				espItems[inst] = nil;
+			elseif root then
+				local d = (root.Position - data.base.Position).Magnitude;
+				data.label.Text = string.format("%s | %.1f", data.text, d);
+			end;
+		end;
+		if not next(espItems) then
+			espConn:Disconnect();
+			espConn = nil;
+		end;
+	end);
 end;
 local function CreateESP(target, color, label)
 	local base = getBasePart(target);
 	if not base then
 		return;
 	end;
+	local existing = espItems[target];
+	if existing then
+		existing.text = label or target.Name;
+		existing.base = base;
+		return existing.box;
+	end;
 	local bc = color or Color3.new(1, 0, 0);
-	local h, s, v = Color3.toHSV(bc);
-	local dark = Color3.fromHSV(h, s, math.clamp(v - 0.5, 0, 1));
-	local lite = Color3.fromHSV(h, s, math.clamp(v + 0.5, 0, 1));
 	local box = Instance.new("BoxHandleAdornment");
 	box.Name = target.Name:lower() .. "_ESP";
 	box.Adornee = base;
@@ -221,17 +366,13 @@ local function CreateESP(target, color, label)
 	box.AlwaysOnTop = true;
 	box.ZIndex = 0;
 	box.Transparency = 0.45;
-	box.Color3 = lite;
+	box.Color3 = bc;
 	if target:IsA("Model") then
 		local _, sz = target:GetBoundingBox();
 		box.Size = sz + Vector3.new(0.1, 0.1, 0.1);
 	else
 		box.Size = base.Size + Vector3.new(0.1, 0.1, 0.1);
 	end;
-	local tw = TweenService:Create(box, TweenInfo.new(1, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut, math.huge, true), {
-		Color3 = dark
-	});
-	tw:Play();
 	local bb = Instance.new("BillboardGui");
 	bb.Name = target.Name:lower() .. "_LABEL";
 	bb.Parent = target;
@@ -249,27 +390,39 @@ local function CreateESP(target, color, label)
 	tl.TextSize = 14;
 	tl.TextColor3 = Color3.new(1, 1, 1);
 	tl.TextStrokeTransparency = 0.5;
-	local grad = Instance.new("UIGradient");
-	grad.Color = ColorSequence.new(dark, lite);
-	grad.Parent = tl;
-	local rs;
-	rs = RunService.RenderStepped:Connect(function()
-		if not box.Parent then
-			tw:Cancel();
-			rs:Disconnect();
-			return;
-		end;
-		local r = rootOf(LocalPlayer.Character);
-		if r then
-			local d = (r.Position - base.Position).Magnitude;
-			tl.Text = string.format("%s | %.1f", label or target.Name, d);
-		end;
-	end);
+	espItems[target] = {
+		base = base,
+		box = box,
+		billboard = bb,
+		label = tl,
+		text = label or target.Name
+	};
+	ensureEspLoop();
 	return box;
 end;
 local function RemoveESP(p)
+	if espItems[p] then
+		local data = espItems[p];
+		if data.box then
+			data.box:Destroy();
+		end;
+		if data.billboard then
+			data.billboard:Destroy();
+		end;
+		espItems[p] = nil;
+	end;
 	pcall(function()
 		for _, c in ipairs(p:GetChildren()) do
+			if espItems[c] then
+				local data = espItems[c];
+				if data.box then
+					data.box:Destroy();
+				end;
+				if data.billboard then
+					data.billboard:Destroy();
+				end;
+				espItems[c] = nil;
+			end;
 			if c:IsA("BoxHandleAdornment") or c:IsA("BillboardGui") or c:IsA("Highlight") then
 				c:Destroy();
 			end;
@@ -1784,6 +1937,14 @@ playerGroup:AddToggle({
 		end;
 	end
 });
+playerGroup:AddToggle({
+	Name = "Auto Heal",
+	CurrentValue = (getgenv()).autoHeal,
+	Flag = "autoHeal",
+	Callback = function(v)
+		(getgenv()).autoHeal = v;
+	end
+});
 local miscGroup = tabMain:AddGroupbox("Misc & Teleports", "hammer", "right");
 miscGroup:AddButton({
 	Name = "Hide Value",
@@ -1810,39 +1971,11 @@ miscGroup:AddButton({
 	end
 });
 miscGroup:AddToggle({
-	Name = "Loop Teleport To Door",
-	CurrentValue = false,
+	Name = "Auto Farm",
+	CurrentValue = (getgenv()).autoFarm,
+	Flag = "AutoFarm",
 	Callback = function(v)
-		task.spawn(function()
-			(getgenv()).teletodoor = v;
-			while (getgenv()).teletodoor and task.wait(0.3) do
-				pcall(tpToDoor);
-			end;
-		end);
-	end
-});
-miscGroup:AddToggle({
-	Name = "Loop Teleport To Key",
-	CurrentValue = false,
-	Callback = function(v)
-		task.spawn(function()
-			(getgenv()).teletokey = v;
-			while (getgenv()).teletokey and task.wait(0.5) do
-				pcall(tpToKey);
-			end;
-		end);
-	end
-});
-miscGroup:AddToggle({
-	Name = "Loop Teleport To Lever",
-	CurrentValue = false,
-	Callback = function(v)
-		task.spawn(function()
-			(getgenv()).teletolever = v;
-			while (getgenv()).teletolever and task.wait(0.5) do
-				pcall(tpToLever);
-			end;
-		end);
+		(getgenv()).autoFarm = v;
 	end
 });
 miscGroup:AddSection("Notifications");
@@ -2124,33 +2257,356 @@ trackConnection(((S("ReplicatedStorage")).Remotes:FindFirstChild("E_A", true)).O
 	end;
 end));
 trackConnection(Rooms.DescendantAdded:Connect(function(o)
-	if (getgenv()).keyESP and o:IsA("BasePart") and o.Name:lower() == "roomkey" and o.Parent.Name:lower() ~= "door" then
+	if not o:IsA("BasePart") then
+		return;
+	end;
+	local n = o.Name:lower();
+	if (getgenv()).keyESP and n == "roomkey" and o.Parent and o.Parent.Name:lower() ~= "door" then
 		task.defer(function()
 			CreateESP(o, Color3.new(1, 1, 0), "Key");
 		end);
-	end;
-end));
-trackConnection(Rooms.DescendantAdded:Connect(function(o)
-	if (getgenv()).bitESP and o:IsA("BasePart") and o.Name:lower() == "bit" then
+	elseif (getgenv()).bitESP and n == "bit" then
 		task.defer(function()
 			CreateESP(o, Color3.new(1, 0.666667, 0));
 		end);
-	end;
-end));
-trackConnection(Rooms.DescendantAdded:Connect(function(o)
-	if (getgenv()).leverESP and o:IsA("BasePart") and o.Name:lower() == "lever" then
+	elseif (getgenv()).leverESP and n == "lever" then
 		task.defer(function()
 			CreateESP(o, Color3.fromRGB(139, 145, 165));
 		end);
-	end;
-end));
-trackConnection(Rooms.DescendantAdded:Connect(function(o)
-	if (getgenv()).batteryESP and o:IsA("BasePart") and o.Name:lower() == "battery" then
+	elseif (getgenv()).batteryESP and n == "battery" then
 		task.defer(function()
 			CreateESP(o, Color3.new(0, 0.666667, 0));
 		end);
 	end;
 end));
+local remNP = ((S("ReplicatedStorage")):WaitForChild("Remotes")):WaitForChild("NP_E");
+local curRoomVal = Values:WaitForChild("RoomsNumber");
+local function getChar()
+	local ch = LocalPlayer.Character;
+	if ch then
+		return ch;
+	end;
+	return LocalPlayer.CharacterAdded:Wait();
+end;
+local function tpTo(o)
+	if not o then
+		return;
+	end;
+	local cf;
+	if o:IsA("Model") then
+		cf = o:GetPivot();
+	elseif o:IsA("BasePart") then
+		cf = o.CFrame;
+	else
+		local m = o:FindFirstAncestorOfClass("Model");
+		if m then
+			cf = m:GetPivot();
+		end;
+	end;
+	if cf then
+		(getChar()):PivotTo(cf);
+	end;
+end;
+local function waitPlay(snd, tm)
+	if not snd then
+		if tm and tm > 0 then
+			task.wait(tm);
+		end;
+		return;
+	end;
+	local done = false;
+	local c;
+	c = snd.Played:Connect(function()
+		done = true;
+		c:Disconnect();
+	end);
+	if snd.IsPlaying then
+		done = true;
+		c:Disconnect();
+	end;
+	local t0 = tick();
+	local lim = tm or 10;
+	while not done and tick() - t0 < lim do
+		task.wait();
+	end;
+end;
+local function imgKey(img)
+	if not img or (not (img:IsA("ImageLabel") or img:IsA("ImageButton"))) then
+		return nil;
+	end;
+	local im = img.Image or "";
+	local off = img.ImageRectOffset;
+	local sz = img.ImageRectSize;
+	local rot = img.Rotation;
+	return im .. "|" .. off.X .. "," .. off.Y .. "|" .. sz.X .. "," .. sz.Y .. "|" .. rot;
+end;
+local function romanNum(s)
+	s = (tostring(s or "")):upper();
+	if s == "" then
+		return nil;
+	end;
+	local map = {
+		I = 1,
+		V = 5,
+		X = 10
+	};
+	local t = 0;
+	local prev = 0;
+	for i = #s, 1, -1 do
+		local ch = s:sub(i, i);
+		local v = map[ch] or 0;
+		if v < prev then
+			t -= v;
+		else
+			t += v;
+		end;
+		prev = v;
+	end;
+	if t <= 0 then
+		return nil;
+	end;
+	return t;
+end;
+local function findFrame(root)
+	if not root then
+		return nil;
+	end;
+	local sg = root:FindFirstChildWhichIsA("SurfaceGui", true);
+	if sg then
+		local fr = sg:FindFirstChild("Frame", true);
+		if fr then
+			return fr;
+		end;
+	end;
+	return root:FindFirstChild("Frame", true);
+end;
+local function numMap(pz)
+	local nr = pz:FindFirstChild("SolutionNumberReveal");
+	if not nr then
+		return nil;
+	end;
+	local fr = findFrame(nr);
+	if not fr then
+		return nil;
+	end;
+	local map = {};
+	for _, ex in ipairs(fr:GetChildren()) do
+		if ex.Name == "NumberExample" or ex:IsA("Frame") then
+			local img = ex:FindFirstChild("ImageShape", true);
+			local lbl = ex:FindFirstChild("OrderLabel", true);
+			if img and lbl and lbl:IsA("TextLabel") then
+				local k = imgKey(img);
+				local t = tostring(lbl.Text or "");
+				local d = t:match("(%d+)");
+				if k and d then
+					map[k] = d;
+				end;
+			end;
+		end;
+	end;
+	return map;
+end;
+local function codeFromOrder(pz, map)
+	if not map then
+		return nil;
+	end;
+	local orv = pz:FindFirstChild("SolutionOrderReveal");
+	if not orv then
+		return nil;
+	end;
+	local fr = findFrame(orv);
+	if not fr then
+		return nil;
+	end;
+	local pos = {};
+	local maxPos = 0;
+	for _, ex in ipairs(fr:GetChildren()) do
+		if ex.Name == "OrderExample" or ex:IsA("Frame") then
+			local img = ex:FindFirstChild("ImageShape", true);
+			local lbl = ex:FindFirstChild("OrderLabel", true);
+			if img and lbl and lbl:IsA("TextLabel") then
+				local k = imgKey(img);
+				local r = tostring(lbl.Text or "");
+				local p = romanNum(r);
+				local d = map[k];
+				if p and d then
+					pos[p] = d;
+					if p > maxPos then
+						maxPos = p;
+					end;
+				end;
+			end;
+		end;
+	end;
+	if maxPos == 0 then
+		return nil;
+	end;
+	local out = {};
+	for i = 1, maxPos do
+		out[i] = pos[i] or "?";
+	end;
+	return table.concat(out);
+end;
+local busyBoss = false;
+local function bruteCode(room, pz)
+	local gate = room:FindFirstChild("GateFinal") or room:FindFirstChild("GateFinal", true);
+	local openS = gate and (gate:FindFirstChild("Opening") or gate:FindFirstChildWhichIsA("Sound", true));
+	local found = false;
+	local last = nil;
+	local tries = 0;
+	if openS then
+		openS.Played:Connect(function()
+			if not found then
+				found = true;
+				print("FOUND CODE:", last, "after", tries, "tries");
+			end;
+		end);
+	end;
+	local map = numMap(pz);
+	local code = codeFromOrder(pz, map);
+	if code and code ~= "" and (not code:find("%?")) then
+		last = code;
+		tries = 1;
+		remNP:FireServer(code);
+		local t0 = tick();
+		while not found and tick() - t0 < 5 do
+			task.wait();
+		end;
+		if found then
+			task.wait(1);
+			return;
+		end;
+	end;
+	for i = 0, 9999 do
+		if found then
+			break;
+		end;
+		local c = string.format("%04d", i);
+		last = c;
+		tries += 1;
+		remNP:FireServer(c);
+		if tries % 10 == 0 then
+			task.wait(0.1);
+		end;
+	end;
+	if found then
+		task.wait(1);
+	end;
+end;
+local function getLeverGates(room, maxWait)
+	local t0 = tick();
+	local gates = {};
+	repeat
+		gates = {};
+		for _, d in ipairs(room:GetDescendants()) do
+			if d:IsA("Model") and d.Name == "LeverGates" then
+				gates[(#gates) + 1] = d;
+			end;
+		end;
+		if #gates > 0 or (not maxWait) then
+			break;
+		end;
+		task.wait(0.25);
+	until tick() - t0 >= maxWait;
+	return gates;
+end;
+local function doBoss(room, pz)
+	if busyBoss or (not (getgenv()).autoFarm) then
+		return;
+	end;
+	busyBoss = true;
+	local ls = room:FindFirstChild("LeverStart");
+	if not ls then
+		busyBoss = false;
+		return;
+	end;
+	tpTo(ls);
+	local pp = ls:FindFirstChildWhichIsA("ProximityPrompt", true);
+	local lever = ls:FindFirstChild("Lever", true);
+	local pullS = lever and (lever:FindFirstChild("Pull") or lever:FindFirstChildWhichIsA("Sound", true));
+	if pp then
+		task.wait(0.5);
+		pcall(fireproximityprompt, pp);
+	end;
+	waitPlay(pullS, 10);
+	task.wait(7);
+	local gates = getLeverGates(room, 15);
+	for _, gModel in ipairs(gates) do
+		local lv = gModel:FindFirstChild("Lever", true) or gModel;
+		local gpp = gModel:FindFirstChildWhichIsA("ProximityPrompt", true);
+		local gsnd = lv:FindFirstChild("Pull") or gModel:FindFirstChild("Pull", true) or gModel:FindFirstChildWhichIsA("Sound", true);
+		tpTo(lv);
+		task.wait(0.7);
+		if gpp then
+			pcall(fireproximityprompt, gpp);
+		end;
+		waitPlay(gsnd, 6);
+	end;
+	local numPad = pz:FindFirstChild("NumPad") or room:FindFirstChild("NumPad", true);
+	if numPad then
+		tpTo(numPad);
+		task.wait(3);
+		bruteCode(room, pz);
+	end;
+	busyBoss = false;
+end;
+local seenBossRooms = {};
+local function isBossPending()
+	local n = curRoomVal.Value;
+	if typeof(n) ~= "number" then
+		return false;
+	end;
+	local r = Rooms:FindFirstChild("Room" .. n);
+	if not r then
+		return false;
+	end;
+	local rn = r:GetAttribute("RoomName");
+	if typeof(rn) == "string" and rn == "ClockRoom" and (not seenBossRooms[n]) then
+		return true;
+	end;
+	return false;
+end;
+local function checkRoom()
+	local n = curRoomVal.Value;
+	if typeof(n) ~= "number" then
+		return;
+	end;
+	if seenBossRooms[n] then
+		return;
+	end;
+	local r = Rooms:FindFirstChild("Room" .. n);
+	if not r then
+		return;
+	end;
+	local rn = r:GetAttribute("RoomName");
+	local pz = r:FindFirstChild("Puzzel") or r:FindFirstChild("Puzzle");
+	if not pz and (not (typeof(rn) == "string" and rn == "ClockRoom")) then
+		return;
+	end;
+	if not pz then
+		pz = r:FindFirstChild("Puzzle") or r:FindFirstChild("Puzzel") or r;
+	end;
+	seenBossRooms[n] = true;
+	task.spawn(function()
+		doBoss(r, pz);
+	end);
+end;
+(curRoomVal:GetPropertyChangedSignal("Value")):Connect(checkRoom);
+checkRoom();
+task.spawn(function()
+	while true do
+		if (getgenv()).autoFarm and (not busyBoss) and (not isBossPending()) then
+			pcall(tpToDoor);
+			task.wait(0.1);
+			pcall(tpToKey);
+			task.wait(0.1);
+			pcall(tpToLever);
+			task.wait(0.1);
+		else
+			task.wait(0.1);
+		end;
+	end;
+end);
 ObsidianUI:LoadConfiguration();
 trackConnection(RunService.RenderStepped:Connect(function()
 	if (getgenv()).chaos then
@@ -2170,7 +2626,8 @@ cameraConn = trackConnection((workspace:GetPropertyChangedSignal("CurrentCamera"
 end));
 task.spawn(function()
 	while task.wait() do
-		local h = LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Humanoid");
+		local ch = LocalPlayer.Character;
+		local h = ch and ch:FindFirstChildOfClass("Humanoid");
 		if h then
 			if (getgenv()).sped then
 				h.WalkSpeed = (getgenv()).speed;
@@ -2178,6 +2635,7 @@ task.spawn(function()
 			if (getgenv()).jumpy then
 				h.JumpPower = (getgenv()).jump;
 			end;
+			tryAutoHeal(h);
 		end;
 	end;
 end);
