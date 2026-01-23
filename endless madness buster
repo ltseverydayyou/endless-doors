@@ -84,6 +84,10 @@ local function tpToDoor()
 	if not (r and r:FindFirstChild("Door")) then
 		return;
 	end;
+	local rn = r:GetAttribute("RoomName");
+	if typeof(rn) == "string" and rn == "ClockRoom" then
+		return;
+	end;
 	if greedActive then
 		local dist, tendRoot = nearestTendrilsDistance();
 		if dist < SAFE_TENDRILS_DIST then
@@ -112,6 +116,10 @@ local function tpToKey()
 	if not r then
 		return;
 	end;
+	local rn = r:GetAttribute("RoomName");
+	if typeof(rn) == "string" and rn == "ClockRoom" then
+		return;
+	end;
 	for _, d in ipairs(r:GetDescendants()) do
 		if d:IsA("BasePart") and d.Name:lower() == "roomkey" and d.Parent.Name:lower() ~= "door" then
 			LocalPlayer.Character:PivotTo(d:GetPivot());
@@ -122,6 +130,10 @@ end;
 local function tpToLever()
 	local r = Rooms:FindFirstChild("Room" .. Values.RoomsNumber.Value);
 	if not r then
+		return;
+	end;
+	local rn = r:GetAttribute("RoomName");
+	if typeof(rn) == "string" and rn == "ClockRoom" then
 		return;
 	end;
 	for _, d in ipairs(r:GetDescendants()) do
@@ -2561,10 +2573,7 @@ local function isBossPending()
 		return false;
 	end;
 	local rn = r:GetAttribute("RoomName");
-	if typeof(rn) == "string" and rn == "ClockRoom" and (not seenBossRooms[n]) then
-		return true;
-	end;
-	return false;
+	return typeof(rn) == "string" and rn == "ClockRoom";
 end;
 local function checkRoom()
 	local n = curRoomVal.Value;
