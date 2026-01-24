@@ -123,9 +123,31 @@ local function tpToLever()
 	if not r then
 		return;
 	end;
+	local gateModel;
+	for _, d in ipairs(r:GetDescendants()) do
+		if d:IsA("Model") and d.Name == "GateLever" then
+			gateModel = d;
+			break;
+		end;
+	end;
+	if gateModel then
+		local target = gateModel:FindFirstChild("LeverGoal") or gateModel:FindFirstChild("Lever") or gateModel;
+		if target then
+			if target:IsA("Model") then
+				LocalPlayer.Character:PivotTo(target:GetPivot());
+			else
+				LocalPlayer.Character:PivotTo(target.CFrame);
+			end;
+			return;
+		end;
+	end;
 	for _, d in ipairs(r:GetDescendants()) do
 		if (d:IsA("BasePart") or d:IsA("Model")) and d.Name:lower() == "gatelever" then
-			LocalPlayer.Character:PivotTo(d:GetPivot());
+			if d:IsA("Model") then
+				LocalPlayer.Character:PivotTo(d:GetPivot());
+			else
+				LocalPlayer.Character:PivotTo(d.CFrame);
+			end;
 			break;
 		end;
 	end;
@@ -1975,6 +1997,9 @@ miscGroup:AddToggle({
 	Flag = "AutoFarm",
 	Callback = function(v)
 		(getgenv()).autoFarm = v;
+		if v and checkRoom then
+			checkRoom();
+		end;
 	end
 });
 miscGroup:AddSection("Notifications");
@@ -2449,6 +2474,7 @@ end;
 local busyBoss = false;
 local bossStarted = {};
 local bossCompleted = {};
+local checkRoom;
 local function bruteCode(room, pz)
 	local gate = room:FindFirstChild("GateFinal") or room:FindFirstChild("GateFinal", true);
 	local openS = gate and (gate:FindFirstChild("Opening") or gate:FindFirstChildWhichIsA("Sound", true));
@@ -2512,7 +2538,7 @@ local function getLeverGates(room, maxWait)
 	return gates;
 end;
 local function doBoss(room, pz, roomIndex)
-	if busyBoss or (not (getgenv()).autoFarm) then
+	if busyBoss then
 		return;
 	end;
 	busyBoss = true;
@@ -2573,12 +2599,12 @@ local function isBossPending()
 	local rn = r:GetAttribute("RoomName");
 	return typeof(rn) == "string" and rn == "ClockRoom";
 end;
-local function checkRoom()
+checkRoom = function()
 	local n = curRoomVal.Value;
 	if typeof(n) ~= "number" then
 		return;
 	end;
-	if bossStarted[n] then
+	if bossStarted[n] or bossCompleted[n] then
 		return;
 	end;
 	local r = Rooms:FindFirstChild("Room" .. n);
@@ -2592,6 +2618,9 @@ local function checkRoom()
 	end;
 	if not pz then
 		pz = r:FindFirstChild("Puzzle") or r:FindFirstChild("Puzzel") or r;
+	end;
+	if not (getgenv()).autoFarm then
+		return;
 	end;
 	bossStarted[n] = true;
 	task.spawn(function()
