@@ -83,10 +83,6 @@ local function tpToDoor()
 	if not (r and r:FindFirstChild("Door")) then
 		return;
 	end;
-	local rn = r:GetAttribute("RoomName");
-	if typeof(rn) == "string" and rn == "ClockRoom" then
-		return;
-	end;
 	if greedActive then
 		local dist, tendRoot = nearestTendrilsDistance();
 		if dist < SAFE_TENDRILS_DIST then
@@ -115,10 +111,6 @@ local function tpToKey()
 	if not r then
 		return;
 	end;
-	local rn = r:GetAttribute("RoomName");
-	if typeof(rn) == "string" and rn == "ClockRoom" then
-		return;
-	end;
 	for _, d in ipairs(r:GetDescendants()) do
 		if d:IsA("BasePart") and d.Name:lower() == "roomkey" and d.Parent.Name:lower() ~= "door" then
 			LocalPlayer.Character:PivotTo(d:GetPivot());
@@ -129,10 +121,6 @@ end;
 local function tpToLever()
 	local r = Rooms:FindFirstChild("Room" .. Values.RoomsNumber.Value);
 	if not r then
-		return;
-	end;
-	local rn = r:GetAttribute("RoomName");
-	if typeof(rn) == "string" and rn == "ClockRoom" then
 		return;
 	end;
 	for _, d in ipairs(r:GetDescendants()) do
@@ -2459,6 +2447,8 @@ local function codeFromOrder(pz, map)
 	return table.concat(out);
 end;
 local busyBoss = false;
+local bossStarted = {};
+local bossCompleted = {};
 local function bruteCode(room, pz)
 	local gate = room:FindFirstChild("GateFinal") or room:FindFirstChild("GateFinal", true);
 	local openS = gate and (gate:FindFirstChild("Opening") or gate:FindFirstChildWhichIsA("Sound", true));
@@ -2521,7 +2511,7 @@ local function getLeverGates(room, maxWait)
 	until tick() - t0 >= maxWait;
 	return gates;
 end;
-local function doBoss(room, pz)
+local function doBoss(room, pz, roomIndex)
 	if busyBoss or (not (getgenv()).autoFarm) then
 		return;
 	end;
@@ -2529,6 +2519,9 @@ local function doBoss(room, pz)
 	local ls = room:FindFirstChild("LeverStart");
 	if not ls then
 		busyBoss = false;
+		if roomIndex ~= nil then
+			bossCompleted[roomIndex] = true;
+		end;
 		return;
 	end;
 	tpTo(ls);
@@ -2560,11 +2553,17 @@ local function doBoss(room, pz)
 		bruteCode(room, pz);
 	end;
 	busyBoss = false;
+	if roomIndex ~= nil then
+		bossCompleted[roomIndex] = true;
+	end;
 end;
 local seenBossRooms = {};
 local function isBossPending()
 	local n = curRoomVal.Value;
 	if typeof(n) ~= "number" then
+		return false;
+	end;
+	if bossCompleted[n] then
 		return false;
 	end;
 	local r = Rooms:FindFirstChild("Room" .. n);
@@ -2579,7 +2578,7 @@ local function checkRoom()
 	if typeof(n) ~= "number" then
 		return;
 	end;
-	if seenBossRooms[n] then
+	if bossStarted[n] then
 		return;
 	end;
 	local r = Rooms:FindFirstChild("Room" .. n);
@@ -2594,9 +2593,9 @@ local function checkRoom()
 	if not pz then
 		pz = r:FindFirstChild("Puzzle") or r:FindFirstChild("Puzzel") or r;
 	end;
-	seenBossRooms[n] = true;
+	bossStarted[n] = true;
 	task.spawn(function()
-		doBoss(r, pz);
+		doBoss(r, pz, n);
 	end);
 end;
 (curRoomVal:GetPropertyChangedSignal("Value")):Connect(checkRoom);
