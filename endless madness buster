@@ -43,6 +43,8 @@ local currentCamera = workspace.CurrentCamera;
 local brightLoop, antiAFKConn, fovLockConn, cameraConn, infJumpConn, mobHoldConn, mobDownConn, mobUpConn;
 local overCon, lurkCon, watchCon, flowCon, abyssCon, takerCon, chaseCon;
 local greedActive = false;
+local greedToken = 0;
+local ObsidianUI;
 local scriptRunning = true;
 local activeConnections = {};
 local function trackConnection(conn)
@@ -78,7 +80,177 @@ local function charValStr(ctn, nm)
 	local o = ch and ch:FindFirstChild(ctn) and ch[ctn]:FindFirstChild(nm);
 	return o and tostring(o.Value);
 end;
-local function tpToDoor()
+local RoomTracker = (function()
+	local roomItemCache = {};
+	local trackedParts = {
+		roomkey = {},
+		bit = {},
+		lever = {},
+		battery = {}
+	};
+	local itemRoomIndex = {};
+	local function roomKey(room)
+		return room and room.Name;
+	end;
+	local function registerPart(kind, inst)
+		local set = trackedParts[kind];
+		if set and inst then
+			set[inst] = true;
+		end;
+	end;
+	local function unregisterPart(inst)
+		for _, set in pairs(trackedParts) do
+			set[inst] = nil;
+		end;
+	end;
+	local function cleanedList(kind)
+		local set = trackedParts[kind];
+		if not set then
+			return {};
+		end;
+		local list = {};
+		for inst in pairs(set) do
+			if inst and inst.Parent then
+				list[(#list) + 1] = inst;
+			else
+				set[inst] = nil;
+			end;
+		end;
+		return list;
+	end;
+	local function findRoom(inst)
+		local current = inst;
+		while current and current ~= Rooms do
+			if current.Parent == Rooms and current:IsA("Model") and current.Name:match("^Room") then
+				return current;
+			end;
+			current = current.Parent;
+		end;
+		return nil;
+	end;
+	local function setRoomValue(room, field, inst)
+		local key = roomKey(room);
+		if not key then
+			return;
+		end;
+		local cache = roomItemCache[key];
+		if not cache then
+			cache = {
+				room = room
+			};
+			roomItemCache[key] = cache;
+		else
+			cache.room = room;
+		end;
+		if field == "gateLever" then
+			local current = cache.gateLever;
+			if current and current.Parent and current:IsA("Model") and (not inst:IsA("Model")) then
+				return;
+			end;
+		end;
+		cache[field] = inst;
+	end;
+	local function clearRoomValue(roomName, inst)
+		local cache = roomName and roomItemCache[roomName];
+		if not cache then
+			return;
+		end;
+		if cache.roomKey == inst then
+			cache.roomKey = nil;
+		end;
+		if cache.gateLever == inst then
+			cache.gateLever = nil;
+		end;
+	end;
+	local function processAdded(inst, room)
+		room = room or findRoom(inst);
+		if not room then
+			return;
+		end;
+		local lower = inst.Name:lower();
+		if inst:IsA("BasePart") then
+			if lower == "roomkey" then
+				if not (inst.Parent and inst.Parent.Name:lower() == "door") then
+					itemRoomIndex[inst] = room.Name;
+					registerPart("roomkey", inst);
+					setRoomValue(room, "roomKey", inst);
+				end;
+			elseif lower == "bit" or lower == "lever" or lower == "battery" then
+				itemRoomIndex[inst] = room.Name;
+				registerPart(lower, inst);
+			elseif lower == "gatelever" then
+				itemRoomIndex[inst] = room.Name;
+				setRoomValue(room, "gateLever", inst);
+			end;
+		elseif inst:IsA("Model") and (lower == "gatelever" or inst.Name == "GateLever") then
+			itemRoomIndex[inst] = room.Name;
+			setRoomValue(room, "gateLever", inst);
+		end;
+	end;
+	local function processRemoved(inst)
+		unregisterPart(inst);
+		local roomName = itemRoomIndex[inst];
+		itemRoomIndex[inst] = nil;
+		if roomName then
+			clearRoomValue(roomName, inst);
+		else
+			local room = findRoom(inst);
+			if room then
+				clearRoomValue(room.Name, inst);
+			end;
+		end;
+	end;
+	local function indexRoom(room)
+		if not (room and room:IsA("Model")) then
+			return;
+		end;
+		for _, desc in ipairs(room:GetDescendants()) do
+			processAdded(desc, room);
+		end;
+	end;
+	local function getRoomTarget(room, field)
+		if not room then
+			return nil;
+		end;
+		local cache = roomItemCache[room.Name];
+		if not cache then
+			return nil;
+		end;
+		local inst = cache[field];
+		if inst and inst.Parent then
+			return inst;
+		end;
+		cache[field] = nil;
+		return nil;
+	end;
+	local function init()
+		for _, room in ipairs(Rooms:GetChildren()) do
+			indexRoom(room);
+		end;
+		trackConnection(Rooms.ChildAdded:Connect(function(room)
+			if room and room:IsA("Model") and room.Name:match("^Room") then
+				indexRoom(room);
+			end;
+		end));
+		trackConnection(Rooms.DescendantAdded:Connect(processAdded));
+		trackConnection(Rooms.DescendantRemoving:Connect(processRemoved));
+	end;
+	init();
+	return {
+		getRoomTarget = getRoomTarget,
+		getTracked = function(kind)
+			return cleanedList(kind);
+		end,
+		clear = function()
+			roomItemCache = {};
+			itemRoomIndex = {};
+			for name in pairs(trackedParts) do
+				trackedParts[name] = {};
+			end;
+		end
+	};
+end)();
+local function tpToDoor(ignoreGreed)
 	local r = Rooms:FindFirstChild("Room" .. Values.RoomsNumber.Value);
 	if not (r and r:FindFirstChild("Door")) then
 		return;
@@ -96,12 +268,11 @@ local function tpToDoor()
 					ch:PivotTo(CFrame.new(tendRoot.Position + offset));
 				end;
 			end;
-			return;
 		end;
 	end;
 	LocalPlayer.Character:PivotTo(r.Door:GetPivot());
 end;
-local function tpToKey()
+local function tpToKey(_ignoreGreed)
 	local ch = LocalPlayer.Character;
 	local hk = ch and ch:FindFirstChild("Values") and ch.Values:FindFirstChild("HasKey");
 	if hk and hk.Value then
@@ -111,45 +282,28 @@ local function tpToKey()
 	if not r then
 		return;
 	end;
-	for _, d in ipairs(r:GetDescendants()) do
-		if d:IsA("BasePart") and d.Name:lower() == "roomkey" and d.Parent.Name:lower() ~= "door" then
-			LocalPlayer.Character:PivotTo(d:GetPivot());
-			break;
-		end;
+	local keyPart = RoomTracker.getRoomTarget(r, "roomKey");
+	if keyPart then
+		LocalPlayer.Character:PivotTo(keyPart:GetPivot());
 	end;
 end;
-local function tpToLever()
+local function tpToLever(_ignoreGreed)
 	local r = Rooms:FindFirstChild("Room" .. Values.RoomsNumber.Value);
 	if not r then
 		return;
 	end;
-	local gateModel;
-	for _, d in ipairs(r:GetDescendants()) do
-		if d:IsA("Model") and d.Name == "GateLever" then
-			gateModel = d;
-			break;
-		end;
+	local gateLever = RoomTracker.getRoomTarget(r, "gateLever");
+	if not gateLever then
+		return;
 	end;
-	if gateModel then
-		local target = gateModel:FindFirstChild("LeverGoal") or gateModel:FindFirstChild("Lever") or gateModel;
-		if target then
-			if target:IsA("Model") then
-				LocalPlayer.Character:PivotTo(target:GetPivot());
-			else
-				LocalPlayer.Character:PivotTo(target.CFrame);
-			end;
-			return;
-		end;
+	local target = gateLever;
+	if gateLever:IsA("Model") then
+		target = gateLever:FindFirstChild("LeverGoal") or gateLever:FindFirstChild("Lever") or gateLever;
 	end;
-	for _, d in ipairs(r:GetDescendants()) do
-		if (d:IsA("BasePart") or d:IsA("Model")) and d.Name:lower() == "gatelever" then
-			if d:IsA("Model") then
-				LocalPlayer.Character:PivotTo(d:GetPivot());
-			else
-				LocalPlayer.Character:PivotTo(d.CFrame);
-			end;
-			break;
-		end;
+	if target:IsA("Model") then
+		LocalPlayer.Character:PivotTo(target:GetPivot());
+	else
+		LocalPlayer.Character:PivotTo(target.CFrame);
 	end;
 end;
 local function disableRagdoll()
@@ -377,6 +531,10 @@ local function CreateESP(target, color, label)
 	if existing then
 		existing.text = label or target.Name;
 		existing.base = base;
+		if color then
+			existing.box.Color3 = color;
+			existing.label.TextColor3 = color;
+		end;
 		return existing.box;
 	end;
 	local bc = color or Color3.new(1, 0, 0);
@@ -409,7 +567,7 @@ local function CreateESP(target, color, label)
 	tl.Font = Enum.Font.SourceSansBold;
 	tl.Text = label or target.Name;
 	tl.TextSize = 14;
-	tl.TextColor3 = Color3.new(1, 1, 1);
+	tl.TextColor3 = bc;
 	tl.TextStrokeTransparency = 0.5;
 	espItems[target] = {
 		base = base,
@@ -447,6 +605,30 @@ local function RemoveESP(p)
 			if c:IsA("BoxHandleAdornment") or c:IsA("BillboardGui") or c:IsA("Highlight") then
 				c:Destroy();
 			end;
+		end;
+	end);
+end;
+local function handleEntitySpawn(ent, opts)
+	if not ent then
+		return;
+	end;
+	local notify = opts and (opts.notify ~= false);
+	local wantESP = (getgenv()).entityEsp;
+	local wantNotif = notify and (getgenv()).entityNotif;
+	if not (wantESP or wantNotif) then
+		return;
+	end;
+	task.defer(function()
+		if wantESP then
+			CreateESP(ent);
+		end;
+		if wantNotif then
+			ObsidianUI:Notify({
+				Title = "Entity",
+				Content = ent.Name .. " Has Spawned",
+				Duration = 3,
+				Image = decalID
+			});
 		end;
 	end);
 end;
@@ -783,7 +965,7 @@ local function normalizeSoundId(value)
 	end;
 	return nil;
 end;
-local ObsidianUI = {
+ObsidianUI = {
 	Library = ObsidianLibrary,
 	SaveManager = ObsidianSaveManager,
 	ThemeManager = ObsidianThemeManager,
@@ -859,6 +1041,7 @@ function ObsidianUI:Cleanup()
 	(getgenv()).teletodoor = false;
 	(getgenv()).teletokey = false;
 	(getgenv()).teletolever = false;
+	RoomTracker.clear();
 	pcall(function()
 		for _, obj in ipairs(Entities:GetDescendants()) do
 			RemoveESP(obj);
@@ -1250,7 +1433,7 @@ coreGroup:AddToggle({
 				if brightLoop then
 					brightLoop:Disconnect();
 				end;
-				brightLoop = RunService.Stepped:Connect(function()
+				brightLoop = RunService.RenderStepped:Connect(function()
 					L.ClockTime = 0;
 					L.FogEnd = 10000000000;
 					L.FogStart = 0;
@@ -1451,11 +1634,13 @@ espGroup:AddToggle({
 			(getgenv()).entityEsp = v;
 			if not v then
 				for _, e in ipairs(Entities:GetDescendants()) do
-					RemoveESP(e);
+					task.defer(RemoveESP, e);
 				end;
 			else
 				for _, e in ipairs(Entities:GetChildren()) do
-					CreateESP(e);
+					handleEntitySpawn(e, {
+						notify = false
+					});
 				end;
 			end;
 		end);
@@ -1468,17 +1653,11 @@ espGroup:AddToggle({
 	Callback = function(v)
 		task.defer(function()
 			(getgenv()).keyESP = v;
-			if not v then
-				for _, p in ipairs(Rooms:GetDescendants()) do
-					if p:IsA("BasePart") and p.Name:lower() == "roomkey" and p.Parent.Name:lower() ~= "door" then
-						RemoveESP(p);
-					end;
-				end;
-			else
-				for _, p in ipairs(Rooms:GetDescendants()) do
-					if p:IsA("BasePart") and p.Name:lower() == "roomkey" and p.Parent.Name:lower() ~= "door" then
-						CreateESP(p, Color3.new(1, 1, 0), "Key");
-					end;
+			for _, p in ipairs(RoomTracker.getTracked("roomkey")) do
+				if v then
+					CreateESP(p, Color3.new(1, 1, 0), "Key");
+				else
+					RemoveESP(p);
 				end;
 			end;
 		end);
@@ -1491,17 +1670,11 @@ espGroup:AddToggle({
 	Callback = function(v)
 		task.defer(function()
 			(getgenv()).bitESP = v;
-			if not v then
-				for _, p in ipairs(Rooms:GetDescendants()) do
-					if p:IsA("BasePart") and p.Name:lower() == "bit" then
-						RemoveESP(p);
-					end;
-				end;
-			else
-				for _, p in ipairs(Rooms:GetDescendants()) do
-					if p:IsA("BasePart") and p.Name:lower() == "bit" then
-						CreateESP(p, Color3.new(1, 0.666667, 0));
-					end;
+			for _, p in ipairs(RoomTracker.getTracked("bit")) do
+				if v then
+					CreateESP(p, Color3.new(1, 0.666667, 0));
+				else
+					RemoveESP(p);
 				end;
 			end;
 		end);
@@ -1514,17 +1687,11 @@ espGroup:AddToggle({
 	Callback = function(v)
 		task.defer(function()
 			(getgenv()).leverESP = v;
-			if not v then
-				for _, p in ipairs(Rooms:GetDescendants()) do
-					if p:IsA("BasePart") and p.Name:lower() == "lever" then
-						RemoveESP(p);
-					end;
-				end;
-			else
-				for _, p in ipairs(Rooms:GetDescendants()) do
-					if p:IsA("BasePart") and p.Name:lower() == "lever" then
-						CreateESP(p, Color3.fromRGB(139, 145, 165));
-					end;
+			for _, p in ipairs(RoomTracker.getTracked("lever")) do
+				if v then
+					CreateESP(p, Color3.fromRGB(139, 145, 165));
+				else
+					RemoveESP(p);
 				end;
 			end;
 		end);
@@ -1537,17 +1704,11 @@ espGroup:AddToggle({
 	Callback = function(v)
 		task.defer(function()
 			(getgenv()).batteryESP = v;
-			if not v then
-				for _, p in ipairs(Rooms:GetDescendants()) do
-					if p:IsA("BasePart") and p.Name:lower() == "battery" then
-						RemoveESP(p);
-					end;
-				end;
-			else
-				for _, p in ipairs(Rooms:GetDescendants()) do
-					if p:IsA("BasePart") and p.Name:lower() == "battery" then
-						CreateESP(p, Color3.new(0, 0.666667, 0));
-					end;
+			for _, p in ipairs(RoomTracker.getTracked("battery")) do
+				if v then
+					CreateESP(p, Color3.new(0, 0.666667, 0));
+				else
+					RemoveESP(p);
 				end;
 			end;
 		end);
@@ -1571,39 +1732,222 @@ espGroup:AddToggle({
 });
 local bypassGroup = tabMain:AddGroupbox("Bypasses", "shield", "right");
 bypassGroup:AddSection("General");
+local function setBypassOverseer(v)
+	task.defer(function()
+		if v then
+			if overCon then
+				overCon:Disconnect();
+			end;
+			overCon = Entities.ChildAdded:Connect(function(ent)
+				if ent.Name:lower() == "overseer" then
+					task.defer(function()
+						if ent and ent.Parent then
+							ent:Destroy();
+						end;
+					end);
+				end;
+			end);
+			for _, ent in ipairs(Entities:GetChildren()) do
+				if ent.Name:lower() == "overseer" then
+					task.defer(function()
+						if ent and ent.Parent then
+							ent:Destroy();
+						end;
+					end);
+				end;
+			end;
+		elseif overCon then
+			overCon:Disconnect();
+			overCon = nil;
+		end;
+	end);
+end;
+local function setBypassLurker(v)
+	task.defer(function()
+		if v then
+			if lurkCon then
+				lurkCon:Disconnect();
+			end;
+			lurkCon = workspace.DescendantAdded:Connect(function(o)
+				if o.Name:lower() == "lurker" then
+					task.defer(function()
+						if o and o.Parent then
+							o:Destroy();
+						end;
+					end);
+				end;
+			end);
+			for _, o in ipairs(workspace:GetDescendants()) do
+				if o.Name:lower() == "lurker" then
+					task.defer(function()
+						if o and o.Parent then
+							o:Destroy();
+						end;
+					end);
+				end;
+			end;
+		elseif lurkCon then
+			lurkCon:Disconnect();
+			lurkCon = nil;
+		end;
+	end);
+end;
+local function setBypassWatch(v)
+	task.defer(function()
+		if v then
+			if watchCon then
+				watchCon:Disconnect();
+			end;
+			watchCon = workspace.DescendantAdded:Connect(function(o)
+				if o.Name:lower() == "watchbane" then
+					task.defer(function()
+						if o and o.Parent then
+							o:Destroy();
+						end;
+					end);
+				end;
+			end);
+			for _, o in ipairs(workspace:GetDescendants()) do
+				if o.Name:lower() == "watchbane" then
+					task.defer(function()
+						if o and o.Parent then
+							o:Destroy();
+						end;
+					end);
+				end;
+			end;
+		elseif watchCon then
+			watchCon:Disconnect();
+			watchCon = nil;
+		end;
+	end);
+end;
+local function setBypassFlower(v)
+	task.defer(function()
+		if v then
+			if flowCon then
+				flowCon:Disconnect();
+			end;
+			flowCon = workspace.DescendantAdded:Connect(function(o)
+				if o.Name:lower() == "flowergrowth" then
+					task.defer(function()
+						if o and o.Parent then
+							o:Destroy();
+						end;
+					end);
+				end;
+			end);
+			for _, o in ipairs(workspace:GetDescendants()) do
+				if o.Name:lower() == "flowergrowth" then
+					task.defer(function()
+						if o and o.Parent then
+							o:Destroy();
+						end;
+					end);
+				end;
+			end;
+		elseif flowCon then
+			flowCon:Disconnect();
+			flowCon = nil;
+		end;
+	end);
+end;
+local function setBypassAbyss(v)
+	task.defer(function()
+		if v then
+			if abyssCon then
+				abyssCon:Disconnect();
+			end;
+			abyssCon = workspace.DescendantAdded:Connect(function(o)
+				if o.Name:lower() == "abysskill" then
+					task.defer(function()
+						if o and o.Parent then
+							o:Destroy();
+						end;
+					end);
+				end;
+			end);
+			for _, o in ipairs(workspace:GetDescendants()) do
+				if o.Name:lower() == "abysskill" then
+					task.defer(function()
+						if o and o.Parent then
+							o:Destroy();
+						end;
+					end);
+				end;
+			end;
+		elseif abyssCon then
+			abyssCon:Disconnect();
+			abyssCon = nil;
+		end;
+	end);
+end;
+local function setBypassTaker(v)
+	task.defer(function()
+		if v then
+			if takerCon then
+				takerCon:Disconnect();
+			end;
+			takerCon = workspace.DescendantAdded:Connect(function(o)
+				if o.Name:lower() == "taker" then
+					task.defer(function()
+						if o and o.Parent then
+							o:Destroy();
+						end;
+					end);
+				end;
+			end);
+			for _, o in ipairs(workspace:GetDescendants()) do
+				if o.Name:lower() == "taker" then
+					task.defer(function()
+						if o and o.Parent then
+							o:Destroy();
+						end;
+					end);
+				end;
+			end;
+		elseif takerCon then
+			takerCon:Disconnect();
+			takerCon = nil;
+		end;
+	end);
+end;
+local function setBypassChase(v)
+	task.defer(function()
+		if v then
+			if chaseCon then
+				chaseCon:Disconnect();
+			end;
+			chaseCon = workspace.DescendantAdded:Connect(function(o)
+				if o.Name:lower() == "chasetrigger" then
+					task.defer(function()
+						if o and o.Parent then
+							o:Destroy();
+						end;
+					end);
+				end;
+			end);
+			for _, o in ipairs(workspace:GetDescendants()) do
+				if o.Name:lower() == "chasetrigger" then
+					task.defer(function()
+						if o and o.Parent then
+							o:Destroy();
+						end;
+					end);
+				end;
+			end;
+		elseif chaseCon then
+			chaseCon:Disconnect();
+			chaseCon = nil;
+		end;
+	end);
+end;
 bypassGroup:AddToggle({
 	Name = "Bypass Overseer",
 	CurrentValue = false,
 	Flag = "overSeer",
 	Callback = function(v)
-		task.defer(function()
-			if v then
-				if overCon then
-					overCon:Disconnect();
-				end;
-				overCon = Entities.ChildAdded:Connect(function(ent)
-					if ent.Name:lower() == "overseer" then
-						task.defer(function()
-							if ent and ent.Parent then
-								ent:Destroy();
-							end;
-						end);
-					end;
-				end);
-				for _, ent in ipairs(Entities:GetChildren()) do
-					if ent.Name:lower() == "overseer" then
-						task.defer(function()
-							if ent and ent.Parent then
-								ent:Destroy();
-							end;
-						end);
-					end;
-				end;
-			elseif overCon then
-				overCon:Disconnect();
-				overCon = nil;
-			end;
-		end);
+		setBypassOverseer(v);
 	end
 });
 bypassGroup:AddToggle({
@@ -1611,34 +1955,7 @@ bypassGroup:AddToggle({
 	CurrentValue = false,
 	Flag = "lurkER",
 	Callback = function(v)
-		task.defer(function()
-			if v then
-				if lurkCon then
-					lurkCon:Disconnect();
-				end;
-				lurkCon = workspace.DescendantAdded:Connect(function(o)
-					if o.Name:lower() == "lurker" then
-						task.defer(function()
-							if o and o.Parent then
-								o:Destroy();
-							end;
-						end);
-					end;
-				end);
-				for _, o in ipairs(workspace:GetDescendants()) do
-					if o.Name:lower() == "lurker" then
-						task.defer(function()
-							if o and o.Parent then
-								o:Destroy();
-							end;
-						end);
-					end;
-				end;
-			elseif lurkCon then
-				lurkCon:Disconnect();
-				lurkCon = nil;
-			end;
-		end);
+		setBypassLurker(v);
 	end
 });
 bypassGroup:AddToggle({
@@ -1646,34 +1963,7 @@ bypassGroup:AddToggle({
 	CurrentValue = false,
 	Flag = "watcherBANE",
 	Callback = function(v)
-		task.defer(function()
-			if v then
-				if watchCon then
-					watchCon:Disconnect();
-				end;
-				watchCon = workspace.DescendantAdded:Connect(function(o)
-					if o.Name:lower() == "watchbane" then
-						task.defer(function()
-							if o and o.Parent then
-								o:Destroy();
-							end;
-						end);
-					end;
-				end);
-				for _, o in ipairs(workspace:GetDescendants()) do
-					if o.Name:lower() == "watchbane" then
-						task.defer(function()
-							if o and o.Parent then
-								o:Destroy();
-							end;
-						end);
-					end;
-				end;
-			elseif watchCon then
-				watchCon:Disconnect();
-				watchCon = nil;
-			end;
-		end);
+		setBypassWatch(v);
 	end
 });
 bypassGroup:AddToggle({
@@ -1681,34 +1971,7 @@ bypassGroup:AddToggle({
 	CurrentValue = false,
 	Flag = "flowerGrowth",
 	Callback = function(v)
-		task.defer(function()
-			if v then
-				if flowCon then
-					flowCon:Disconnect();
-				end;
-				flowCon = workspace.DescendantAdded:Connect(function(o)
-					if o.Name:lower() == "flowergrowth" then
-						task.defer(function()
-							if o and o.Parent then
-								o:Destroy();
-							end;
-						end);
-					end;
-				end);
-				for _, o in ipairs(workspace:GetDescendants()) do
-					if o.Name:lower() == "flowergrowth" then
-						task.defer(function()
-							if o and o.Parent then
-								o:Destroy();
-							end;
-						end);
-					end;
-				end;
-			elseif flowCon then
-				flowCon:Disconnect();
-				flowCon = nil;
-			end;
-		end);
+		setBypassFlower(v);
 	end
 });
 bypassGroup:AddToggle({
@@ -1716,34 +1979,7 @@ bypassGroup:AddToggle({
 	CurrentValue = false,
 	Flag = "abyssKILL",
 	Callback = function(v)
-		task.defer(function()
-			if v then
-				if abyssCon then
-					abyssCon:Disconnect();
-				end;
-				abyssCon = workspace.DescendantAdded:Connect(function(o)
-					if o.Name:lower() == "abysskill" then
-						task.defer(function()
-							if o and o.Parent then
-								o:Destroy();
-							end;
-						end);
-					end;
-				end);
-				for _, o in ipairs(workspace:GetDescendants()) do
-					if o.Name:lower() == "abysskill" then
-						task.defer(function()
-							if o and o.Parent then
-								o:Destroy();
-							end;
-						end);
-					end;
-				end;
-			elseif abyssCon then
-				abyssCon:Disconnect();
-				abyssCon = nil;
-			end;
-		end);
+		setBypassAbyss(v);
 	end
 });
 bypassGroup:AddSection("Bypass [Special]");
@@ -1752,34 +1988,7 @@ bypassGroup:AddToggle({
 	CurrentValue = false,
 	Flag = "TAKERRRRR",
 	Callback = function(v)
-		task.defer(function()
-			if v then
-				if takerCon then
-					takerCon:Disconnect();
-				end;
-				takerCon = workspace.DescendantAdded:Connect(function(o)
-					if o.Name:lower() == "taker" then
-						task.defer(function()
-							if o and o.Parent then
-								o:Destroy();
-							end;
-						end);
-					end;
-				end);
-				for _, o in ipairs(workspace:GetDescendants()) do
-					if o.Name:lower() == "taker" then
-						task.defer(function()
-							if o and o.Parent then
-								o:Destroy();
-							end;
-						end);
-					end;
-				end;
-			elseif takerCon then
-				takerCon:Disconnect();
-				takerCon = nil;
-			end;
-		end);
+		setBypassTaker(v);
 	end
 });
 bypassGroup:AddToggle({
@@ -1787,34 +1996,7 @@ bypassGroup:AddToggle({
 	CurrentValue = false,
 	Flag = "chaseTrigger",
 	Callback = function(v)
-		task.defer(function()
-			if v then
-				if chaseCon then
-					chaseCon:Disconnect();
-				end;
-				chaseCon = workspace.DescendantAdded:Connect(function(o)
-					if o.Name:lower() == "chasetrigger" then
-						task.defer(function()
-							if o and o.Parent then
-								o:Destroy();
-							end;
-						end);
-					end;
-				end);
-				for _, o in ipairs(workspace:GetDescendants()) do
-					if o.Name:lower() == "chasetrigger" then
-						task.defer(function()
-							if o and o.Parent then
-								o:Destroy();
-							end;
-						end);
-					end;
-				end;
-			elseif chaseCon then
-				chaseCon:Disconnect();
-				chaseCon = nil;
-			end;
-		end);
+		setBypassChase(v);
 	end
 });
 local playerGroup = tabMain:AddGroupbox("Player Tweaks", "user", "right");
@@ -1967,6 +2149,29 @@ playerGroup:AddToggle({
 	end
 });
 local miscGroup = tabMain:AddGroupbox("Misc & Teleports", "hammer", "right");
+local function ensureAutoFarmSafety()
+	(getgenv()).autoHeal = true;
+	(getgenv()).chaos = true;
+	if not selectionEmpty() then
+		clearSelection();
+		updateModeLabelText();
+		if dropdownObj then
+			local ok, err = pcall(function()
+				dropdownObj:SetValue({});
+			end);
+			if not ok then
+				warn("[AutoFarm] Failed to reset prompt selection:", err);
+			end;
+		end;
+	end;
+	setBypassOverseer(true);
+	setBypassLurker(true);
+	setBypassWatch(true);
+	setBypassFlower(true);
+	setBypassAbyss(true);
+	setBypassTaker(true);
+	setBypassChase(true);
+end;
 miscGroup:AddButton({
 	Name = "Hide Value",
 	Callback = function()
@@ -1997,6 +2202,9 @@ miscGroup:AddToggle({
 	Flag = "AutoFarm",
 	Callback = function(v)
 		(getgenv()).autoFarm = v;
+		if v then
+			ensureAutoFarmSafety();
+		end;
 		if v and checkRoom then
 			checkRoom();
 		end;
@@ -2023,35 +2231,40 @@ miscGroup:AddButton({
 	end
 });
 local tabInfo = Win:AddTab("Info/Stats", "info", "Live statistics");
-local L_rooms = tabInfo:AddLabel("Rooms: " .. playerRoom());
-local L_bits = tabInfo:AddLabel("Bits: " .. playerBits());
-local L_dbl = tabInfo:AddLabel("Double Bits: " .. doubleBits());
-tabInfo:AddSection("");
-local L_fame, L_deaths, L_rift, L_group;
-if game.PlaceId == pREN then
-	L_fame = tabInfo:AddLabel("Fame: " .. fame());
-	L_deaths = tabInfo:AddLabel("Deaths: " .. deaths());
-	L_rift = tabInfo:AddLabel("Rift: " .. rift());
-	L_group = tabInfo:AddLabel("Joined Group: " .. inGroup());
-	tabInfo:AddSection("");
-end;
-local L_cur = tabInfo:AddLabel("Current Room: " .. curRoom());
-local L_phil = tabInfo:AddLabel("Phil Chance: " .. phil());
-local L_spider = tabInfo:AddLabel("Spider Chance: " .. spider());
+local runGroup = tabInfo:AddGroupbox("Run Progress", "map", "left");
+runGroup:AddSection("Rooms");
+local L_rooms = runGroup:AddLabel("Rooms: " .. playerRoom());
+local L_cur = runGroup:AddLabel("Current Room: " .. curRoom());
+runGroup:AddSection("Currency");
+local L_bits = runGroup:AddLabel("Bits: " .. playerBits());
+local L_dbl = runGroup:AddLabel("Double Bits: " .. doubleBits());
 local L_rev;
 if game.PlaceId ~= pCLASS then
-	L_rev = tabInfo:AddLabel("Revive Price: " .. revivePrice());
+	runGroup:AddSection("Revives");
+	L_rev = runGroup:AddLabel("Revive Price: " .. revivePrice());
 end;
-local L_alive = tabInfo:AddLabel("Players Alive: " .. alive());
-local L_ingame = tabInfo:AddLabel("Players In Game: " .. inGame());
+local chanceGroup = tabInfo:AddGroupbox("Odds & Events", "activity", "left");
+local L_phil = chanceGroup:AddLabel("Phil Chance: " .. phil());
+local L_spider = chanceGroup:AddLabel("Spider Chance: " .. spider());
 if game.PlaceId == pREN then
-	tabInfo:AddSection("");
-	tabInfo:AddLabel("Fuzzi: " .. fuz());
-	tabInfo:AddLabel("Zav: " .. zav());
-	tabInfo:AddLabel("Jake: " .. jake());
-	tabInfo:AddLabel("Blue: " .. blue());
-	tabInfo:AddLabel("Alan: " .. alan());
+	chanceGroup:AddSection("Collectibles");
+	chanceGroup:AddLabel("Fuzzi: " .. fuz());
+	chanceGroup:AddLabel("Zav: " .. zav());
+	chanceGroup:AddLabel("Jake: " .. jake());
+	chanceGroup:AddLabel("Blue: " .. blue());
+	chanceGroup:AddLabel("Alan: " .. alan());
 end;
+local playerGroup = tabInfo:AddGroupbox("Player Stats", "user", "right");
+local L_fame, L_deaths, L_rift, L_group;
+if game.PlaceId == pREN then
+	L_fame = playerGroup:AddLabel("Fame: " .. fame());
+	L_deaths = playerGroup:AddLabel("Deaths: " .. deaths());
+	L_rift = playerGroup:AddLabel("Rift: " .. rift());
+	L_group = playerGroup:AddLabel("Joined Group: " .. inGroup());
+end;
+local sessionGroup = tabInfo:AddGroupbox("Session", "users", "right");
+local L_alive = sessionGroup:AddLabel("Players Alive: " .. alive());
+local L_ingame = sessionGroup:AddLabel("Players In Game: " .. inGame());
 local tabSettings = Win:AddTab("Settings", "cog", "UI customization");
 local settingsTabRaw = tabSettings and tabSettings._tab;
 if settingsTabRaw then
@@ -2226,19 +2439,7 @@ task.spawn(function()
 	end));
 end);
 trackConnection(Entities.ChildAdded:Connect(function(ent)
-	if (getgenv()).entityEsp then
-		task.defer(function()
-			CreateESP(ent);
-			if (getgenv()).entityNotif then
-				ObsidianUI:Notify({
-					Title = "Entity",
-					Content = ent.Name .. " Has Spawned",
-					Duration = 3,
-					Image = decalID
-				});
-			end;
-		end);
-	end;
+	handleEntitySpawn(ent);
 end));
 trackConnection((Values.MimicActivated:GetPropertyChangedSignal("Value")):Connect(function()
 	if (getgenv()).entityNotif then
@@ -2256,9 +2457,14 @@ end));
 trackConnection(((S("ReplicatedStorage")).Remotes:FindFirstChild("E_A", true)).OnClientEvent:Connect(function(ent)
 	if (tostring(ent)):lower() == "greed" then
 		task.defer(function()
+			greedToken += 1;
+			local token = greedToken;
 			greedActive = true;
-			task.wait(9);
-			greedActive = false;
+			task.delay(9, function()
+				if greedToken == token then
+					greedActive = false;
+				end;
+			end);
 		end);
 		if (getgenv()).entityNotif then
 			ObsidianUI:Notify({
@@ -2584,6 +2790,23 @@ local function doBoss(room, pz, roomIndex)
 	end;
 end;
 local seenBossRooms = {};
+local function isBossRoom(r)
+	if not r then
+		return false;
+	end;
+	local rn = r:GetAttribute("RoomName");
+	if typeof(rn) == "string" and rn == "ClockRoom" then
+		return true;
+	end;
+	if r:FindFirstChild("LeverStart", true) then
+		return true;
+	end;
+	local pz = r:FindFirstChild("Puzzel") or r:FindFirstChild("Puzzle");
+	if pz then
+		return true;
+	end;
+	return false;
+end;
 local function isBossPending()
 	local n = curRoomVal.Value;
 	if typeof(n) ~= "number" then
@@ -2593,11 +2816,10 @@ local function isBossPending()
 		return false;
 	end;
 	local r = Rooms:FindFirstChild("Room" .. n);
-	if not r then
+	if not isBossRoom(r) then
 		return false;
 	end;
-	local rn = r:GetAttribute("RoomName");
-	return typeof(rn) == "string" and rn == "ClockRoom";
+	return true;
 end;
 checkRoom = function()
 	local n = curRoomVal.Value;
@@ -2608,14 +2830,10 @@ checkRoom = function()
 		return;
 	end;
 	local r = Rooms:FindFirstChild("Room" .. n);
-	if not r then
+	if not isBossRoom(r) then
 		return;
 	end;
-	local rn = r:GetAttribute("RoomName");
 	local pz = r:FindFirstChild("Puzzel") or r:FindFirstChild("Puzzle");
-	if not pz and (not (typeof(rn) == "string" and rn == "ClockRoom")) then
-		return;
-	end;
 	if not pz then
 		pz = r:FindFirstChild("Puzzle") or r:FindFirstChild("Puzzel") or r;
 	end;
@@ -2632,11 +2850,12 @@ checkRoom();
 task.spawn(function()
 	while true do
 		if (getgenv()).autoFarm and (not busyBoss) and (not isBossPending()) then
-			pcall(tpToDoor);
+			ensureAutoFarmSafety();
+			pcall(tpToDoor, true);
 			task.wait(0.1);
-			pcall(tpToKey);
+			pcall(tpToKey, true);
 			task.wait(0.1);
-			pcall(tpToLever);
+			pcall(tpToLever, true);
 			task.wait(0.1);
 		else
 			task.wait(0.1);
