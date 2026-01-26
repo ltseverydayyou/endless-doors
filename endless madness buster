@@ -2748,6 +2748,23 @@ local function doBoss(room, pz, roomIndex)
 		return;
 	end;
 	busyBoss = true;
+	local function anchorTo(target, interval)
+		local alive = true;
+		local delay = interval or 0.3;
+		task.spawn(function()
+			while alive and busyBoss do
+				if target and target.Parent then
+					pcall(tpTo, target);
+				else
+					break;
+				end;
+				task.wait(delay);
+			end;
+		end);
+		return function()
+			alive = false;
+		end;
+	end;
 	local ls = room:FindFirstChild("LeverStart");
 	if not ls then
 		busyBoss = false;
@@ -2757,6 +2774,7 @@ local function doBoss(room, pz, roomIndex)
 		return;
 	end;
 	tpTo(ls);
+	local stopAnchor = anchorTo(ls, 0.35);
 	local pp = ls:FindFirstChildWhichIsA("ProximityPrompt", true);
 	local lever = ls:FindFirstChild("Lever", true);
 	local pullS = lever and (lever:FindFirstChild("Pull") or lever:FindFirstChildWhichIsA("Sound", true));
@@ -2764,6 +2782,7 @@ local function doBoss(room, pz, roomIndex)
 		task.wait(0.5);
 		pcall(fireproximityprompt, pp);
 	end;
+	stopAnchor();
 	waitPlay(pullS, 10);
 	task.wait(7);
 	local gates = getLeverGates(room, 15);
@@ -2772,17 +2791,21 @@ local function doBoss(room, pz, roomIndex)
 		local gpp = gModel:FindFirstChildWhichIsA("ProximityPrompt", true);
 		local gsnd = lv:FindFirstChild("Pull") or gModel:FindFirstChild("Pull", true) or gModel:FindFirstChildWhichIsA("Sound", true);
 		tpTo(lv);
+		stopAnchor = anchorTo(lv, 0.35);
 		task.wait(0.7);
 		if gpp then
 			pcall(fireproximityprompt, gpp);
 		end;
+		stopAnchor();
 		waitPlay(gsnd, 6);
 	end;
 	local numPad = pz:FindFirstChild("NumPad") or room:FindFirstChild("NumPad", true);
 	if numPad then
 		tpTo(numPad);
+		stopAnchor = anchorTo(numPad, 0.35);
 		task.wait(3);
 		bruteCode(room, pz);
+		stopAnchor();
 	end;
 	busyBoss = false;
 	if roomIndex ~= nil then
@@ -2799,6 +2822,12 @@ local function isBossRoom(r)
 		return true;
 	end;
 	if r:FindFirstChild("LeverStart", true) then
+		return true;
+	end;
+	if r:FindFirstChild("GateLever", true) then
+		return true;
+	end;
+	if r:FindFirstChild("LeverGates", true) then
 		return true;
 	end;
 	local pz = r:FindFirstChild("Puzzel") or r:FindFirstChild("Puzzle");
