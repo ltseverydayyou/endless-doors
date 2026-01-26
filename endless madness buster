@@ -47,11 +47,22 @@ local greedToken = 0;
 local ObsidianUI;
 local scriptRunning = true;
 local activeConnections = {};
+local notifiedEntities = {};
 local function trackConnection(conn)
 	if conn then
 		activeConnections[(#activeConnections) + 1] = conn;
 	end;
 	return conn;
+end;
+local function findEntityRoot(inst)
+	local current = inst;
+	while current and current.Parent do
+		if current.Parent == Entities then
+			return current;
+		end;
+		current = current.Parent;
+	end;
+	return nil;
 end;
 (getgenv()).speed = tonumber((getgenv()).speed) or 16;
 (getgenv()).jump = tonumber((getgenv()).jump) or 30;
@@ -255,7 +266,7 @@ local function tpToDoor(ignoreGreed)
 	if not (r and r:FindFirstChild("Door")) then
 		return;
 	end;
-	if greedActive then
+	if greedActive and (not ignoreGreed) then
 		local dist, tendRoot = nearestTendrilsDistance();
 		if dist < SAFE_TENDRILS_DIST then
 			local ch = LocalPlayer.Character;
@@ -613,6 +624,11 @@ local function handleEntitySpawn(ent, opts)
 		return;
 	end;
 	local notify = opts and (opts.notify ~= false);
+	local root = findEntityRoot(ent) or ent;
+	if notifiedEntities[root] then
+		return;
+	end;
+	notifiedEntities[root] = true;
 	local wantESP = (getgenv()).entityEsp;
 	local wantNotif = notify and (getgenv()).entityNotif;
 	if not (wantESP or wantNotif) then
@@ -620,12 +636,12 @@ local function handleEntitySpawn(ent, opts)
 	end;
 	task.defer(function()
 		if wantESP then
-			CreateESP(ent);
+			CreateESP(root);
 		end;
 		if wantNotif then
 			ObsidianUI:Notify({
 				Title = "Entity",
-				Content = ent.Name .. " Has Spawned",
+				Content = root.Name .. " Has Spawned",
 				Duration = 3,
 				Image = decalID
 			});
@@ -1028,6 +1044,7 @@ function ObsidianUI:Cleanup()
 		disconnectConn(conn);
 	end;
 	activeConnections = {};
+	notifiedEntities = {};
 	(getgenv()).chaos = false;
 	(getgenv()).entityEsp = false;
 	(getgenv()).keyESP = false;
@@ -1630,11 +1647,11 @@ espGroup:AddToggle({
 	CurrentValue = false,
 	Flag = "entityESP",
 	Callback = function(v)
-		task.defer(function()
-			(getgenv()).entityEsp = v;
-			if not v then
-				for _, e in ipairs(Entities:GetDescendants()) do
-					task.defer(RemoveESP, e);
+	task.defer(function()
+		(getgenv()).entityEsp = v;
+		if not v then
+			for _, e in ipairs(Entities:GetDescendants()) do
+				task.defer(RemoveESP, e);
 				end;
 			else
 				for _, e in ipairs(Entities:GetChildren()) do
@@ -1728,6 +1745,11 @@ espGroup:AddToggle({
 	Flag = "entityNotifs",
 	Callback = function(v)
 		(getgenv()).entityNotif = v;
+		if v then
+			for _, e in ipairs(Entities:GetDescendants()) do
+				handleEntitySpawn(e);
+			end;
+		end;
 	end
 });
 local bypassGroup = tabMain:AddGroupbox("Bypasses", "shield", "right");
@@ -2440,6 +2462,17 @@ task.spawn(function()
 end);
 trackConnection(Entities.ChildAdded:Connect(function(ent)
 	handleEntitySpawn(ent);
+end));
+trackConnection(Entities.DescendantAdded:Connect(function(inst)
+	handleEntitySpawn(inst, {
+		notify = true
+	});
+end));
+trackConnection(Entities.DescendantRemoving:Connect(function(inst)
+	local root = findEntityRoot(inst) or inst;
+	if notifiedEntities[root] then
+		notifiedEntities[root] = nil;
+	end;
 end));
 trackConnection((Values.MimicActivated:GetPropertyChangedSignal("Value")):Connect(function()
 	if (getgenv()).entityNotif then
