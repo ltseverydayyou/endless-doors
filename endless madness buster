@@ -87,9 +87,19 @@ local function rootOf(c)
 	return c and (c:FindFirstChild("HumanoidRootPart") or c:FindFirstChild("UpperTorso") or c:FindFirstChild("Torso") or c:FindFirstChild("LowerTorso") or c:FindFirstChildWhichIsA("BasePart"));
 end;
 local function charValStr(ctn, nm)
-	local ch = LocalPlayer.Character;
-	local o = ch and ch:FindFirstChild(ctn) and ch[ctn]:FindFirstChild(nm);
-	return o and tostring(o.Value);
+	local ch = LocalPlayer.Character
+	if not ch then
+		return "false"
+	end
+	local folder = ch:FindFirstChild(ctn)
+	if not folder then
+		return "false"
+	end
+	local o = folder:FindFirstChild(nm)
+	if not o then
+		return "false"
+	end
+	return tostring(o.Value)
 end;
 local RoomTracker = (function()
 	local roomItemCache = {};
