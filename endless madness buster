@@ -81,10 +81,20 @@ if not game:IsLoaded() then
 	m:Destroy();
 end;
 local function rootOf(c)
-	if c:IsA("Player") then
+	if not c then
+		return nil;
+	end;
+	if typeof(c) == "Instance" and c:IsA("Player") then
 		c = c.Character;
 	end;
-	return c and (c:FindFirstChild("HumanoidRootPart") or c:FindFirstChild("UpperTorso") or c:FindFirstChild("Torso") or c:FindFirstChild("LowerTorso") or c:FindFirstChildWhichIsA("BasePart"));
+	if not c then
+		return nil;
+	end;
+	return c:FindFirstChild("HumanoidRootPart")
+		or c:FindFirstChild("UpperTorso")
+		or c:FindFirstChild("Torso")
+		or c:FindFirstChild("LowerTorso")
+		or c:FindFirstChildWhichIsA("BasePart");
 end;
 local function charValStr(ctn, nm)
 	local ch = LocalPlayer.Character
@@ -271,9 +281,77 @@ local RoomTracker = (function()
 		end
 	};
 end)();
+local function hasVoidWindOnDoor(doorModel)
+	if not (doorModel and doorModel:IsA("Model")) then
+		return false;
+	end;
+	local voidCount = 0;
+	local hasVoidSound = false;
+	for _, c in ipairs(doorModel:GetDescendants()) do
+		local n = (c.Name or ""):lower();
+		if n:find("void") then
+			voidCount += 1;
+			if c:IsA("Sound") then
+				hasVoidSound = true;
+			end;
+		end;
+		if c:IsA("Sound") then
+			local sid = "";
+			local ok, v = pcall(function()
+				return c.SoundId;
+			end);
+			if ok and type(v) == "string" then
+				sid = v:lower();
+				if sid:find("void") then
+					hasVoidSound = true;
+				end;
+			end;
+		end;
+	end;
+	if hasVoidSound then
+		return true;
+	end;
+	return voidCount >= 2;
+end;
+local function getVoidDoorForCurrentRoom()
+	local r = Rooms:FindFirstChild("Room" .. tostring(Values.RoomsNumber.Value));
+	if not r then
+		return nil;
+	end;
+	for _, d in ipairs(r:GetDescendants()) do
+		if d:IsA("Model") then
+			local n = d.Name:lower();
+			if n:find("door") or n:find("void") then
+				if hasVoidWindOnDoor(d) then
+					return d;
+				end;
+			end;
+		end;
+	end;
+	return nil;
+end;
+local function getSafeDoorForCurrentRoom()
+	local r = Rooms:FindFirstChild("Room" .. tostring(Values.RoomsNumber.Value));
+	if not r then
+		return nil;
+	end;
+	local models = r:FindFirstChild("Models");
+	if models then
+		for _, d in ipairs(models:GetDescendants()) do
+			if d:IsA("Model") and d.Name:lower():find("door") and not hasVoidWindOnDoor(d) then
+				return d;
+			end;
+		end;
+	end;
+	local baseDoor = r:FindFirstChild("Door");
+	if baseDoor and baseDoor:IsA("Model") and not hasVoidWindOnDoor(baseDoor) then
+		return baseDoor;
+	end;
+	return nil;
+end;
 local function tpToDoor(ignoreGreed)
-	local r = Rooms:FindFirstChild("Room" .. Values.RoomsNumber.Value);
-	if not (r and r:FindFirstChild("Door")) then
+	local doorModel = getSafeDoorForCurrentRoom();
+	if not doorModel then
 		return;
 	end;
 	if greedActive and (not ignoreGreed) then
@@ -291,7 +369,7 @@ local function tpToDoor(ignoreGreed)
 			end;
 		end;
 	end;
-	LocalPlayer.Character:PivotTo(r.Door:GetPivot());
+	LocalPlayer.Character:PivotTo(doorModel:GetPivot());
 end;
 local function tpToKey(_ignoreGreed)
 	local ch = LocalPlayer.Character;
@@ -765,6 +843,19 @@ local function holderName(inst)
 	local h = resolveHolder(inst);
 	return h and h.Name or "unknown";
 end;
+local function isVoidDoorPrompt(pp)
+	if not (pp and pp.Parent) then
+		return false;
+	end;
+	local inst = pp;
+	while inst and inst ~= Rooms do
+		if inst:IsA("Model") and inst.Name:lower():find("door") then
+			return hasVoidWindOnDoor(inst);
+		end;
+		inst = inst.Parent;
+	end;
+	return false;
+end;
 local proximityPrompts = {};
 local function onPPAdded(o)
 	proximityPrompts[(#proximityPrompts) + 1] = o;
@@ -898,16 +989,19 @@ local function firePrompts()
 				local rad = pp.MaxActivationDistance or 12;
 				if d <= rad + 6 then
 					local nm = hold and hold.Name:lower() or "";
-					local skip = false;
-					if hold then
-						for _, c in ipairs(hold:GetChildren()) do
-							if c:IsA("BoolValue") and (c.Name:lower()):find("greed") and c.Value then
-								skip = true;
-								break;
-							end;
-						end;
+			local skip = false;
+			if isVoidDoorPrompt(pp) then
+				skip = true;
+			end;
+			if hold and not skip then
+				for _, c in ipairs(hold:GetChildren()) do
+					if c:IsA("BoolValue") and (c.Name:lower()):find("greed") and c.Value then
+						skip = true;
+						break;
 					end;
-					if not skip and (not (nm == "handle" and greedActive)) then
+				end;
+			end;
+			if not skip and (not (nm == "handle" and greedActive)) then
 						if game.PlaceId == pEPIC or game.PlaceId == pEMARC then
 							local b = bitsStat and bitsStat.Value or 0;
 							if b >= 2500 and nm ~= "bit" or b < 2500 then
@@ -1990,6 +2084,21 @@ local function setBypassChase(v)
 		end;
 	end);
 end;
+(getgenv()).voidDoorAutoDelete = (getgenv()).voidDoorAutoDelete or false;
+local function deleteVoidDoorOnce()
+	local d = getVoidDoorForCurrentRoom();
+	if d and d.Parent then
+		d:Destroy();
+	end;
+end;
+task.spawn(function()
+	while scriptRunning do
+		if (getgenv()).voidDoorAutoDelete then
+			deleteVoidDoorOnce();
+		end;
+		task.wait(0.5);
+	end;
+end);
 bypassGroup:AddToggle({
 	Name = "Bypass Overseer",
 	CurrentValue = false,
@@ -2028,6 +2137,14 @@ bypassGroup:AddToggle({
 	Flag = "abyssKILL",
 	Callback = function(v)
 		setBypassAbyss(v);
+	end
+});
+bypassGroup:AddToggle({
+	Name = "Bypass Void Door",
+	CurrentValue = (getgenv()).voidDoorAutoDelete,
+	Flag = "VoidDoorDelete",
+	Callback = function(v)
+		(getgenv()).voidDoorAutoDelete = v;
 	end
 });
 bypassGroup:AddSection("Bypass [Special]");
