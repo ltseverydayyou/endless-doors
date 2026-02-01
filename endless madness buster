@@ -318,10 +318,14 @@ local function tpToLever(_ignoreGreed)
 	end;
 end;
 local function disableRagdoll()
-	local t = LocalPlayer.Character:FindFirstChild("RagdollTrigger");
+	local ch = LocalPlayer.Character
+	if not ch then
+		return
+	end
+	local t = ch:FindFirstChild("RagdollTrigger")
 	if t then
-		t.Value = false;
-	end;
+		t.Value = false
+	end
 end;
 local function bindFOV(cam)
 	if fovLockConn then
@@ -353,7 +357,19 @@ local function playerBits()
 	return tostring(LocalPlayer.leaderstats.Bits.Value);
 end;
 local function doubleBits()
-	return tostring(LocalPlayer.Character.Values.DoubleBits.Value);
+	local ch = LocalPlayer.Character
+	if not ch then
+		return "0"
+	end
+	local vals = ch:FindFirstChild("Values")
+	if not vals then
+		return "0"
+	end
+	local db = vals:FindFirstChild("DoubleBits")
+	if not db then
+		return "0"
+	end
+	return tostring(db.Value)
 end;
 local function fame()
 	return tostring(LocalPlayer.Fame.Value);
