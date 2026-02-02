@@ -70,6 +70,7 @@ end;
 (getgenv()).jump = tonumber((getgenv()).jump) or 30;
 (getgenv()).fov = tonumber((getgenv()).fov) or 70;
 (getgenv()).promptDelay = tonumber((getgenv()).promptDelay) or 0;
+(getgenv()).promptRange = tonumber((getgenv()).promptRange) or 6;
 (getgenv()).autoFarm = (getgenv()).autoFarm or false;
 (getgenv()).autoHeal = (getgenv()).autoHeal or false;
 local decalID = 95434351872718;
@@ -821,6 +822,12 @@ local function resolveHolder(inst)
 	if p and (p:IsA("Model") or p:IsA("BasePart")) then
 		return p;
 	end;
+	if p and p:IsA("Attachment") and p.Parent then
+		local gp = p.Parent;
+		if gp:IsA("Model") or gp:IsA("BasePart") then
+			return gp;
+		end;
+	end;
 	local mdl = inst:FindFirstAncestorOfClass("Model");
 	if mdl then
 		return mdl;
@@ -836,13 +843,23 @@ local function resolveDistancePart(inst)
 	if not h then
 		return nil;
 	end;
+	if h:IsA("Attachment") and h.Parent and h.Parent:IsA("BasePart") then
+		return h.Parent;
+	end;
+	if h:IsA("BasePart") then
+		return h;
+	end;
 	if h:IsA("Model") then
 		if h.PrimaryPart then
 			return h.PrimaryPart;
 		end;
 		return h:FindFirstChildWhichIsA("BasePart", true);
 	end;
-	return h;
+	local bp = inst:FindFirstAncestorOfClass("BasePart");
+	if bp then
+		return bp;
+	end;
+	return nil;
 end;
 local function holderName(inst)
 	local h = resolveHolder(inst);
@@ -1006,7 +1023,13 @@ local function promptAllowed(pp)
 			return false;
 		end;
 		local n = holderName(pp);
-		return n and selectedPromptNames[n:lower()] or false;
+		if not n then
+			return false;
+		end;
+		if n:lower() == "victrola" then
+			return true;
+		end;
+		return selectedPromptNames[n:lower()] or false;
 	end;
 end;
 local function firePrompts()
@@ -1025,7 +1048,8 @@ local function firePrompts()
 			if bp then
 				local d = (root.Position - bp.Position).Magnitude;
 				local rad = pp.MaxActivationDistance or 12;
-				if d <= rad + 6 then
+				local extra = tonumber((getgenv()).promptRange) or 0;
+				if d <= rad + extra then
 					local nm = hold and hold.Name:lower() or "";
 			local skip = false;
 			if isVoidDoorPrompt(pp) then
@@ -1559,6 +1583,9 @@ local coreGroup = tabMain:AddGroupbox("Core Actions", "zap", "left");
 local GM_BACK = 5
 local GM_FIRE = 15
 local remHide
+local gmRoomAddedConn
+local gmRoomRemovedConn
+local gmHasHidden = false
 
 local function gmNote(txt, dur)
 	ObsidianUI:Notify({
@@ -1628,21 +1655,19 @@ local function gmOpenDoor(d)
 	if not d then
 		return
 	end
-	task.spawn(function()
-		for i = 1, GM_FIRE do
-			task.wait(0.05)
-			if not (d and d.Parent) then
-				break
-			end
-			local h = d:FindFirstChild("Handle") or d:FindFirstChildWhichIsA("BasePart", true)
-			if h then
-				local p = h:FindFirstChildWhichIsA("ProximityPrompt", true)
-				if p then
-					pcall(fireproximityprompt, p)
-				end
+	for i = 1, GM_FIRE do
+		if not (d and d.Parent) then
+			break
+		end
+		local h = d:FindFirstChild("Handle") or d:FindFirstChildWhichIsA("BasePart", true)
+		if h then
+			local p = h:FindFirstChildWhichIsA("ProximityPrompt", true)
+			if p then
+				pcall(fireproximityprompt, p)
 			end
 		end
-	end)
+		task.wait(0.05)
+	end
 end
 
 local function gmHideWard(w)
@@ -1654,8 +1679,70 @@ local function gmHideWard(w)
 		local rems = rs and rs:FindFirstChild("Remotes")
 		remHide = rems and rems:FindFirstChild("HIDE")
 	end
-	if remHide then
-		remHide:FireServer(w, false, false)
+	if not remHide then
+		return
+	end
+
+	local ch = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+	local hid = ch and ch:FindFirstChild("Hiding")
+
+	remHide:FireServer(w, false, false)
+
+	if hid then
+		task.spawn(function()
+			local t0 = tick()
+			while tick() - t0 < 1 do
+				if hid.Value then
+					gmHasHidden = true
+					break
+				end
+				task.wait(0.05)
+			end
+		end)
+	end
+end
+
+local function gmDisconnectCloset()
+	if gmRoomAddedConn then
+		gmRoomAddedConn:Disconnect()
+		gmRoomAddedConn = nil
+	end
+	if gmRoomRemovedConn then
+		gmRoomRemovedConn:Disconnect()
+		gmRoomRemovedConn = nil
+	end
+	gmHasHidden = false
+end
+
+local function gmWatchCloset(currentIdx, backIdx, ward)
+	gmDisconnectCloset()
+
+	gmRoomRemovedConn = Rooms.ChildRemoved:Connect(function(room)
+		if not (room and room:IsA("Model")) then
+			return
+		end
+		if room.Name ~= "Room" .. tostring(backIdx) then
+			return
+		end
+		gmDisconnectCloset()
+		task.defer(function()
+			local c = LocalPlayer.Character
+			if c then
+				local hid = c:FindFirstChild("Hiding")
+				if hid and hid.Value then
+					hid.Value = false
+					if gmHasHidden then
+						gmNote("Exploit done.", 3)
+					end
+				end
+			end
+		end)
+	end)
+
+	if ward and ward.Parent then
+		task.defer(function()
+			gmHideWard(ward)
+		end)
 	end
 end
 
@@ -1680,6 +1767,80 @@ local function gmNeedKey(idx)
 	return true
 end
 
+local function gmAcquireKey(idx)
+	local r = Rooms:FindFirstChild("Room" .. idx)
+	if not r then
+		return false
+	end
+	local key = RoomTracker.getRoomTarget(r, "roomKey")
+	if not key or not key.Parent then
+		return false
+	end
+	local ch = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+	if not ch then
+		return false
+	end
+	local base = ED_tbl.getBasePart(key)
+	if base then
+		ch:PivotTo(base.CFrame)
+	end
+	local pp = WaitClass(key, "ProximityPrompt", 5) or key:FindFirstChildWhichIsA("ProximityPrompt", true)
+	if not pp then
+		return false
+	end
+	local t0 = tick()
+	while tick() - t0 < 5 do
+		ch = LocalPlayer.Character
+		local vals = ch and ch:FindFirstChild("Values")
+		local hk = vals and vals:FindFirstChild("HasKey")
+		if hk and hk.Value then
+			return true
+		end
+		pcall(fireproximityprompt, pp)
+		task.wait(0.15)
+	end
+	return false
+end
+
+local function gmHasLever(idx)
+	local r = Rooms:FindFirstChild("Room" .. idx)
+	if not r then
+		return false
+	end
+	local gateLever = RoomTracker.getRoomTarget(r, "gateLever")
+	return gateLever ~= nil and gateLever.Parent ~= nil
+end
+
+local function gmUseLever(idx)
+	local r = Rooms:FindFirstChild("Room" .. idx)
+	if not r then
+		return false
+	end
+
+	local gateLever = RoomTracker.getRoomTarget(r, "gateLever")
+	if not gateLever or not gateLever.Parent then
+		return false
+	end
+
+	ED_tbl.tpToLever(true)
+
+	local pp = WaitClass(gateLever, "ProximityPrompt", 5) or gateLever:FindFirstChildWhichIsA("ProximityPrompt", true)
+	if not pp then
+		return false
+	end
+
+	for i = 1, GM_FIRE do
+		if not (pp and pp.Parent and gateLever and gateLever.Parent) then
+			break
+		end
+		pcall(fireproximityprompt, pp)
+		task.wait(0.05)
+	end
+
+	task.wait(0.5)
+	return true
+end
+
 local function gmAvail(v)
 	if v <= 2 then
 		return false
@@ -1697,40 +1858,69 @@ local function gmAvail(v)
 	return gmHasBack(v) or not Rooms:FindFirstChild("Room1") or not Rooms:FindFirstChild("Room0")
 end
 
+local function gmWaitRoomAdvance(fromIdx, timeout)
+	local t0 = tick()
+	local lim = timeout or 6
+	while Values.RoomsNumber.Value == fromIdx and tick() - t0 < lim do
+		task.wait(0.05)
+	end
+	return Values.RoomsNumber.Value ~= fromIdx
+end
 
 local function runGodMode()
 	if greedActive then
 		gmNote("Greed is active, try again later.", 4)
 		return
 	end
+
 	local v = Values.RoomsNumber.Value
 	if type(v) ~= "number" then
 		return
 	end
-	if gmNeedKey(v) then
-		gmNote("This room needs a key. Use the key first.", 4)
-		return
+
+	local needKey = gmNeedKey(v)
+	local hasLever = gmHasLever and gmHasLever(v)
+
+	if needKey then
+		local ok = gmAcquireKey(v)
+		if not ok then
+			gmNote("Failed to get key for this room.", 4)
+			return
+		end
 	end
+
+	if hasLever then
+		local ok = gmUseLever(v)
+		if not ok then
+			gmNote("Failed to use lever for this room.", 4)
+			return
+		end
+	end
+
 	local availBack = gmAvail(v)
 	if not availBack then
 		gmNote("Open more doors before using God Mode.", 4)
 		return
 	end
+
 	local backIdx = gmPrevRoom(v)
 	if not backIdx then
 		gmNote("Open more doors before using God Mode.", 4)
 		return
 	end
+
 	local w = gmWard(backIdx)
 	if not w then
 		gmNote("No wardrobe found in nearby rooms.", 4)
 		return
 	end
+
 	local d = gmDoor(v)
 	if not d then
 		gmNote("No safe door found (void door?).", 4)
 		return
 	end
+
 	local ch = LocalPlayer.Character
 	if not ch then
 		ch = LocalPlayer.CharacterAdded:Wait()
@@ -1738,16 +1928,24 @@ local function runGodMode()
 	if not ch then
 		return
 	end
+
 	local hVal = ch:FindFirstChild("Hiding")
 	if hVal and hVal.Value then
 		gmNote("You are already hiding.", 3)
 		return
 	end
+
 	ch:PivotTo(d:GetPivot())
 	gmOpenDoor(d)
-	task.wait(0.5)
-	gmHideWard(w)
-	task.wait(1)
+
+	local progressed = gmWaitRoomAdvance(v, 6)
+	if not progressed then
+		gmNote("Door did not progress to the next room.", 4)
+		return
+	end
+
+	gmWatchCloset(v, backIdx, w)
+
 	task.spawn(function()
 		local p = LocalPlayer
 		local c = p.Character or p.CharacterAdded:Wait()
@@ -1756,9 +1954,12 @@ local function runGodMode()
 			task.wait()
 			c = p.Character or c
 			hid = c and c:FindFirstChild("Hiding")
-		until hid and hid.Value
+		until not scriptRunning or (hid and hid.Value) or not c
+		if not (hid and hid.Value) then
+			return
+		end
 		gmNote("Hidden, holding...", 3)
-		while hid and hid.Value do
+		while scriptRunning and hid and hid.Value do
 			local door = gmDoor(v)
 			if door and door.Parent and c then
 				c:PivotTo(door:GetPivot())
@@ -1768,15 +1969,6 @@ local function runGodMode()
 			hid = c and c:FindFirstChild("Hiding")
 		end
 	end)
-	task.wait(3.5)
-	local c = LocalPlayer.Character
-	if c then
-		local hid = c:FindFirstChild("Hiding")
-		if hid then
-			hid.Value = false
-		end
-	end
-	gmNote("Exploit done.", 3)
 end
 coreGroup:AddButton({
 	Name = "Infinite Flashlight",
@@ -1997,6 +2189,19 @@ interactGroup:AddSlider({
 	Flag = "PromptDelay",
 	Callback = function(value)
 		(getgenv()).promptDelay = value;
+	end
+});
+interactGroup:AddSlider({
+	Name = "Prompt Extra Range",
+	Range = {
+		0,
+		50
+	},
+	Increment = 1,
+	CurrentValue = tonumber((getgenv()).promptRange) or 6,
+	Flag = "PromptRange",
+	Callback = function(value)
+		(getgenv()).promptRange = value;
 	end
 });
 interactGroup:AddSection("Info");
