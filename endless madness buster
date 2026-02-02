@@ -906,10 +906,24 @@ local function addSelectionName(name)
 	selectedPromptNames[key] = true;
 	selectedPromptDisplay[key] = trimmed;
 end;
-local function WaitChild(inst, class, time)
+local function WaitClass(inst, class, time)
 	local start = tick();
 	while inst and inst.Parent do
 		local c = inst:FindFirstChildOfClass(class,true);
+		if c then
+			return c;
+		end;
+		if time and tick() - start >= time then
+			return nil;
+		end;
+		task.wait();
+	end;
+	return nil;
+end;
+local function WaitInst(inst, name, time)
+	local start = tick();
+	while inst and inst.Parent do
+		local c = inst:FindFirstChild(name,true);
 		if c then
 			return c;
 		end;
@@ -959,7 +973,7 @@ local function updateModeLabelText()
 end;
 local function isInteracting(inst)
 	if inst:IsA("Model") or inst:IsA("BasePart") then
-		return WaitChild(inst, "ProximityPrompt", 5) ~= nil;
+		return WaitClass(inst, "ProximityPrompt", 5) ~= nil;
 	end;
 end;
 local function applySelectionFromValue(value)
@@ -2936,7 +2950,12 @@ ED_tbl.trackConnection(Rooms.DescendantAdded:Connect(function(o)
 		end);
 	end;
 end));
-local remNP = ((S("ReplicatedStorage")):WaitForChild("Remotes")):WaitForChild("NP_E");
+local remNP = nil
+task.spawn(function()
+	pcall(function()
+		remNP = WaitInst(S("ReplicatedStorage"),"NP_E",10);
+	end)
+end)
 local curRoomVal = Values:WaitForChild("RoomsNumber");
 local godModeAvailable = false
 
