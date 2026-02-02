@@ -48,13 +48,15 @@ local ObsidianUI;
 local scriptRunning = true;
 local activeConnections = {};
 local notifiedEntities = {};
-local function trackConnection(conn)
+local L_fuz, L_zav, L_jake, L_blue, L_alan;
+local ED_tbl = {};
+ED_tbl.trackConnection=function(conn)
 	if conn then
 		activeConnections[(#activeConnections) + 1] = conn;
 	end;
 	return conn;
 end;
-local function findEntityRoot(inst)
+ED_tbl.findEntityRoot=function(inst)
 	local current = inst;
 	while current and current.Parent do
 		if current.Parent == Entities then
@@ -71,16 +73,16 @@ end;
 (getgenv()).autoFarm = (getgenv()).autoFarm or false;
 (getgenv()).autoHeal = (getgenv()).autoHeal or false;
 local decalID = 95434351872718;
-local function GuiRoot()
+ED_tbl.GuiRoot=function()
 	return gethui and gethui() or (S("CoreGui")):FindFirstChild("RobloxGui") or S("CoreGui") or LocalPlayer:WaitForChild("PlayerGui");
 end;
 if not game:IsLoaded() then
-	local m = Instance.new("Message", GuiRoot());
+	local m = Instance.new("Message", ED_tbl.GuiRoot());
 	m.Text = "waiting for the game to load";
 	game.Loaded:Wait();
 	m:Destroy();
 end;
-local function rootOf(c)
+ED_tbl.rootOf=function(c)
 	if not c then
 		return nil;
 	end;
@@ -96,7 +98,7 @@ local function rootOf(c)
 		or c:FindFirstChild("LowerTorso")
 		or c:FindFirstChildWhichIsA("BasePart");
 end;
-local function charValStr(ctn, nm)
+ED_tbl.charValStr=function(ctn, nm)
 	local ch = LocalPlayer.Character
 	if not ch then
 		return "false"
@@ -194,30 +196,38 @@ local RoomTracker = (function()
 		end;
 	end;
 	local function processAdded(inst, room)
-		room = room or findRoom(inst);
+		room = room or findRoom(inst)
 		if not room then
-			return;
-		end;
-		local lower = inst.Name:lower();
-		if inst:IsA("BasePart") then
+			return
+		end
+		local lower = inst.Name:lower()
+		if inst:IsA("Model") then
 			if lower == "roomkey" then
-				if not (inst.Parent and inst.Parent.Name:lower() == "door") then
-					itemRoomIndex[inst] = room.Name;
-					registerPart("roomkey", inst);
-					setRoomValue(room, "roomKey", inst);
-				end;
-			elseif lower == "bit" or lower == "lever" or lower == "battery" then
-				itemRoomIndex[inst] = room.Name;
-				registerPart(lower, inst);
+				itemRoomIndex[inst] = room.Name
+				registerPart("roomkey", inst)
+				setRoomValue(room, "roomKey", inst)
+			elseif lower == "gatelever" or inst.Name == "GateLever" then
+				itemRoomIndex[inst] = room.Name
+				setRoomValue(room, "gateLever", inst)
+			end
+		elseif inst:IsA("BasePart") then
+			if lower == "bit" then
+				itemRoomIndex[inst] = room.Name
+				registerPart("bit", inst)
+			elseif lower == "lever" or lower == "battery" then
+				itemRoomIndex[inst] = room.Name
+				registerPart(lower, inst)
 			elseif lower == "gatelever" then
-				itemRoomIndex[inst] = room.Name;
-				setRoomValue(room, "gateLever", inst);
-			end;
-		elseif inst:IsA("Model") and (lower == "gatelever" or inst.Name == "GateLever") then
-			itemRoomIndex[inst] = room.Name;
-			setRoomValue(room, "gateLever", inst);
-		end;
-	end;
+				itemRoomIndex[inst] = room.Name
+				setRoomValue(room, "gateLever", inst)
+			elseif inst.Parent and inst.Parent:IsA("Model") and inst.Parent.Name:lower() == "roomkey" then
+				local holder = inst.Parent
+				itemRoomIndex[holder] = room.Name
+				registerPart("roomkey", holder)
+				setRoomValue(room, "roomKey", holder)
+			end
+		end
+	end
 	local function processRemoved(inst)
 		unregisterPart(inst);
 		local roomName = itemRoomIndex[inst];
@@ -258,13 +268,13 @@ local RoomTracker = (function()
 		for _, room in ipairs(Rooms:GetChildren()) do
 			indexRoom(room);
 		end;
-		trackConnection(Rooms.ChildAdded:Connect(function(room)
+		ED_tbl.trackConnection(Rooms.ChildAdded:Connect(function(room)
 			if room and room:IsA("Model") and room.Name:match("^Room") then
 				indexRoom(room);
 			end;
 		end));
-		trackConnection(Rooms.DescendantAdded:Connect(processAdded));
-		trackConnection(Rooms.DescendantRemoving:Connect(processRemoved));
+		ED_tbl.trackConnection(Rooms.DescendantAdded:Connect(processAdded));
+		ED_tbl.trackConnection(Rooms.DescendantRemoving:Connect(processRemoved));
 	end;
 	init();
 	return {
@@ -281,7 +291,7 @@ local RoomTracker = (function()
 		end
 	};
 end)();
-local function hasVoidWindOnDoor(doorModel)
+ED_tbl.hasVoidWindOnDoor=function(doorModel)
 	if not (doorModel and doorModel:IsA("Model")) then
 		return false;
 	end;
@@ -313,7 +323,7 @@ local function hasVoidWindOnDoor(doorModel)
 	end;
 	return voidCount >= 2;
 end;
-local function getVoidDoorForCurrentRoom()
+ED_tbl.getVoidDoorForCurrentRoom=function()
 	local r = Rooms:FindFirstChild("Room" .. tostring(Values.RoomsNumber.Value));
 	if not r then
 		return nil;
@@ -322,7 +332,7 @@ local function getVoidDoorForCurrentRoom()
 		if d:IsA("Model") then
 			local n = d.Name:lower();
 			if n:find("door") or n:find("void") then
-				if hasVoidWindOnDoor(d) then
+				if ED_tbl.hasVoidWindOnDoor(d) then
 					return d;
 				end;
 			end;
@@ -330,48 +340,43 @@ local function getVoidDoorForCurrentRoom()
 	end;
 	return nil;
 end;
-local function getSafeDoorForCurrentRoom()
+ED_tbl.getSafeDoorForCurrentRoom=function()
 	local r = Rooms:FindFirstChild("Room" .. tostring(Values.RoomsNumber.Value));
 	if not r then
 		return nil;
 	end;
-	local models = r:FindFirstChild("Models");
-	if models then
-		for _, d in ipairs(models:GetDescendants()) do
-			if d:IsA("Model") and d.Name:lower():find("door") and not hasVoidWindOnDoor(d) then
-				return d;
-			end;
-		end;
-	end;
-	local baseDoor = r:FindFirstChild("Door");
-	if baseDoor and baseDoor:IsA("Model") and not hasVoidWindOnDoor(baseDoor) then
+	local baseDoor = r:FindFirstChild("Door") or r:FindFirstChild("Door", true);
+	if baseDoor and baseDoor:IsA("Model") and not ED_tbl.hasVoidWindOnDoor(baseDoor) then
 		return baseDoor;
 	end;
 	return nil;
 end;
-local function tpToDoor(ignoreGreed)
-	local doorModel = getSafeDoorForCurrentRoom();
+ED_tbl.tpToDoor=function(ignoreGreed)
+	local doorModel
 	if not doorModel then
-		return;
-	end;
+		doorModel = ED_tbl.getSafeDoorForCurrentRoom()
+	end
+	if not doorModel then
+		return
+	end
 	if greedActive and (not ignoreGreed) then
-		local dist, tendRoot = nearestTendrilsDistance();
+		local dist, tendRoot = nearestTendrilsDistance()
 		if dist < SAFE_TENDRILS_DIST then
-			local ch = LocalPlayer.Character;
-			local myRoot = rootOf(ch);
+			local ch = LocalPlayer.Character
+			local myRoot = ED_tbl.rootOf(ch)
 			if myRoot and tendRoot then
-				local dir = myRoot.Position - tendRoot.Position;
+				local dir = myRoot.Position - tendRoot.Position
 				if dir.Magnitude > 0 then
-					dir = dir.Unit;
-					local offset = dir * (SAFE_TENDRILS_DIST + 5);
-					ch:PivotTo(CFrame.new(tendRoot.Position + offset));
-				end;
-			end;
-		end;
-	end;
-	LocalPlayer.Character:PivotTo(doorModel:GetPivot());
-end;
-local function tpToKey(_ignoreGreed)
+					dir = dir.Unit
+					local offset = dir * (SAFE_TENDRILS_DIST + 5)
+					ch:PivotTo(CFrame.new(tendRoot.Position + offset))
+				end
+			end
+		end
+	end
+	LocalPlayer.Character:PivotTo(doorModel:GetPivot())
+end
+ED_tbl.tpToKey=function(_ignoreGreed)
 	local ch = LocalPlayer.Character;
 	local hk = ch and ch:FindFirstChild("Values") and ch.Values:FindFirstChild("HasKey");
 	if hk and hk.Value then
@@ -386,7 +391,7 @@ local function tpToKey(_ignoreGreed)
 		LocalPlayer.Character:PivotTo(keyPart:GetPivot());
 	end;
 end;
-local function tpToLever(_ignoreGreed)
+ED_tbl.tpToLever=function(_ignoreGreed)
 	local r = Rooms:FindFirstChild("Room" .. Values.RoomsNumber.Value);
 	if not r then
 		return;
@@ -405,7 +410,7 @@ local function tpToLever(_ignoreGreed)
 		LocalPlayer.Character:PivotTo(target.CFrame);
 	end;
 end;
-local function disableRagdoll()
+ED_tbl.disableRagdoll=function()
 	local ch = LocalPlayer.Character
 	if not ch then
 		return
@@ -415,7 +420,7 @@ local function disableRagdoll()
 		t.Value = false
 	end
 end;
-local function bindFOV(cam)
+ED_tbl.bindFOV=function(cam)
 	if fovLockConn then
 		fovLockConn:Disconnect();
 		fovLockConn = nil;
@@ -438,13 +443,13 @@ local SUBTITLE = "zavaled loves KitaFuzzi";
 local TITLE = "Endless Doors";
 local MODE_LABEL = PLACE_NAME:match("(%[[^%]]+%])") or PLACE_NAME;
 local FOOTER = MODE_LABEL .. " | " .. SUBTITLE;
-local function playerRoom()
+ED_tbl.playerRoom=function()
 	return tostring(LocalPlayer.leaderstats.Room.Value);
 end;
-local function playerBits()
+ED_tbl.playerBits=function()
 	return tostring(LocalPlayer.leaderstats.Bits.Value);
 end;
-local function doubleBits()
+ED_tbl.doubleBits=function()
 	local ch = LocalPlayer.Character
 	if not ch then
 		return "0"
@@ -459,52 +464,52 @@ local function doubleBits()
 	end
 	return tostring(db.Value)
 end;
-local function fame()
+ED_tbl.fame=function()
 	return tostring(LocalPlayer.Fame.Value);
 end;
-local function deaths()
+ED_tbl.deaths=function()
 	return tostring(LocalPlayer.Deaths.Value);
 end;
-local function rift()
+ED_tbl.rift=function()
 	return tostring(LocalPlayer.Rift.Value);
 end;
-local function inGroup()
+ED_tbl.inGroup=function()
 	return tostring(LocalPlayer.JoinedGroup.Value);
 end;
-local function curRoom()
+ED_tbl.curRoom=function()
 	return tostring(Values.RoomsNumber.Value);
 end;
-local function phil()
+ED_tbl.phil=function()
 	return tostring(Values.PhilMeter.Value);
 end;
-local function spider()
+ED_tbl.spider=function()
 	return tostring(Values.SpiderChance.Value);
 end;
-local function revivePrice()
+ED_tbl.revivePrice=function()
 	return tostring(Values.RevivePrice.Value);
 end;
-local function alive()
+ED_tbl.alive=function()
 	return tostring(Values.PlayersAlive.Value);
 end;
-local function inGame()
+ED_tbl.inGame=function()
 	return tostring(Values.PlayersInGame.Value);
 end;
-local function fuz()
-	return charValStr("Collectibles", "Fuzzi");
+ED_tbl.fuz=function()
+	return ED_tbl.charValStr("Collectibles", "Fuzzi");
 end;
-local function zav()
-	return charValStr("Collectibles", "Zav");
+ED_tbl.zav=function()
+	return ED_tbl.charValStr("Collectibles", "Zav");
 end;
-local function jake()
-	return charValStr("Collectibles", "Jake");
+ED_tbl.jake=function()
+	return ED_tbl.charValStr("Collectibles", "Jake");
 end;
-local function blue()
-	return charValStr("Collectibles", "Blue");
+ED_tbl.blue=function()
+	return ED_tbl.charValStr("Collectibles", "Blue");
 end;
-local function alan()
-	return charValStr("Collectibles", "Alan");
+ED_tbl.alan=function()
+	return ED_tbl.charValStr("Collectibles", "Alan");
 end;
-local function getBasePart(o)
+ED_tbl.getBasePart=function(o)
 	if o:IsA("BasePart") then
 		return o;
 	end;
@@ -517,7 +522,7 @@ local function getBasePart(o)
 end;
 local SAFE_TENDRILS_DIST = 30;
 local tendrilsRoots = {};
-local function addTendrils(m)
+ED_tbl.addTendrils=function(m)
 	if not (m and m:IsA("Model") and m.Name:lower() == "tendrils") then
 		return;
 	end;
@@ -526,7 +531,7 @@ local function addTendrils(m)
 		tendrilsRoots[(#tendrilsRoots) + 1] = root;
 	end;
 end;
-local function cleanTendrils(inst)
+ED_tbl.cleanTendrils=function(inst)
 	for i = #tendrilsRoots, 1, -1 do
 		local r = tendrilsRoots[i];
 		if r == inst or (not (r and r.Parent and r:IsDescendantOf(Entities))) then
@@ -535,12 +540,12 @@ local function cleanTendrils(inst)
 	end;
 end;
 for _, m in ipairs(Entities:GetChildren()) do
-	addTendrils(m);
+	ED_tbl.addTendrils(m);
 end;
-trackConnection(Entities.ChildAdded:Connect(addTendrils));
-trackConnection(Entities.DescendantRemoving:Connect(cleanTendrils));
+ED_tbl.trackConnection(Entities.ChildAdded:Connect(ED_tbl.addTendrils));
+ED_tbl.trackConnection(Entities.DescendantRemoving:Connect(ED_tbl.cleanTendrils));
 nearestTendrilsDistance = function()
-	local root = rootOf(LocalPlayer.Character);
+	local root = ED_tbl.rootOf(LocalPlayer.Character);
 	if not (root and root.Parent) then
 		return math.huge, nil;
 	end;
@@ -616,7 +621,7 @@ local function ensureEspLoop()
 		return;
 	end;
 	espConn = RunService.RenderStepped:Connect(function()
-		local root = rootOf(LocalPlayer.Character);
+		local root = ED_tbl.rootOf(LocalPlayer.Character);
 		for inst, data in pairs(espItems) do
 			if not (inst and inst.Parent and data.base and data.base.Parent and data.box and data.box.Parent and data.label and data.label.Parent) then
 				if data.box then
@@ -638,7 +643,7 @@ local function ensureEspLoop()
 	end);
 end;
 local function CreateESP(target, color, label)
-	local base = getBasePart(target);
+	local base = ED_tbl.getBasePart(target);
 	if not base then
 		return;
 	end;
@@ -728,7 +733,7 @@ local function handleEntitySpawn(ent, opts)
 		return;
 	end;
 	local notify = opts and (opts.notify ~= false);
-	local root = findEntityRoot(ent) or ent;
+	local root = ED_tbl.findEntityRoot(ent) or ent;
 	if notifiedEntities[root] then
 		return;
 	end;
@@ -752,7 +757,7 @@ local function handleEntitySpawn(ent, opts)
 		end;
 	end);
 end;
-trackConnection(PPromptService.PromptButtonHoldBegan:Connect(function(p)
+ED_tbl.trackConnection(PPromptService.PromptButtonHoldBegan:Connect(function(p)
 	task.defer(function()
 		fireproximityprompt(p);
 	end);
@@ -784,11 +789,11 @@ end);
 task.spawn(function()
 	if game.PlaceId == pREN then
 		while task.wait() do
-			disableRagdoll();
+			ED_tbl.disableRagdoll();
 		end;
 	end;
 end);
-trackConnection(workspace.DescendantAdded:Connect(function(o)
+ED_tbl.trackConnection(workspace.DescendantAdded:Connect(function(o)
 	if junk[o.Name:lower()] then
 		task.defer(function()
 			if o and o.Parent then
@@ -804,7 +809,7 @@ task.spawn(function()
 		end;
 	end;
 	setAutoJump(LocalPlayer.Character and LocalPlayer.Character:FindFirstChildWhichIsA("Humanoid"));
-	trackConnection(LocalPlayer.CharacterAdded:Connect(function(ch)
+	ED_tbl.trackConnection(LocalPlayer.CharacterAdded:Connect(function(ch)
 		setAutoJump(ch:WaitForChild("Humanoid", 5));
 	end));
 end);
@@ -850,7 +855,7 @@ local function isVoidDoorPrompt(pp)
 	local inst = pp;
 	while inst and inst ~= Rooms do
 		if inst:IsA("Model") and inst.Name:lower():find("door") then
-			return hasVoidWindOnDoor(inst);
+			return ED_tbl.hasVoidWindOnDoor(inst);
 		end;
 		inst = inst.Parent;
 	end;
@@ -873,12 +878,12 @@ for _, o in ipairs(workspace:GetDescendants()) do
 		onPPAdded(o);
 	end;
 end;
-trackConnection(workspace.DescendantAdded:Connect(function(o)
+ED_tbl.trackConnection(workspace.DescendantAdded:Connect(function(o)
 	if o:IsA("ProximityPrompt") then
 		onPPAdded(o);
 	end;
 end));
-trackConnection(workspace.DescendantRemoving:Connect(function(o)
+ED_tbl.trackConnection(workspace.DescendantRemoving:Connect(function(o)
 	if o:IsA("ProximityPrompt") then
 		onPPRemoved(o);
 	end;
@@ -900,6 +905,20 @@ local function addSelectionName(name)
 	local key = trimmed:lower();
 	selectedPromptNames[key] = true;
 	selectedPromptDisplay[key] = trimmed;
+end;
+local function WaitChild(inst, class, time)
+	local start = tick();
+	while inst and inst.Parent do
+		local c = inst:FindFirstChildOfClass(class,true);
+		if c then
+			return c;
+		end;
+		if time and tick() - start >= time then
+			return nil;
+		end;
+		task.wait();
+	end;
+	return nil;
 end;
 local function clearSelection()
 	for k in pairs(selectedPromptNames) do
@@ -938,6 +957,11 @@ local function updateModeLabelText()
 		modeLabel:Set("Mode: Selected holders only (" .. table.concat(names, ", ") .. ")");
 	end;
 end;
+local function isInteracting(inst)
+	if inst:IsA("Model") or inst:IsA("BasePart") then
+		return WaitChild(inst, "ProximityPrompt", 5) ~= nil;
+	end;
+end;
 local function applySelectionFromValue(value)
 	clearSelection();
 	if typeof(value) == "table" then
@@ -972,7 +996,7 @@ local function promptAllowed(pp)
 	end;
 end;
 local function firePrompts()
-	local root = rootOf(LocalPlayer.Character);
+	local root = ED_tbl.rootOf(LocalPlayer.Character);
 	if not (root and root.Parent) then
 		return;
 	end;
@@ -1518,6 +1542,228 @@ if ObsidianUI.Library and ObsidianUI.Library.OnUnload then
 end;
 local tabMain = Win:AddTab("Main", "layout-dashboard", "Primary actions");
 local coreGroup = tabMain:AddGroupbox("Core Actions", "zap", "left");
+local GM_BACK = 5
+local GM_FIRE = 15
+local remHide
+
+local function gmNote(txt, dur)
+	ObsidianUI:Notify({
+		Title = "God Mode",
+		Content = txt,
+		Duration = dur or 3,
+		Image = decalID
+	})
+end
+
+local function gmHasBack(v)
+	if v <= 2 then
+		return false
+	end
+	for i = math.max(1, v - (GM_BACK + 2)), v - 1 do
+		if not Rooms:FindFirstChild("Room" .. i) then
+			return true
+		end
+	end
+	return false
+end
+
+local function gmPrevRoom(v)
+	for i = GM_BACK, 2, -1 do
+		local t = v - i
+		if t > 0 then
+			if Rooms:FindFirstChild("Room" .. t) then
+				return t
+			end
+		end
+	end
+end
+
+local function gmWard(idx)
+	local r = Rooms:FindFirstChild("Room" .. idx)
+	if not r then
+		return nil
+	end
+	local models = r:FindFirstChild("Models")
+	if models then
+		local w = models:FindFirstChild("Wardrobe")
+		if w then
+			return w
+		end
+	end
+	return r:FindFirstChild("Wardrobe", true)
+end
+
+local function gmDoor(idx)
+	local r = Rooms:FindFirstChild("Room" .. idx)
+	if not r then
+		return nil
+	end
+
+	if idx == Values.RoomsNumber.Value then
+		return ED_tbl.getSafeDoorForCurrentRoom()
+	end
+
+	local d = r:FindFirstChild("Door") or r:FindFirstChild("Door", true)
+	if d and d:IsA("Model") and ED_tbl.hasVoidWindOnDoor(d) then
+		return nil
+	end
+	return d
+end
+
+local function gmOpenDoor(d)
+	if not d then
+		return
+	end
+	task.spawn(function()
+		for i = 1, GM_FIRE do
+			task.wait(0.05)
+			if not (d and d.Parent) then
+				break
+			end
+			local h = d:FindFirstChild("Handle") or d:FindFirstChildWhichIsA("BasePart", true)
+			if h then
+				local p = h:FindFirstChildWhichIsA("ProximityPrompt", true)
+				if p then
+					pcall(fireproximityprompt, p)
+				end
+			end
+		end
+	end)
+end
+
+local function gmHideWard(w)
+	if not (w and w.Parent) then
+		return
+	end
+	if not remHide then
+		local rs = S("ReplicatedStorage")
+		local rems = rs and rs:FindFirstChild("Remotes")
+		remHide = rems and rems:FindFirstChild("HIDE")
+	end
+	if remHide then
+		remHide:FireServer(w, false, false)
+	end
+end
+
+local function gmNeedKey(idx)
+	local r = Rooms:FindFirstChild("Room" .. idx)
+	if not r then
+		return false
+	end
+	local key = RoomTracker.getRoomTarget(r, "roomKey")
+	if not key then
+		return false
+	end
+	local ch = LocalPlayer.Character
+	if not ch then
+		return true
+	end
+	local vals = ch:FindFirstChild("Values")
+	local hk = vals and vals:FindFirstChild("HasKey")
+	if hk and hk.Value then
+		return false
+	end
+	return true
+end
+
+local function gmAvail(v)
+	if v <= 2 then
+		return false
+	end
+	local hasRooms = false
+	for _, r in ipairs(Rooms:GetChildren()) do
+		if r:IsA("Model") and r.Name:match("^Room%d+") then
+			hasRooms = true
+			break
+		end
+	end
+	if not hasRooms then
+		return false
+	end
+	return gmHasBack(v) or not Rooms:FindFirstChild("Room1") or not Rooms:FindFirstChild("Room0")
+end
+
+
+local function runGodMode()
+	if greedActive then
+		gmNote("Greed is active, try again later.", 4)
+		return
+	end
+	local v = Values.RoomsNumber.Value
+	if type(v) ~= "number" then
+		return
+	end
+	if gmNeedKey(v) then
+		gmNote("This room needs a key. Use the key first.", 4)
+		return
+	end
+	local availBack = gmAvail(v)
+	if not availBack then
+		gmNote("Open more doors before using God Mode.", 4)
+		return
+	end
+	local backIdx = gmPrevRoom(v)
+	if not backIdx then
+		gmNote("Open more doors before using God Mode.", 4)
+		return
+	end
+	local w = gmWard(backIdx)
+	if not w then
+		gmNote("No wardrobe found in nearby rooms.", 4)
+		return
+	end
+	local d = gmDoor(v)
+	if not d then
+		gmNote("No safe door found (void door?).", 4)
+		return
+	end
+	local ch = LocalPlayer.Character
+	if not ch then
+		ch = LocalPlayer.CharacterAdded:Wait()
+	end
+	if not ch then
+		return
+	end
+	local hVal = ch:FindFirstChild("Hiding")
+	if hVal and hVal.Value then
+		gmNote("You are already hiding.", 3)
+		return
+	end
+	ch:PivotTo(d:GetPivot())
+	gmOpenDoor(d)
+	task.wait(0.5)
+	gmHideWard(w)
+	task.wait(1)
+	task.spawn(function()
+		local p = LocalPlayer
+		local c = p.Character or p.CharacterAdded:Wait()
+		local hid = c and c:FindFirstChild("Hiding")
+		repeat
+			task.wait()
+			c = p.Character or c
+			hid = c and c:FindFirstChild("Hiding")
+		until hid and hid.Value
+		gmNote("Hidden, holding...", 3)
+		while hid and hid.Value do
+			local door = gmDoor(v)
+			if door and door.Parent and c then
+				c:PivotTo(door:GetPivot())
+			end
+			task.wait(0.1)
+			c = p.Character or c
+			hid = c and c:FindFirstChild("Hiding")
+		end
+	end)
+	task.wait(3.5)
+	local c = LocalPlayer.Character
+	if c then
+		local hid = c:FindFirstChild("Hiding")
+		if hid then
+			hid.Value = false
+		end
+	end
+	gmNote("Exploit done.", 3)
+end
 coreGroup:AddButton({
 	Name = "Infinite Flashlight",
 	Callback = function()
@@ -1527,11 +1773,9 @@ coreGroup:AddButton({
 	end
 });
 coreGroup:AddButton({
-	Name = "God Mode [WIP]",
+	Name = "God Mode",
 	Callback = function()
-		task.defer(function()
-			(loadstring(game:HttpGet("https://raw.githubusercontent.com/ltseverydayyou/endless-doors/main/ED%20god")))();
-		end);
+		task.defer(runGodMode)
 	end
 });
 coreGroup:AddToggle({
@@ -1751,12 +1995,12 @@ task.spawn(function()
 		pcall(rebuildPromptList);
 	end;
 end);
-trackConnection(workspace.DescendantAdded:Connect(function(o)
+ED_tbl.trackConnection(workspace.DescendantAdded:Connect(function(o)
 	if o:IsA("ProximityPrompt") then
 		task.defer(rebuildPromptList);
 	end;
 end));
-trackConnection(workspace.DescendantRemoving:Connect(function(o)
+ED_tbl.trackConnection(workspace.DescendantRemoving:Connect(function(o)
 	if o:IsA("ProximityPrompt") then
 		task.defer(rebuildPromptList);
 	end;
@@ -1808,7 +2052,7 @@ espGroup:AddToggle({
 		task.defer(function()
 			(getgenv()).bitESP = v;
 			for _, p in ipairs(RoomTracker.getTracked("bit")) do
-				if v then
+				if v and isInteracting(p) then
 					CreateESP(p, Color3.new(1, 0.666667, 0));
 				else
 					RemoveESP(p);
@@ -1825,7 +2069,7 @@ espGroup:AddToggle({
 		task.defer(function()
 			(getgenv()).leverESP = v;
 			for _, p in ipairs(RoomTracker.getTracked("lever")) do
-				if v then
+				if v and isInteracting(p) then
 					CreateESP(p, Color3.fromRGB(139, 145, 165));
 				else
 					RemoveESP(p);
@@ -1842,7 +2086,7 @@ espGroup:AddToggle({
 		task.defer(function()
 			(getgenv()).batteryESP = v;
 			for _, p in ipairs(RoomTracker.getTracked("battery")) do
-				if v then
+				if v and isInteracting(p) then
 					CreateESP(p, Color3.new(0, 0.666667, 0));
 				else
 					RemoveESP(p);
@@ -2086,7 +2330,7 @@ local function setBypassChase(v)
 end;
 (getgenv()).voidDoorAutoDelete = (getgenv()).voidDoorAutoDelete or false;
 local function deleteVoidDoorOnce()
-	local d = getVoidDoorForCurrentRoom();
+	local d = ED_tbl.getVoidDoorForCurrentRoom();
 	if d and d.Parent then
 		d:Destroy();
 	end;
@@ -2233,7 +2477,7 @@ playerGroup:AddToggle({
 	Callback = function(v)
 		(getgenv()).wide = v;
 		if v then
-			bindFOV(workspace.CurrentCamera);
+			ED_tbl.bindFOV(workspace.CurrentCamera);
 		elseif fovLockConn then
 			fovLockConn:Disconnect();
 			fovLockConn = nil;
@@ -2346,19 +2590,19 @@ miscGroup:AddButton({
 miscGroup:AddButton({
 	Name = "Teleport to Door",
 	Callback = function()
-		tpToDoor();
+		ED_tbl.tpToDoor();
 	end
 });
 miscGroup:AddButton({
 	Name = "Teleport to Key",
 	Callback = function()
-		tpToKey();
+		ED_tbl.tpToKey();
 	end
 });
 miscGroup:AddButton({
 	Name = "Teleport to Lever",
 	Callback = function()
-		tpToLever();
+		ED_tbl.tpToLever();
 	end
 });
 miscGroup:AddToggle({
@@ -2398,38 +2642,38 @@ miscGroup:AddButton({
 local tabInfo = Win:AddTab("Info/Stats", "info", "Live statistics");
 local runGroup = tabInfo:AddGroupbox("Run Progress", "map", "left");
 runGroup:AddSection("Rooms");
-local L_rooms = runGroup:AddLabel("Rooms: " .. playerRoom());
-local L_cur = runGroup:AddLabel("Current Room: " .. curRoom());
+local L_rooms = runGroup:AddLabel("Rooms: " .. ED_tbl.playerRoom());
+local L_cur = runGroup:AddLabel("Current Room: " .. ED_tbl.curRoom());
 runGroup:AddSection("Currency");
-local L_bits = runGroup:AddLabel("Bits: " .. playerBits());
-local L_dbl = runGroup:AddLabel("Double Bits: " .. doubleBits());
+local L_bits = runGroup:AddLabel("Bits: " .. ED_tbl.playerBits());
+local L_dbl = runGroup:AddLabel("Double Bits: " .. ED_tbl.doubleBits());
 local L_rev;
 if game.PlaceId ~= pCLASS then
 	runGroup:AddSection("Revives");
-	L_rev = runGroup:AddLabel("Revive Price: " .. revivePrice());
+	L_rev = runGroup:AddLabel("Revive Price: " .. ED_tbl.revivePrice());
 end;
 local chanceGroup = tabInfo:AddGroupbox("Odds & Events", "activity", "left");
-local L_phil = chanceGroup:AddLabel("Phil Chance: " .. phil());
-local L_spider = chanceGroup:AddLabel("Spider Chance: " .. spider());
+local L_phil = chanceGroup:AddLabel("Phil Chance: " .. ED_tbl.phil());
+local L_spider = chanceGroup:AddLabel("Spider Chance: " .. ED_tbl.spider());
 if game.PlaceId == pREN then
 	chanceGroup:AddSection("Collectibles");
-	chanceGroup:AddLabel("Fuzzi: " .. fuz());
-	chanceGroup:AddLabel("Zav: " .. zav());
-	chanceGroup:AddLabel("Jake: " .. jake());
-	chanceGroup:AddLabel("Blue: " .. blue());
-	chanceGroup:AddLabel("Alan: " .. alan());
+	L_fuz = chanceGroup:AddLabel("Fuzzi: " .. ED_tbl.fuz());
+	L_zav = chanceGroup:AddLabel("Zav: " .. ED_tbl.zav());
+	L_jake = chanceGroup:AddLabel("Jake: " .. ED_tbl.jake());
+	L_blue = chanceGroup:AddLabel("Blue: " .. ED_tbl.blue());
+	L_alan = chanceGroup:AddLabel("Alan: " .. ED_tbl.alan());
 end;
 local playerGroup = tabInfo:AddGroupbox("Player Stats", "user", "right");
 local L_fame, L_deaths, L_rift, L_group;
 if game.PlaceId == pREN then
-	L_fame = playerGroup:AddLabel("Fame: " .. fame());
-	L_deaths = playerGroup:AddLabel("Deaths: " .. deaths());
-	L_rift = playerGroup:AddLabel("Rift: " .. rift());
-	L_group = playerGroup:AddLabel("Joined Group: " .. inGroup());
+	L_fame = playerGroup:AddLabel("Fame: " .. ED_tbl.fame());
+	L_deaths = playerGroup:AddLabel("Deaths: " .. ED_tbl.deaths());
+	L_rift = playerGroup:AddLabel("Rift: " .. ED_tbl.rift());
+	L_group = playerGroup:AddLabel("Joined Group: " .. ED_tbl.inGroup());
 end;
 local sessionGroup = tabInfo:AddGroupbox("Session", "users", "right");
-local L_alive = sessionGroup:AddLabel("Players Alive: " .. alive());
-local L_ingame = sessionGroup:AddLabel("Players In Game: " .. inGame());
+local L_alive = sessionGroup:AddLabel("Players Alive: " .. ED_tbl.alive());
+local L_ingame = sessionGroup:AddLabel("Players In Game: " .. ED_tbl.inGame());
 local tabSettings = Win:AddTab("Settings", "cog", "UI customization");
 local settingsTabRaw = tabSettings and tabSettings._tab;
 if settingsTabRaw then
@@ -2547,27 +2791,34 @@ end;
 task.spawn(function()
 	while task.wait() do
 		pcall(function()
-			L_rooms:Set("Rooms: " .. playerRoom());
-			L_bits:Set("Bits: " .. playerBits());
-			L_dbl:Set("Double Bits: " .. doubleBits());
-			L_cur:Set("Current Room: " .. curRoom());
-			L_phil:Set("Phil Chance: " .. phil());
-			L_spider:Set("Spider Chance: " .. spider());
+			L_rooms:Set("Rooms: " .. ED_tbl.playerRoom());
+			L_bits:Set("Bits: " .. ED_tbl.playerBits());
+			L_dbl:Set("Double Bits: " .. ED_tbl.doubleBits());
+			L_cur:Set("Current Room: " .. ED_tbl.curRoom());
+			L_phil:Set("Phil Chance: " .. ED_tbl.phil());
+			L_spider:Set("Spider Chance: " .. ED_tbl.spider());
 			if L_rev then
-				L_rev:Set("Revive Price: " .. revivePrice());
+				L_rev:Set("Revive Price: " .. ED_tbl.revivePrice());
 			end;
-			L_alive:Set("Players Alive: " .. alive());
-			L_ingame:Set("Players In Game: " .. inGame());
+			L_alive:Set("Players Alive: " .. ED_tbl.alive());
+			L_ingame:Set("Players In Game: " .. ED_tbl.inGame());
 			if game.PlaceId == pREN then
-				L_fame:Set("Fame: " .. fame());
-				L_deaths:Set("Deaths: " .. deaths());
-				L_rift:Set("Rift: " .. rift());
-				L_group:Set("Joined Group: " .. inGroup());
+				L_fame:Set("Fame: " .. ED_tbl.fame());
+				L_deaths:Set("Deaths: " .. ED_tbl.deaths());
+				L_rift:Set("Rift: " .. ED_tbl.rift());
+				L_group:Set("Joined Group: " .. ED_tbl.inGroup());
+				if L_fuz then
+					L_fuz:Set("Fuzzi: " .. ED_tbl.fuz());
+					L_zav:Set("Zav: " .. ED_tbl.zav());
+					L_jake:Set("Jake: " .. ED_tbl.jake());
+					L_blue:Set("Blue: " .. ED_tbl.blue());
+					L_alan:Set("Alan: " .. ED_tbl.alan());
+				end;
 			end;
 		end);
 	end;
 end);
-trackConnection(Players.PlayerAdded:Connect(function(pl)
+ED_tbl.trackConnection(Players.PlayerAdded:Connect(function(pl)
 	task.defer(function()
 		local n = pl.Name;
 		local d = pl.DisplayName;
@@ -2585,7 +2836,7 @@ task.spawn(function()
 	if not pg then
 		return;
 	end;
-	trackConnection(pg.DescendantAdded:Connect(function(txt)
+	ED_tbl.trackConnection(pg.DescendantAdded:Connect(function(txt)
 		if not txt:IsA("TextLabel") then
 			return;
 		end;
@@ -2603,21 +2854,21 @@ task.spawn(function()
 		end;
 	end));
 end);
-trackConnection(Entities.ChildAdded:Connect(function(ent)
+ED_tbl.trackConnection(Entities.ChildAdded:Connect(function(ent)
 	handleEntitySpawn(ent);
 end));
-trackConnection(Entities.DescendantAdded:Connect(function(inst)
+ED_tbl.trackConnection(Entities.DescendantAdded:Connect(function(inst)
 	handleEntitySpawn(inst, {
 		notify = true
 	});
 end));
-trackConnection(Entities.DescendantRemoving:Connect(function(inst)
-	local root = findEntityRoot(inst) or inst;
+ED_tbl.trackConnection(Entities.DescendantRemoving:Connect(function(inst)
+	local root = ED_tbl.findEntityRoot(inst) or inst;
 	if notifiedEntities[root] then
 		notifiedEntities[root] = nil;
 	end;
 end));
-trackConnection((Values.MimicActivated:GetPropertyChangedSignal("Value")):Connect(function()
+ED_tbl.trackConnection((Values.MimicActivated:GetPropertyChangedSignal("Value")):Connect(function()
 	if (getgenv()).entityNotif then
 		task.defer(function()
 			local txt = Values.MimicActivated.Value and "Mimic Is Enabled" or "Mimic Is Disabled";
@@ -2630,7 +2881,7 @@ trackConnection((Values.MimicActivated:GetPropertyChangedSignal("Value")):Connec
 		end);
 	end;
 end));
-trackConnection(((S("ReplicatedStorage")).Remotes:FindFirstChild("E_A", true)).OnClientEvent:Connect(function(ent)
+ED_tbl.trackConnection(((S("ReplicatedStorage")).Remotes:FindFirstChild("E_A", true)).OnClientEvent:Connect(function(ent)
 	if (tostring(ent)):lower() == "greed" then
 		task.defer(function()
 			greedToken += 1;
@@ -2662,7 +2913,7 @@ trackConnection(((S("ReplicatedStorage")).Remotes:FindFirstChild("E_A", true)).O
 		end);
 	end;
 end));
-trackConnection(Rooms.DescendantAdded:Connect(function(o)
+ED_tbl.trackConnection(Rooms.DescendantAdded:Connect(function(o)
 	if not o:IsA("BasePart") then
 		return;
 	end;
@@ -2671,15 +2922,15 @@ trackConnection(Rooms.DescendantAdded:Connect(function(o)
 		task.defer(function()
 			CreateESP(o, Color3.new(1, 1, 0), "Key");
 		end);
-	elseif (getgenv()).bitESP and n == "bit" then
+	elseif (getgenv()).bitESP and n == "bit" and isInteracting(o) then
 		task.defer(function()
 			CreateESP(o, Color3.new(1, 0.666667, 0));
 		end);
-	elseif (getgenv()).leverESP and n == "lever" then
+	elseif (getgenv()).leverESP and n == "lever" and isInteracting(o) then
 		task.defer(function()
 			CreateESP(o, Color3.fromRGB(139, 145, 165));
 		end);
-	elseif (getgenv()).batteryESP and n == "battery" then
+	elseif (getgenv()).batteryESP and n == "battery" and isInteracting(o) then
 		task.defer(function()
 			CreateESP(o, Color3.new(0, 0.666667, 0));
 		end);
@@ -2687,6 +2938,33 @@ trackConnection(Rooms.DescendantAdded:Connect(function(o)
 end));
 local remNP = ((S("ReplicatedStorage")):WaitForChild("Remotes")):WaitForChild("NP_E");
 local curRoomVal = Values:WaitForChild("RoomsNumber");
+local godModeAvailable = false
+
+local function updateGodModeAvailable()
+	local v = curRoomVal.Value
+	if type(v) ~= "number" then
+		return
+	end
+	local avail = gmAvail(v)
+	if avail and not godModeAvailable then
+		godModeAvailable = true
+		gmNote("God Mode is now available to use.", 4)
+	elseif not avail then
+		godModeAvailable = false
+	end
+end
+
+updateGodModeAvailable()
+
+ED_tbl.trackConnection(curRoomVal:GetPropertyChangedSignal("Value"):Connect(function()
+	updateGodModeAvailable()
+end))
+
+ED_tbl.trackConnection(Rooms.ChildRemoved:Connect(function(c)
+	if c and c:IsA("Model") and c.Name:match("^Room%d+") then
+		updateGodModeAvailable()
+	end
+end))
 local function getChar()
 	local ch = LocalPlayer.Character;
 	if ch then
@@ -3056,11 +3334,11 @@ task.spawn(function()
 	while true do
 		if (getgenv()).autoFarm and (not busyBoss) and (not isBossPending()) then
 			ensureAutoFarmSafety();
-			pcall(tpToDoor, true);
+			pcall(ED_tbl.tpToDoor, true);
 			task.wait(0.1);
-			pcall(tpToKey, true);
+			pcall(ED_tbl.tpToKey, true);
 			task.wait(0.1);
-			pcall(tpToLever, true);
+			pcall(ED_tbl.tpToLever, true);
 			task.wait(0.1);
 		else
 			task.wait(0.1);
@@ -3068,7 +3346,7 @@ task.spawn(function()
 	end;
 end);
 ObsidianUI:LoadConfiguration();
-trackConnection(RunService.RenderStepped:Connect(function()
+ED_tbl.trackConnection(RunService.RenderStepped:Connect(function()
 	if (getgenv()).chaos then
 		local delay = tonumber((getgenv()).promptDelay) or 0;
 		local now = tick();
@@ -3078,10 +3356,10 @@ trackConnection(RunService.RenderStepped:Connect(function()
 		end;
 	end;
 end));
-cameraConn = trackConnection((workspace:GetPropertyChangedSignal("CurrentCamera")):Connect(function()
+cameraConn = ED_tbl.trackConnection((workspace:GetPropertyChangedSignal("CurrentCamera")):Connect(function()
 	currentCamera = workspace.CurrentCamera;
 	if (getgenv()).wide then
-		bindFOV(currentCamera);
+		ED_tbl.bindFOV(currentCamera);
 	end;
 end));
 task.spawn(function()
