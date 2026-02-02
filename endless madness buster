@@ -3173,7 +3173,7 @@ local function bruteCode(room, pz)
 	if code and code ~= "" and (not code:find("%?")) then
 		last = code;
 		tries = 1;
-		remNP:FireServer(code);
+		if remNP then remNP:FireServer(code) end
 		local t0 = tick();
 		while not found and tick() - t0 < 5 do
 			task.wait();
@@ -3190,7 +3190,7 @@ local function bruteCode(room, pz)
 		local c = string.format("%04d", i);
 		last = c;
 		tries += 1;
-		remNP:FireServer(c);
+		if remNP then remNP:FireServer(c) end
 		if tries % 10 == 0 then
 			task.wait(0.1);
 		end;
