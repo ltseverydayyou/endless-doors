@@ -39,6 +39,7 @@ local GameFolder = workspace:WaitForChild("Game");
 local Values = GameFolder:WaitForChild("Values");
 local Rooms = GameFolder:WaitForChild("Rooms");
 local Entities = GameFolder:WaitForChild("Entities");
+local curRoomVal = Values:WaitForChild("RoomsNumber");
 local currentCamera = workspace.CurrentCamera;
 local brightLoop, antiAFKConn, fovLockConn, cameraConn, infJumpConn, mobHoldConn, mobDownConn, mobUpConn;
 local overCon, lurkCon, watchCon, flowCon, abyssCon, takerCon, chaseCon;
@@ -1585,6 +1586,7 @@ local GM_FIRE = 15
 local remHide
 local gmRoomAddedConn
 local gmRoomRemovedConn
+local gmRoomValConn
 local gmHasHidden = false
 
 local function gmNote(txt, dur)
@@ -1710,6 +1712,10 @@ local function gmDisconnectCloset()
 	if gmRoomRemovedConn then
 		gmRoomRemovedConn:Disconnect()
 		gmRoomRemovedConn = nil
+	end
+	if gmRoomValConn then
+		gmRoomValConn:Disconnect()
+		gmRoomValConn = nil
 	end
 	gmHasHidden = false
 end
@@ -1936,15 +1942,19 @@ local function runGodMode()
 	end
 
 	ch:PivotTo(d:GetPivot())
+
+	gmDisconnectCloset()
+
+	local oldVal = curRoomVal.Value
+	gmRoomValConn = curRoomVal:GetPropertyChangedSignal("Value"):Connect(function()
+		if curRoomVal.Value ~= oldVal then
+			task.defer(function()
+				gmWatchCloset(v, backIdx, w)
+			end)
+		end
+	end)
+
 	gmOpenDoor(d)
-
-	local progressed = gmWaitRoomAdvance(v, 6)
-	if not progressed then
-		gmNote("Door did not progress to the next room.", 4)
-		return
-	end
-
-	gmWatchCloset(v, backIdx, w)
 
 	task.spawn(function()
 		local p = LocalPlayer
@@ -3161,7 +3171,6 @@ task.spawn(function()
 		remNP = WaitInst(S("ReplicatedStorage"),"NP_E",10);
 	end)
 end)
-local curRoomVal = Values:WaitForChild("RoomsNumber");
 local godModeAvailable = false
 
 local function updateGodModeAvailable()
