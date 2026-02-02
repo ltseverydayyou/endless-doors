@@ -1849,7 +1849,14 @@ local function gmHasLever(idx)
 		return false
 	end
 	local gateLever = RoomTracker.getRoomTarget(r, "gateLever")
-	return gateLever ~= nil and gateLever.Parent ~= nil
+	if not gateLever or not gateLever.Parent then
+		return false
+	end
+	local pp = gateLever:FindFirstChildWhichIsA("ProximityPrompt", true)
+	if not pp then
+		return false
+	end
+	return true
 end
 
 local function gmUseLever(idx)
@@ -1863,11 +1870,25 @@ local function gmUseLever(idx)
 		return false
 	end
 
-	ED_tbl.tpToLever(true)
+	local target = gateLever
+	if gateLever:IsA("Model") then
+		target = gateLever:FindFirstChild("LeverGoal") or gateLever:FindFirstChild("Lever") or gateLever
+	end
 
-	local pp = WaitClass(gateLever, "ProximityPrompt", 5) or gateLever:FindFirstChildWhichIsA("ProximityPrompt", true)
+	local pp = gateLever:FindFirstChildWhichIsA("ProximityPrompt", true)
 	if not pp then
 		return false
+	end
+
+	local ch = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+	if not ch then
+		return false
+	end
+
+	if target:IsA("Model") then
+		ch:PivotTo(target:GetPivot())
+	elseif target:IsA("BasePart") then
+		ch:PivotTo(target.CFrame)
 	end
 
 	for i = 1, GM_FIRE do
@@ -1878,7 +1899,7 @@ local function gmUseLever(idx)
 		task.wait(0.05)
 	end
 
-	task.wait(0.5)
+	task.wait(0.3)
 	return true
 end
 
