@@ -1779,19 +1779,21 @@ local function gmAcquireKey(idx)
 		return false
 	end
 
-	local key = RoomTracker.getRoomTarget(r, "roomKey")
 	local ch = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
 	if not ch then
 		return false
 	end
 
+	local vals = ch:FindFirstChild("Values")
+	local hk = vals and vals:FindFirstChild("HasKey")
+
+	if hk and hk.Value then
+		return true
+	end
+
+	local key = RoomTracker.getRoomTarget(r, "roomKey")
 	if not key or not key.Parent then
-		local vals = ch:FindFirstChild("Values")
-		local hk = vals and vals:FindFirstChild("HasKey")
-		if hk and hk.Value then
-			return true
-		end
-		return false
+		return hk and hk.Value or false
 	end
 
 	local base = ED_tbl.getBasePart(key)
@@ -1799,37 +1801,41 @@ local function gmAcquireKey(idx)
 		ch:PivotTo(base.CFrame)
 	end
 
-	local pp = WaitClass(key, "ProximityPrompt", 5) or key:FindFirstChildWhichIsA("ProximityPrompt", true)
+	local pp = WaitClass(key, "ProximityPrompt", 0.5) or key:FindFirstChildWhichIsA("ProximityPrompt", true)
 	if not pp then
-		return false
+		return hk and hk.Value or false
+	end
+
+	local got = hk and hk.Value or false
+	local conn
+	if hk then
+		conn = hk:GetPropertyChangedSignal("Value"):Connect(function()
+			if hk.Value then
+				got = true
+			end
+		end)
 	end
 
 	local t0 = tick()
-	while tick() - t0 < 6 do
-		ch = LocalPlayer.Character
-		local vals = ch and ch:FindFirstChild("Values")
-		local hk = vals and vals:FindFirstChild("HasKey")
-		if hk and hk.Value then
-			return true
-		end
-
+	while not got and tick() - t0 < 3 do
 		if not (pp and pp.Parent) then
 			key = RoomTracker.getRoomTarget(r, "roomKey")
 			if not key or not key.Parent then
 				break
 			end
 			pp = WaitClass(key, "ProximityPrompt", 1) or key:FindFirstChildWhichIsA("ProximityPrompt", true)
+			if not pp then
+				break
+			end
 		end
-
-		if pp and pp.Parent then
-			pcall(fireproximityprompt, pp)
-		end
-		task.wait(0.15)
+		pcall(fireproximityprompt, pp)
+		task.wait(0.08)
 	end
 
-	ch = LocalPlayer.Character
-	local vals = ch and ch:FindFirstChild("Values")
-	local hk = vals and vals:FindFirstChild("HasKey")
+	if conn then
+		conn:Disconnect()
+	end
+
 	if hk and hk.Value then
 		return true
 	end
