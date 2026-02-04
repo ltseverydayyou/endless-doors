@@ -42,7 +42,7 @@ local Entities = GameFolder:WaitForChild("Entities");
 local curRoomVal = Values:WaitForChild("RoomsNumber");
 local currentCamera = workspace.CurrentCamera;
 local brightLoop, antiAFKConn, fovLockConn, cameraConn, infJumpConn, mobHoldConn, mobDownConn, mobUpConn;
-local overCon, lurkCon, watchCon, flowCon, abyssCon, takerCon, chaseCon;
+local overCon, lurkCon, watchCon, flowCon, abyssCon, takerCon, chaseCon, vacCon;
 local greedActive = false;
 local greedToken = 0;
 local ObsidianUI;
@@ -51,13 +51,13 @@ local activeConnections = {};
 local notifiedEntities = {};
 local L_fuz, L_zav, L_jake, L_blue, L_alan;
 local ED_tbl = {};
-ED_tbl.trackConnection=function(conn)
+ED_tbl.trackConnection = function(conn)
 	if conn then
 		activeConnections[(#activeConnections) + 1] = conn;
 	end;
 	return conn;
 end;
-ED_tbl.findEntityRoot=function(inst)
+ED_tbl.findEntityRoot = function(inst)
 	local current = inst;
 	while current and current.Parent do
 		if current.Parent == Entities then
@@ -75,7 +75,7 @@ end;
 (getgenv()).autoFarm = (getgenv()).autoFarm or false;
 (getgenv()).autoHeal = (getgenv()).autoHeal or false;
 local decalID = 95434351872718;
-ED_tbl.GuiRoot=function()
+ED_tbl.GuiRoot = function()
 	return gethui and gethui() or (S("CoreGui")):FindFirstChild("RobloxGui") or S("CoreGui") or LocalPlayer:WaitForChild("PlayerGui");
 end;
 if not game:IsLoaded() then
@@ -84,7 +84,7 @@ if not game:IsLoaded() then
 	game.Loaded:Wait();
 	m:Destroy();
 end;
-ED_tbl.rootOf=function(c)
+ED_tbl.rootOf = function(c)
 	if not c then
 		return nil;
 	end;
@@ -94,26 +94,22 @@ ED_tbl.rootOf=function(c)
 	if not c then
 		return nil;
 	end;
-	return c:FindFirstChild("HumanoidRootPart")
-		or c:FindFirstChild("UpperTorso")
-		or c:FindFirstChild("Torso")
-		or c:FindFirstChild("LowerTorso")
-		or c:FindFirstChildWhichIsA("BasePart");
+	return c:FindFirstChild("HumanoidRootPart") or c:FindFirstChild("UpperTorso") or c:FindFirstChild("Torso") or c:FindFirstChild("LowerTorso") or c:FindFirstChildWhichIsA("BasePart");
 end;
-ED_tbl.charValStr=function(ctn, nm)
-	local ch = LocalPlayer.Character
+ED_tbl.charValStr = function(ctn, nm)
+	local ch = LocalPlayer.Character;
 	if not ch then
-		return "false"
-	end
-	local folder = ch:FindFirstChild(ctn)
+		return "false";
+	end;
+	local folder = ch:FindFirstChild(ctn);
 	if not folder then
-		return "false"
-	end
-	local o = folder:FindFirstChild(nm)
+		return "false";
+	end;
+	local o = folder:FindFirstChild(nm);
 	if not o then
-		return "false"
-	end
-	return tostring(o.Value)
+		return "false";
+	end;
+	return tostring(o.Value);
 end;
 local RoomTracker = (function()
 	local roomItemCache = {};
@@ -198,38 +194,38 @@ local RoomTracker = (function()
 		end;
 	end;
 	local function processAdded(inst, room)
-		room = room or findRoom(inst)
+		room = room or findRoom(inst);
 		if not room then
-			return
-		end
-		local lower = inst.Name:lower()
+			return;
+		end;
+		local lower = inst.Name:lower();
 		if inst:IsA("Model") then
 			if lower == "roomkey" then
-				itemRoomIndex[inst] = room.Name
-				registerPart("roomkey", inst)
-				setRoomValue(room, "roomKey", inst)
+				itemRoomIndex[inst] = room.Name;
+				registerPart("roomkey", inst);
+				setRoomValue(room, "roomKey", inst);
 			elseif lower == "gatelever" or inst.Name == "GateLever" then
-				itemRoomIndex[inst] = room.Name
-				setRoomValue(room, "gateLever", inst)
-			end
+				itemRoomIndex[inst] = room.Name;
+				setRoomValue(room, "gateLever", inst);
+			end;
 		elseif inst:IsA("BasePart") then
 			if lower == "bit" then
-				itemRoomIndex[inst] = room.Name
-				registerPart("bit", inst)
+				itemRoomIndex[inst] = room.Name;
+				registerPart("bit", inst);
 			elseif lower == "lever" or lower == "battery" then
-				itemRoomIndex[inst] = room.Name
-				registerPart(lower, inst)
+				itemRoomIndex[inst] = room.Name;
+				registerPart(lower, inst);
 			elseif lower == "gatelever" then
-				itemRoomIndex[inst] = room.Name
-				setRoomValue(room, "gateLever", inst)
+				itemRoomIndex[inst] = room.Name;
+				setRoomValue(room, "gateLever", inst);
 			elseif inst.Parent and inst.Parent:IsA("Model") and inst.Parent.Name:lower() == "roomkey" then
-				local holder = inst.Parent
-				itemRoomIndex[holder] = room.Name
-				registerPart("roomkey", holder)
-				setRoomValue(room, "roomKey", holder)
-			end
-		end
-	end
+				local holder = inst.Parent;
+				itemRoomIndex[holder] = room.Name;
+				registerPart("roomkey", holder);
+				setRoomValue(room, "roomKey", holder);
+			end;
+		end;
+	end;
 	local function processRemoved(inst)
 		unregisterPart(inst);
 		local roomName = itemRoomIndex[inst];
@@ -293,7 +289,7 @@ local RoomTracker = (function()
 		end
 	};
 end)();
-ED_tbl.hasVoidWindOnDoor=function(doorModel)
+ED_tbl.hasVoidWindOnDoor = function(doorModel)
 	if not (doorModel and doorModel:IsA("Model")) then
 		return false;
 	end;
@@ -325,7 +321,7 @@ ED_tbl.hasVoidWindOnDoor=function(doorModel)
 	end;
 	return voidCount >= 2;
 end;
-ED_tbl.getVoidDoorForCurrentRoom=function()
+ED_tbl.getVoidDoorForCurrentRoom = function()
 	local r = Rooms:FindFirstChild("Room" .. tostring(Values.RoomsNumber.Value));
 	if not r then
 		return nil;
@@ -342,43 +338,43 @@ ED_tbl.getVoidDoorForCurrentRoom=function()
 	end;
 	return nil;
 end;
-ED_tbl.getSafeDoorForCurrentRoom=function()
+ED_tbl.getSafeDoorForCurrentRoom = function()
 	local r = Rooms:FindFirstChild("Room" .. tostring(Values.RoomsNumber.Value));
 	if not r then
 		return nil;
 	end;
 	local baseDoor = r:FindFirstChild("Door") or r:FindFirstChild("Door", true);
-	if baseDoor and baseDoor:IsA("Model") and not ED_tbl.hasVoidWindOnDoor(baseDoor) then
+	if baseDoor and baseDoor:IsA("Model") and (not ED_tbl.hasVoidWindOnDoor(baseDoor)) then
 		return baseDoor;
 	end;
 	return nil;
 end;
-ED_tbl.tpToDoor=function(ignoreGreed)
-	local doorModel
+ED_tbl.tpToDoor = function(ignoreGreed)
+	local doorModel;
 	if not doorModel then
-		doorModel = ED_tbl.getSafeDoorForCurrentRoom()
-	end
+		doorModel = ED_tbl.getSafeDoorForCurrentRoom();
+	end;
 	if not doorModel then
-		return
-	end
+		return;
+	end;
 	if greedActive and (not ignoreGreed) then
-		local dist, tendRoot = nearestTendrilsDistance()
+		local dist, tendRoot = nearestTendrilsDistance();
 		if dist < SAFE_TENDRILS_DIST then
-			local ch = LocalPlayer.Character
-			local myRoot = ED_tbl.rootOf(ch)
+			local ch = LocalPlayer.Character;
+			local myRoot = ED_tbl.rootOf(ch);
 			if myRoot and tendRoot then
-				local dir = myRoot.Position - tendRoot.Position
+				local dir = myRoot.Position - tendRoot.Position;
 				if dir.Magnitude > 0 then
-					dir = dir.Unit
-					local offset = dir * (SAFE_TENDRILS_DIST + 5)
-					ch:PivotTo(CFrame.new(tendRoot.Position + offset))
-				end
-			end
-		end
-	end
-	LocalPlayer.Character:PivotTo(doorModel:GetPivot())
-end
-ED_tbl.tpToKey=function(_ignoreGreed)
+					dir = dir.Unit;
+					local offset = dir * (SAFE_TENDRILS_DIST + 5);
+					ch:PivotTo(CFrame.new(tendRoot.Position + offset));
+				end;
+			end;
+		end;
+	end;
+	LocalPlayer.Character:PivotTo(doorModel:GetPivot());
+end;
+ED_tbl.tpToKey = function(_ignoreGreed)
 	local ch = LocalPlayer.Character;
 	local hk = ch and ch:FindFirstChild("Values") and ch.Values:FindFirstChild("HasKey");
 	if hk and hk.Value then
@@ -393,7 +389,7 @@ ED_tbl.tpToKey=function(_ignoreGreed)
 		LocalPlayer.Character:PivotTo(keyPart:GetPivot());
 	end;
 end;
-ED_tbl.tpToLever=function(_ignoreGreed)
+ED_tbl.tpToLever = function(_ignoreGreed)
 	local r = Rooms:FindFirstChild("Room" .. Values.RoomsNumber.Value);
 	if not r then
 		return;
@@ -412,17 +408,17 @@ ED_tbl.tpToLever=function(_ignoreGreed)
 		LocalPlayer.Character:PivotTo(target.CFrame);
 	end;
 end;
-ED_tbl.disableRagdoll=function()
-	local ch = LocalPlayer.Character
+ED_tbl.disableRagdoll = function()
+	local ch = LocalPlayer.Character;
 	if not ch then
-		return
-	end
-	local t = ch:FindFirstChild("RagdollTrigger")
+		return;
+	end;
+	local t = ch:FindFirstChild("RagdollTrigger");
 	if t then
-		t.Value = false
-	end
+		t.Value = false;
+	end;
 end;
-ED_tbl.bindFOV=function(cam)
+ED_tbl.bindFOV = function(cam)
 	if fovLockConn then
 		fovLockConn:Disconnect();
 		fovLockConn = nil;
@@ -445,73 +441,73 @@ local SUBTITLE = "zavaled loves KitaFuzzi";
 local TITLE = "Endless Doors";
 local MODE_LABEL = PLACE_NAME:match("(%[[^%]]+%])") or PLACE_NAME;
 local FOOTER = MODE_LABEL .. " | " .. SUBTITLE;
-ED_tbl.playerRoom=function()
+ED_tbl.playerRoom = function()
 	return tostring(LocalPlayer.leaderstats.Room.Value);
 end;
-ED_tbl.playerBits=function()
+ED_tbl.playerBits = function()
 	return tostring(LocalPlayer.leaderstats.Bits.Value);
 end;
-ED_tbl.doubleBits=function()
-	local ch = LocalPlayer.Character
+ED_tbl.doubleBits = function()
+	local ch = LocalPlayer.Character;
 	if not ch then
-		return "0"
-	end
-	local vals = ch:FindFirstChild("Values")
+		return "0";
+	end;
+	local vals = ch:FindFirstChild("Values");
 	if not vals then
-		return "0"
-	end
-	local db = vals:FindFirstChild("DoubleBits")
+		return "0";
+	end;
+	local db = vals:FindFirstChild("DoubleBits");
 	if not db then
-		return "0"
-	end
-	return tostring(db.Value)
+		return "0";
+	end;
+	return tostring(db.Value);
 end;
-ED_tbl.fame=function()
+ED_tbl.fame = function()
 	return tostring(LocalPlayer.Fame.Value);
 end;
-ED_tbl.deaths=function()
+ED_tbl.deaths = function()
 	return tostring(LocalPlayer.Deaths.Value);
 end;
-ED_tbl.rift=function()
+ED_tbl.rift = function()
 	return tostring(LocalPlayer.Rift.Value);
 end;
-ED_tbl.inGroup=function()
+ED_tbl.inGroup = function()
 	return tostring(LocalPlayer.JoinedGroup.Value);
 end;
-ED_tbl.curRoom=function()
+ED_tbl.curRoom = function()
 	return tostring(Values.RoomsNumber.Value);
 end;
-ED_tbl.phil=function()
+ED_tbl.phil = function()
 	return tostring(Values.PhilMeter.Value);
 end;
-ED_tbl.spider=function()
+ED_tbl.spider = function()
 	return tostring(Values.SpiderChance.Value);
 end;
-ED_tbl.revivePrice=function()
+ED_tbl.revivePrice = function()
 	return tostring(Values.RevivePrice.Value);
 end;
-ED_tbl.alive=function()
+ED_tbl.alive = function()
 	return tostring(Values.PlayersAlive.Value);
 end;
-ED_tbl.inGame=function()
+ED_tbl.inGame = function()
 	return tostring(Values.PlayersInGame.Value);
 end;
-ED_tbl.fuz=function()
+ED_tbl.fuz = function()
 	return ED_tbl.charValStr("Collectibles", "Fuzzi");
 end;
-ED_tbl.zav=function()
+ED_tbl.zav = function()
 	return ED_tbl.charValStr("Collectibles", "Zav");
 end;
-ED_tbl.jake=function()
+ED_tbl.jake = function()
 	return ED_tbl.charValStr("Collectibles", "Jake");
 end;
-ED_tbl.blue=function()
+ED_tbl.blue = function()
 	return ED_tbl.charValStr("Collectibles", "Blue");
 end;
-ED_tbl.alan=function()
+ED_tbl.alan = function()
 	return ED_tbl.charValStr("Collectibles", "Alan");
 end;
-ED_tbl.getBasePart=function(o)
+ED_tbl.getBasePart = function(o)
 	if o:IsA("BasePart") then
 		return o;
 	end;
@@ -524,7 +520,7 @@ ED_tbl.getBasePart=function(o)
 end;
 local SAFE_TENDRILS_DIST = 30;
 local tendrilsRoots = {};
-ED_tbl.addTendrils=function(m)
+ED_tbl.addTendrils = function(m)
 	if not (m and m:IsA("Model") and m.Name:lower() == "tendrils") then
 		return;
 	end;
@@ -533,7 +529,7 @@ ED_tbl.addTendrils=function(m)
 		tendrilsRoots[(#tendrilsRoots) + 1] = root;
 	end;
 end;
-ED_tbl.cleanTendrils=function(inst)
+ED_tbl.cleanTendrils = function(inst)
 	for i = #tendrilsRoots, 1, -1 do
 		local r = tendrilsRoots[i];
 		if r == inst or (not (r and r.Parent and r:IsDescendantOf(Entities))) then
@@ -734,7 +730,7 @@ local function handleEntitySpawn(ent, opts)
 	if not ent then
 		return;
 	end;
-	local notify = opts and (opts.notify ~= false);
+	local notify = opts and opts.notify ~= false;
 	local root = ED_tbl.findEntityRoot(ent) or ent;
 	if notifiedEntities[root] then
 		return;
@@ -872,7 +868,7 @@ local function isVoidDoorPrompt(pp)
 	end;
 	local inst = pp;
 	while inst and inst ~= Rooms do
-		if inst:IsA("Model") and inst.Name:lower():find("door") then
+		if inst:IsA("Model") and (inst.Name:lower()):find("door") then
 			return ED_tbl.hasVoidWindOnDoor(inst);
 		end;
 		inst = inst.Parent;
@@ -927,7 +923,7 @@ end;
 local function WaitClass(inst, class, time)
 	local start = tick();
 	while inst and inst.Parent do
-		local c = inst:FindFirstChildOfClass(class,true);
+		local c = inst:FindFirstChildOfClass(class, true);
 		if c then
 			return c;
 		end;
@@ -941,7 +937,7 @@ end;
 local function WaitInst(inst, name, time)
 	local start = tick();
 	while inst and inst.Parent do
-		local c = inst:FindFirstChild(name,true);
+		local c = inst:FindFirstChild(name, true);
 		if c then
 			return c;
 		end;
@@ -1052,19 +1048,19 @@ local function firePrompts()
 				local extra = tonumber((getgenv()).promptRange) or 0;
 				if d <= rad + extra then
 					local nm = hold and hold.Name:lower() or "";
-			local skip = false;
-			if isVoidDoorPrompt(pp) then
-				skip = true;
-			end;
-			if hold and not skip then
-				for _, c in ipairs(hold:GetChildren()) do
-					if c:IsA("BoolValue") and (c.Name:lower()):find("greed") and c.Value then
+					local skip = false;
+					if isVoidDoorPrompt(pp) then
 						skip = true;
-						break;
 					end;
-				end;
-			end;
-			if not skip and (not (nm == "handle" and greedActive)) then
+					if hold and (not skip) then
+						for _, c in ipairs(hold:GetChildren()) do
+							if c:IsA("BoolValue") and (c.Name:lower()):find("greed") and c.Value then
+								skip = true;
+								break;
+							end;
+						end;
+					end;
+					if not skip and (not (nm == "handle" and greedActive)) then
 						if game.PlaceId == pEPIC or game.PlaceId == pEMARC then
 							local b = bitsStat and bitsStat.Value or 0;
 							if b >= 2500 and nm ~= "bit" or b < 2500 then
@@ -1203,7 +1199,8 @@ function ObsidianUI:Cleanup()
 		flowCon,
 		abyssCon,
 		takerCon,
-		chaseCon
+		chaseCon,
+		vacCon
 	};
 	for _, conn in ipairs(tracked) do
 		disconnectConn(conn);
@@ -1223,6 +1220,7 @@ function ObsidianUI:Cleanup()
 	abyssCon = nil;
 	takerCon = nil;
 	chaseCon = nil;
+	vacCon = nil;
 	for _, conn in ipairs(activeConnections) do
 		disconnectConn(conn);
 	end;
@@ -1581,461 +1579,405 @@ if ObsidianUI.Library and ObsidianUI.Library.OnUnload then
 end;
 local tabMain = Win:AddTab("Main", "layout-dashboard", "Primary actions");
 local coreGroup = tabMain:AddGroupbox("Core Actions", "zap", "left");
-local GM_BACK = 5
-local GM_FIRE = 15
-local remHide
-local gmRoomAddedConn
-local gmRoomRemovedConn
-local gmRoomValConn
-local gmHasHidden = false
-
+local GM_BACK = 5;
+local GM_FIRE = 15;
+local remHide;
+local gmRoomAddedConn;
+local gmRoomRemovedConn;
+local gmRoomValConn;
+local gmHasHidden = false;
 local function gmNote(txt, dur)
 	ObsidianUI:Notify({
 		Title = "God Mode",
 		Content = txt,
 		Duration = dur or 3,
 		Image = decalID
-	})
-end
-
+	});
+end;
 local function gmHasBack(v)
 	if v <= 2 then
-		return false
-	end
+		return false;
+	end;
 	for i = math.max(1, v - (GM_BACK + 2)), v - 1 do
-		if not Rooms:FindFirstChild("Room" .. i) then
-			return true
-		end
-	end
-	return false
-end
-
+		if not Rooms:FindFirstChild(("Room" .. i)) then
+			return true;
+		end;
+	end;
+	return false;
+end;
 local function gmPrevRoom(v)
 	for i = GM_BACK, 2, -1 do
-		local t = v - i
+		local t = v - i;
 		if t > 0 then
 			if Rooms:FindFirstChild("Room" .. t) then
-				return t
-			end
-		end
-	end
-end
-
+				return t;
+			end;
+		end;
+	end;
+end;
 local function gmWard(idx)
-	local r = Rooms:FindFirstChild("Room" .. idx)
+	local r = Rooms:FindFirstChild("Room" .. idx);
 	if not r then
-		return nil
-	end
-	local models = r:FindFirstChild("Models")
+		return nil;
+	end;
+	local models = r:FindFirstChild("Models");
 	if models then
-		local w = models:FindFirstChild("Wardrobe")
+		local w = models:FindFirstChild("Wardrobe");
 		if w then
-			return w
-		end
-	end
-	return r:FindFirstChild("Wardrobe", true)
-end
-
+			return w;
+		end;
+	end;
+	return r:FindFirstChild("Wardrobe", true);
+end;
 local function gmDoor(idx)
-	local r = Rooms:FindFirstChild("Room" .. idx)
+	local r = Rooms:FindFirstChild("Room" .. idx);
 	if not r then
-		return nil
-	end
-
+		return nil;
+	end;
 	if idx == Values.RoomsNumber.Value then
-		return ED_tbl.getSafeDoorForCurrentRoom()
-	end
-
-	local d = r:FindFirstChild("Door") or r:FindFirstChild("Door", true)
+		return ED_tbl.getSafeDoorForCurrentRoom();
+	end;
+	local d = r:FindFirstChild("Door") or r:FindFirstChild("Door", true);
 	if d and d:IsA("Model") and ED_tbl.hasVoidWindOnDoor(d) then
-		return nil
-	end
-	return d
-end
-
+		return nil;
+	end;
+	return d;
+end;
 local function gmOpenDoor(d)
 	if not d then
-		return
-	end
+		return;
+	end;
 	for i = 1, GM_FIRE do
 		if not (d and d.Parent) then
-			break
-		end
-		local h = d:FindFirstChild("Handle") or d:FindFirstChildWhichIsA("BasePart", true)
+			break;
+		end;
+		local h = d:FindFirstChild("Handle") or d:FindFirstChildWhichIsA("BasePart", true);
 		if h then
-			local p = h:FindFirstChildWhichIsA("ProximityPrompt", true)
+			local p = h:FindFirstChildWhichIsA("ProximityPrompt", true);
 			if p then
-				pcall(fireproximityprompt, p)
-			end
-		end
-		task.wait(0.05)
-	end
-end
-
+				pcall(fireproximityprompt, p);
+			end;
+		end;
+		task.wait(0.05);
+	end;
+end;
 local function gmHideWard(w)
 	if not (w and w.Parent) then
-		return
-	end
+		return;
+	end;
 	if not remHide then
-		local rs = S("ReplicatedStorage")
-		local rems = rs and rs:FindFirstChild("Remotes")
-		remHide = rems and rems:FindFirstChild("HIDE")
-	end
+		local rs = S("ReplicatedStorage");
+		local rems = rs and rs:FindFirstChild("Remotes");
+		remHide = rems and rems:FindFirstChild("HIDE");
+	end;
 	if not remHide then
-		return
-	end
-
-	local ch = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
-	local hid = ch and ch:FindFirstChild("Hiding")
-
-	remHide:FireServer(w, false, false)
-
+		return;
+	end;
+	local ch = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait();
+	local hid = ch and ch:FindFirstChild("Hiding");
+	remHide:FireServer(w, false, false);
 	if hid then
 		task.spawn(function()
-			local t0 = tick()
+			local t0 = tick();
 			while tick() - t0 < 1 do
 				if hid.Value then
-					gmHasHidden = true
-					break
-				end
-				task.wait(0.05)
-			end
-		end)
-	end
-end
-
+					gmHasHidden = true;
+					break;
+				end;
+				task.wait(0.05);
+			end;
+		end);
+	end;
+end;
 local function gmDisconnectCloset()
 	if gmRoomAddedConn then
-		gmRoomAddedConn:Disconnect()
-		gmRoomAddedConn = nil
-	end
+		gmRoomAddedConn:Disconnect();
+		gmRoomAddedConn = nil;
+	end;
 	if gmRoomRemovedConn then
-		gmRoomRemovedConn:Disconnect()
-		gmRoomRemovedConn = nil
-	end
+		gmRoomRemovedConn:Disconnect();
+		gmRoomRemovedConn = nil;
+	end;
 	if gmRoomValConn then
-		gmRoomValConn:Disconnect()
-		gmRoomValConn = nil
-	end
-	gmHasHidden = false
-end
-
+		gmRoomValConn:Disconnect();
+		gmRoomValConn = nil;
+	end;
+	gmHasHidden = false;
+end;
 local function gmWatchCloset(currentIdx, backIdx, ward)
-	gmDisconnectCloset()
-
+	gmDisconnectCloset();
 	gmRoomRemovedConn = Rooms.ChildRemoved:Connect(function(room)
 		if not (room and room:IsA("Model")) then
-			return
-		end
+			return;
+		end;
 		if room.Name ~= "Room" .. tostring(backIdx) then
-			return
-		end
-		gmDisconnectCloset()
+			return;
+		end;
+		gmDisconnectCloset();
 		task.defer(function()
-			local c = LocalPlayer.Character
+			local c = LocalPlayer.Character;
 			if c then
-				local hid = c:FindFirstChild("Hiding")
+				local hid = c:FindFirstChild("Hiding");
 				if hid and hid.Value then
-					hid.Value = false
+					hid.Value = false;
 					if gmHasHidden then
-						gmNote("Exploit done.", 3)
-					end
-				end
-			end
-		end)
-	end)
-
+						gmNote("Exploit done.", 3);
+					end;
+				end;
+			end;
+		end);
+	end);
 	if ward and ward.Parent then
 		task.defer(function()
-			gmHideWard(ward)
-		end)
-	end
-end
-
+			gmHideWard(ward);
+		end);
+	end;
+end;
 local function gmNeedKey(idx)
-	local r = Rooms:FindFirstChild("Room" .. idx)
+	local r = Rooms:FindFirstChild("Room" .. idx);
 	if not r then
-		return false
-	end
-	local key = RoomTracker.getRoomTarget(r, "roomKey")
+		return false;
+	end;
+	local key = RoomTracker.getRoomTarget(r, "roomKey");
 	if not key then
-		return false
-	end
-	local ch = LocalPlayer.Character
+		return false;
+	end;
+	local ch = LocalPlayer.Character;
 	if not ch then
-		return true
-	end
-	local vals = ch:FindFirstChild("Values")
-	local hk = vals and vals:FindFirstChild("HasKey")
+		return true;
+	end;
+	local vals = ch:FindFirstChild("Values");
+	local hk = vals and vals:FindFirstChild("HasKey");
 	if hk and hk.Value then
-		return false
-	end
-	return true
-end
-
+		return false;
+	end;
+	return true;
+end;
 local function gmAcquireKey(idx)
-	local r = Rooms:FindFirstChild("Room" .. idx)
+	local r = Rooms:FindFirstChild("Room" .. idx);
 	if not r then
-		return false
-	end
-
-	local ch = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+		return false;
+	end;
+	local ch = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait();
 	if not ch then
-		return false
-	end
-
-	local vals = ch:FindFirstChild("Values")
-	local hk = vals and vals:FindFirstChild("HasKey")
-
+		return false;
+	end;
+	local vals = ch:FindFirstChild("Values");
+	local hk = vals and vals:FindFirstChild("HasKey");
 	if hk and hk.Value then
-		return true
-	end
-
-	local key = RoomTracker.getRoomTarget(r, "roomKey")
-	if not key or not key.Parent then
-		return hk and hk.Value or false
-	end
-
-	local base = ED_tbl.getBasePart(key)
+		return true;
+	end;
+	local key = RoomTracker.getRoomTarget(r, "roomKey");
+	if not key or (not key.Parent) then
+		return hk and hk.Value or false;
+	end;
+	local base = ED_tbl.getBasePart(key);
 	if base then
-		ch:PivotTo(base.CFrame)
-	end
-
-	local pp = WaitClass(key, "ProximityPrompt", 0.5) or key:FindFirstChildWhichIsA("ProximityPrompt", true)
+		ch:PivotTo(base.CFrame);
+	end;
+	local pp = WaitClass(key, "ProximityPrompt", 0.5) or key:FindFirstChildWhichIsA("ProximityPrompt", true);
 	if not pp then
-		return hk and hk.Value or false
-	end
-
-	local got = hk and hk.Value or false
-	local conn
+		return hk and hk.Value or false;
+	end;
+	local got = hk and hk.Value or false;
+	local conn;
 	if hk then
-		conn = hk:GetPropertyChangedSignal("Value"):Connect(function()
+		conn = (hk:GetPropertyChangedSignal("Value")):Connect(function()
 			if hk.Value then
-				got = true
-			end
-		end)
-	end
-
-	local t0 = tick()
+				got = true;
+			end;
+		end);
+	end;
+	local t0 = tick();
 	while not got and tick() - t0 < 3 do
 		if not (pp and pp.Parent) then
-			key = RoomTracker.getRoomTarget(r, "roomKey")
-			if not key or not key.Parent then
-				break
-			end
-			pp = WaitClass(key, "ProximityPrompt", 1) or key:FindFirstChildWhichIsA("ProximityPrompt", true)
+			key = RoomTracker.getRoomTarget(r, "roomKey");
+			if not key or (not key.Parent) then
+				break;
+			end;
+			pp = WaitClass(key, "ProximityPrompt", 1) or key:FindFirstChildWhichIsA("ProximityPrompt", true);
 			if not pp then
-				break
-			end
-		end
-		pcall(fireproximityprompt, pp)
-		task.wait(0.08)
-	end
-
+				break;
+			end;
+		end;
+		pcall(fireproximityprompt, pp);
+		task.wait(0.08);
+	end;
 	if conn then
-		conn:Disconnect()
-	end
-
+		conn:Disconnect();
+	end;
 	if hk and hk.Value then
-		return true
-	end
-
-	return false
-end
-
+		return true;
+	end;
+	return false;
+end;
 local function gmHasLever(idx)
-	local r = Rooms:FindFirstChild("Room" .. idx)
+	local r = Rooms:FindFirstChild("Room" .. idx);
 	if not r then
-		return false
-	end
-	local gateLever = RoomTracker.getRoomTarget(r, "gateLever")
-	if not gateLever or not gateLever.Parent then
-		return false
-	end
-	local pp = gateLever:FindFirstChildWhichIsA("ProximityPrompt", true)
+		return false;
+	end;
+	local gateLever = RoomTracker.getRoomTarget(r, "gateLever");
+	if not gateLever or (not gateLever.Parent) then
+		return false;
+	end;
+	local pp = gateLever:FindFirstChildWhichIsA("ProximityPrompt", true);
 	if not pp then
-		return false
-	end
-	return true
-end
-
+		return false;
+	end;
+	return true;
+end;
 local function gmUseLever(idx)
-	local r = Rooms:FindFirstChild("Room" .. idx)
+	local r = Rooms:FindFirstChild("Room" .. idx);
 	if not r then
-		return false
-	end
-
-	local gateLever = RoomTracker.getRoomTarget(r, "gateLever")
-	if not gateLever or not gateLever.Parent then
-		return false
-	end
-
-	local target = gateLever
+		return false;
+	end;
+	local gateLever = RoomTracker.getRoomTarget(r, "gateLever");
+	if not gateLever or (not gateLever.Parent) then
+		return false;
+	end;
+	local target = gateLever;
 	if gateLever:IsA("Model") then
-		target = gateLever:FindFirstChild("LeverGoal") or gateLever:FindFirstChild("Lever") or gateLever
-	end
-
-	local pp = gateLever:FindFirstChildWhichIsA("ProximityPrompt", true)
+		target = gateLever:FindFirstChild("LeverGoal") or gateLever:FindFirstChild("Lever") or gateLever;
+	end;
+	local pp = gateLever:FindFirstChildWhichIsA("ProximityPrompt", true);
 	if not pp then
-		return false
-	end
-
-	local ch = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+		return false;
+	end;
+	local ch = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait();
 	if not ch then
-		return false
-	end
-
+		return false;
+	end;
 	if target:IsA("Model") then
-		ch:PivotTo(target:GetPivot())
+		ch:PivotTo(target:GetPivot());
 	elseif target:IsA("BasePart") then
-		ch:PivotTo(target.CFrame)
-	end
-
+		ch:PivotTo(target.CFrame);
+	end;
 	for i = 1, GM_FIRE do
 		if not (pp and pp.Parent and gateLever and gateLever.Parent) then
-			break
-		end
-		pcall(fireproximityprompt, pp)
-		task.wait(0.05)
-	end
-
-	task.wait(0.3)
-	return true
-end
-
+			break;
+		end;
+		pcall(fireproximityprompt, pp);
+		task.wait(0.05);
+	end;
+	task.wait(0.3);
+	return true;
+end;
 local function gmAvail(v)
 	if v <= 2 then
-		return false
-	end
-	local hasRooms = false
+		return false;
+	end;
+	local hasRooms = false;
 	for _, r in ipairs(Rooms:GetChildren()) do
 		if r:IsA("Model") and r.Name:match("^Room%d+") then
-			hasRooms = true
-			break
-		end
-	end
+			hasRooms = true;
+			break;
+		end;
+	end;
 	if not hasRooms then
-		return false
-	end
-	return gmHasBack(v) or not Rooms:FindFirstChild("Room1") or not Rooms:FindFirstChild("Room0")
-end
-
+		return false;
+	end;
+	return gmHasBack(v) or (not Rooms:FindFirstChild("Room1")) or (not Rooms:FindFirstChild("Room0"));
+end;
 local function gmWaitRoomAdvance(fromIdx, timeout)
-	local t0 = tick()
-	local lim = timeout or 6
+	local t0 = tick();
+	local lim = timeout or 6;
 	while Values.RoomsNumber.Value == fromIdx and tick() - t0 < lim do
-		task.wait(0.05)
-	end
-	return Values.RoomsNumber.Value ~= fromIdx
-end
-
+		task.wait(0.05);
+	end;
+	return Values.RoomsNumber.Value ~= fromIdx;
+end;
 local function runGodMode()
 	if greedActive then
-		gmNote("Greed is active, try again later.", 4)
-		return
-	end
-
-	local v = Values.RoomsNumber.Value
+		gmNote("Greed is active, try again later.", 4);
+		return;
+	end;
+	local v = Values.RoomsNumber.Value;
 	if type(v) ~= "number" then
-		return
-	end
-
-	local needKey = gmNeedKey(v)
-	local hasLever = gmHasLever and gmHasLever(v)
-
+		return;
+	end;
+	local needKey = gmNeedKey(v);
+	local hasLever = gmHasLever and gmHasLever(v);
 	if needKey then
-		local ok = gmAcquireKey(v)
+		local ok = gmAcquireKey(v);
 		if not ok then
-			gmNote("Failed to get key for this room.", 4)
-			return
-		end
-	end
-
+			gmNote("Failed to get key for this room.", 4);
+			return;
+		end;
+	end;
 	if hasLever then
-		local ok = gmUseLever(v)
+		local ok = gmUseLever(v);
 		if not ok then
-			gmNote("Failed to use lever for this room.", 4)
-			return
-		end
-	end
-
-	local availBack = gmAvail(v)
+			gmNote("Failed to use lever for this room.", 4);
+			return;
+		end;
+	end;
+	local availBack = gmAvail(v);
 	if not availBack then
-		gmNote("Open more doors before using God Mode.", 4)
-		return
-	end
-
-	local backIdx = gmPrevRoom(v)
+		gmNote("Open more doors before using God Mode.", 4);
+		return;
+	end;
+	local backIdx = gmPrevRoom(v);
 	if not backIdx then
-		gmNote("Open more doors before using God Mode.", 4)
-		return
-	end
-
-	local w = gmWard(backIdx)
+		gmNote("Open more doors before using God Mode.", 4);
+		return;
+	end;
+	local w = gmWard(backIdx);
 	if not w then
-		gmNote("No wardrobe found in nearby rooms.", 4)
-		return
-	end
-
-	local d = gmDoor(v)
+		gmNote("No wardrobe found in nearby rooms.", 4);
+		return;
+	end;
+	local d = gmDoor(v);
 	if not d then
-		gmNote("No safe door found (void door?).", 4)
-		return
-	end
-
-	local ch = LocalPlayer.Character
+		gmNote("No safe door found (void door?).", 4);
+		return;
+	end;
+	local ch = LocalPlayer.Character;
 	if not ch then
-		ch = LocalPlayer.CharacterAdded:Wait()
-	end
+		ch = LocalPlayer.CharacterAdded:Wait();
+	end;
 	if not ch then
-		return
-	end
-
-	local hVal = ch:FindFirstChild("Hiding")
+		return;
+	end;
+	local hVal = ch:FindFirstChild("Hiding");
 	if hVal and hVal.Value then
-		gmNote("You are already hiding.", 3)
-		return
-	end
-
-	ch:PivotTo(d:GetPivot())
-
-	gmDisconnectCloset()
-
-	local oldVal = curRoomVal.Value
-	gmRoomValConn = curRoomVal:GetPropertyChangedSignal("Value"):Connect(function()
+		gmNote("You are already hiding.", 3);
+		return;
+	end;
+	ch:PivotTo(d:GetPivot());
+	gmDisconnectCloset();
+	local oldVal = curRoomVal.Value;
+	gmRoomValConn = (curRoomVal:GetPropertyChangedSignal("Value")):Connect(function()
 		if curRoomVal.Value ~= oldVal then
 			task.defer(function()
-				gmWatchCloset(v, backIdx, w)
-			end)
-		end
-	end)
-
-	gmOpenDoor(d)
-
+				gmWatchCloset(v, backIdx, w);
+			end);
+		end;
+	end);
+	gmOpenDoor(d);
 	task.spawn(function()
-		local p = LocalPlayer
-		local c = p.Character or p.CharacterAdded:Wait()
-		local hid = c and c:FindFirstChild("Hiding")
+		local p = LocalPlayer;
+		local c = p.Character or p.CharacterAdded:Wait();
+		local hid = c and c:FindFirstChild("Hiding");
 		repeat
-			task.wait()
-			c = p.Character or c
-			hid = c and c:FindFirstChild("Hiding")
-		until not scriptRunning or (hid and hid.Value) or not c
+			task.wait();
+			c = p.Character or c;
+			hid = c and c:FindFirstChild("Hiding");
+		until not scriptRunning or hid and hid.Value or (not c);
 		if not (hid and hid.Value) then
-			return
-		end
-		gmNote("Hidden, holding...", 3)
+			return;
+		end;
+		gmNote("Hidden, holding...", 3);
 		while scriptRunning and hid and hid.Value do
-			local door = gmDoor(v)
+			local door = gmDoor(v);
 			if door and door.Parent and c then
-				c:PivotTo(door:GetPivot())
-			end
-			task.wait(0.1)
-			c = p.Character or c
-			hid = c and c:FindFirstChild("Hiding")
-		end
-	end)
-end
+				c:PivotTo(door:GetPivot());
+			end;
+			task.wait(0.1);
+			c = p.Character or c;
+			hid = c and c:FindFirstChild("Hiding");
+		end;
+	end);
+end;
 coreGroup:AddButton({
 	Name = "Infinite Flashlight",
 	Callback = function()
@@ -2047,7 +1989,7 @@ coreGroup:AddButton({
 coreGroup:AddButton({
 	Name = "God Mode",
 	Callback = function()
-		task.defer(runGodMode)
+		task.defer(runGodMode);
 	end
 });
 coreGroup:AddToggle({
@@ -2296,11 +2238,11 @@ espGroup:AddToggle({
 	CurrentValue = false,
 	Flag = "entityESP",
 	Callback = function(v)
-	task.defer(function()
-		(getgenv()).entityEsp = v;
-		if not v then
-			for _, e in ipairs(Entities:GetDescendants()) do
-				task.defer(RemoveESP, e);
+		task.defer(function()
+			(getgenv()).entityEsp = v;
+			if not v then
+				for _, e in ipairs(Entities:GetDescendants()) do
+					task.defer(RemoveESP, e);
 				end;
 			else
 				for _, e in ipairs(Entities:GetChildren()) do
@@ -2613,6 +2555,36 @@ local function setBypassChase(v)
 		end;
 	end);
 end;
+local function setBypassVacant(v)
+	task.defer(function()
+		if v then
+			if vacCon then
+				vacCon:Disconnect();
+			end;
+			vacCon = Entities.ChildAdded:Connect(function(ent)
+				if ent.Name:lower() == "vacant" then
+					task.defer(function()
+						if ent and ent.Parent then
+							ent:Destroy();
+						end;
+					end);
+				end;
+			end);
+			for _, ent in ipairs(Entities:GetChildren()) do
+				if ent.Name:lower() == "vacant" then
+					task.defer(function()
+						if ent and ent.Parent then
+							ent:Destroy();
+						end;
+					end);
+				end;
+			end;
+		elseif vacCon then
+			vacCon:Disconnect();
+			vacCon = nil;
+		end;
+	end);
+end;
 (getgenv()).voidDoorAutoDelete = (getgenv()).voidDoorAutoDelete or false;
 local function deleteVoidDoorOnce()
 	local d = ED_tbl.getVoidDoorForCurrentRoom();
@@ -2666,6 +2638,14 @@ bypassGroup:AddToggle({
 	Flag = "abyssKILL",
 	Callback = function(v)
 		setBypassAbyss(v);
+	end
+});
+bypassGroup:AddToggle({
+	Name = "Bypass Vacant",
+	CurrentValue = false,
+	Flag = "vacantBypass",
+	Callback = function(v)
+		setBypassVacant(v);
 	end
 });
 bypassGroup:AddToggle({
@@ -2865,6 +2845,7 @@ local function ensureAutoFarmSafety()
 	setBypassAbyss(true);
 	setBypassTaker(true);
 	setBypassChase(true);
+	setBypassVacant(true);
 end;
 miscGroup:AddButton({
 	Name = "Hide Value",
@@ -2890,6 +2871,14 @@ miscGroup:AddButton({
 		ED_tbl.tpToLever();
 	end
 });
+miscGroup:AddButton({
+	Name = "Run Boss Room",
+	Callback = function()
+		task.defer(function()
+			ED_tbl.runBossIfPossible(true);
+		end);
+	end
+});
 miscGroup:AddToggle({
 	Name = "Auto Farm",
 	CurrentValue = (getgenv()).autoFarm,
@@ -2898,9 +2887,7 @@ miscGroup:AddToggle({
 		(getgenv()).autoFarm = v;
 		if v then
 			ensureAutoFarmSafety();
-		end;
-		if v and checkRoom then
-			checkRoom();
+			ED_tbl.runBossIfPossible(true);
 		end;
 	end
 });
@@ -2929,6 +2916,15 @@ local runGroup = tabInfo:AddGroupbox("Run Progress", "map", "left");
 runGroup:AddSection("Rooms");
 local L_rooms = runGroup:AddLabel("Rooms: " .. ED_tbl.playerRoom());
 local L_cur = runGroup:AddLabel("Current Room: " .. ED_tbl.curRoom());
+runGroup:AddSection("Boss");
+local L_code = runGroup:AddLabel("Boss Code: N/A");
+local lastCode = nil;
+local function setBossCode(c)
+	lastCode = c;
+	if L_code then
+		L_code:Set("Boss Code: " .. (c or "N/A"));
+	end;
+end;
 runGroup:AddSection("Currency");
 local L_bits = runGroup:AddLabel("Bits: " .. ED_tbl.playerBits());
 local L_dbl = runGroup:AddLabel("Double Bits: " .. ED_tbl.doubleBits());
@@ -3221,39 +3217,35 @@ ED_tbl.trackConnection(Rooms.DescendantAdded:Connect(function(o)
 		end);
 	end;
 end));
-local remNP = nil
+local remNP = nil;
 task.spawn(function()
 	pcall(function()
-		remNP = WaitInst(S("ReplicatedStorage"),"NP_E",10);
-	end)
-end)
-local godModeAvailable = false
-
+		remNP = WaitInst(S("ReplicatedStorage"), "NP_E", 10);
+	end);
+end);
+local godModeAvailable = false;
 local function updateGodModeAvailable()
-	local v = curRoomVal.Value
+	local v = curRoomVal.Value;
 	if type(v) ~= "number" then
-		return
-	end
-	local avail = gmAvail(v)
-	if avail and not godModeAvailable then
-		godModeAvailable = true
-		gmNote("God Mode is now available to use.", 4)
+		return;
+	end;
+	local avail = gmAvail(v);
+	if avail and (not godModeAvailable) then
+		godModeAvailable = true;
+		gmNote("God Mode is now available to use.", 4);
 	elseif not avail then
-		godModeAvailable = false
-	end
-end
-
-updateGodModeAvailable()
-
-ED_tbl.trackConnection(curRoomVal:GetPropertyChangedSignal("Value"):Connect(function()
-	updateGodModeAvailable()
-end))
-
+		godModeAvailable = false;
+	end;
+end;
+updateGodModeAvailable();
+ED_tbl.trackConnection((curRoomVal:GetPropertyChangedSignal("Value")):Connect(function()
+	updateGodModeAvailable();
+end));
 ED_tbl.trackConnection(Rooms.ChildRemoved:Connect(function(c)
 	if c and c:IsA("Model") and c.Name:match("^Room%d+") then
-		updateGodModeAvailable()
-	end
-end))
+		updateGodModeAvailable();
+	end;
+end));
 local function getChar()
 	local ch = LocalPlayer.Character;
 	if ch then
@@ -3354,6 +3346,9 @@ local function findFrame(root)
 	return root:FindFirstChild("Frame", true);
 end;
 local function numMap(pz)
+	if not pz then
+		return nil;
+	end;
 	local nr = pz:FindFirstChild("SolutionNumberReveal");
 	if not nr then
 		return nil;
@@ -3424,6 +3419,37 @@ local busyBoss = false;
 local bossStarted = {};
 local bossCompleted = {};
 local checkRoom;
+ED_tbl.runBossIfPossible = function(force)
+	local n = curRoomVal.Value;
+	if typeof(n) ~= "number" then
+		return;
+	end;
+	if bossCompleted[n] then
+		return;
+	end;
+	if (not force) and bossStarted[n] then
+		return;
+	end;
+
+	local r = Rooms:FindFirstChild("Room" .. n);
+	if not ED_tbl.isBossRoom(r) then
+		return;
+	end;
+
+	local pz = r:FindFirstChild("Puzzel") or r:FindFirstChild("Puzzle");
+	if not pz then
+		pz = r:FindFirstChild("Puzzle") or r:FindFirstChild("Puzzel") or r;
+	end;
+
+	if busyBoss then
+		return;
+	end;
+
+	bossStarted[n] = true;
+	task.spawn(function()
+		ED_tbl.doBoss(r, pz, n);
+	end);
+end;
 local function bruteCode(room, pz)
 	local gate = room:FindFirstChild("GateFinal") or room:FindFirstChild("GateFinal", true);
 	local openS = gate and (gate:FindFirstChild("Opening") or gate:FindFirstChildWhichIsA("Sound", true));
@@ -3435,6 +3461,9 @@ local function bruteCode(room, pz)
 			if not found then
 				found = true;
 				print("FOUND CODE:", last, "after", tries, "tries");
+				if last then
+					setBossCode(tostring(last));
+				end;
 			end;
 		end);
 	end;
@@ -3443,7 +3472,10 @@ local function bruteCode(room, pz)
 	if code and code ~= "" and (not code:find("%?")) then
 		last = code;
 		tries = 1;
-		if remNP then remNP:FireServer(code) end
+		setBossCode(tostring(code));
+		if remNP then
+			remNP:FireServer(code);
+		end;
 		local t0 = tick();
 		while not found and tick() - t0 < 5 do
 			task.wait();
@@ -3460,9 +3492,11 @@ local function bruteCode(room, pz)
 		local c = string.format("%04d", i);
 		last = c;
 		tries += 1;
-		if remNP then remNP:FireServer(c) end
-		if tries % 10 == 0 then
-			task.wait(0.1);
+		if remNP then
+			remNP:FireServer(c);
+		end;
+		if tries % 50 == 0 and last then
+			setBossCode(tostring(last));
 		end;
 	end;
 	if found then
@@ -3486,7 +3520,7 @@ local function getLeverGates(room, maxWait)
 	until tick() - t0 >= maxWait;
 	return gates;
 end;
-local function doBoss(room, pz, roomIndex)
+ED_tbl.doBoss = function(room, pz, roomIndex)
 	if busyBoss then
 		return;
 	end;
@@ -3556,7 +3590,7 @@ local function doBoss(room, pz, roomIndex)
 	end;
 end;
 local seenBossRooms = {};
-local function isBossRoom(r)
+ED_tbl.isBossRoom = function(r)
 	if not r then
 		return false;
 	end;
@@ -3579,6 +3613,30 @@ local function isBossRoom(r)
 	end;
 	return false;
 end;
+task.spawn(function()
+	while task.wait(0.35) do
+		local v = curRoomVal.Value
+		if typeof(v) ~= "number" then
+			continue
+		end
+
+		local r = Rooms:FindFirstChild("Room" .. v)
+		if not r or not ED_tbl.isBossRoom(r) then
+			continue
+		end
+
+		local pz = r:FindFirstChild("Puzzel") or r:FindFirstChild("Puzzle") or r
+		local map = numMap(pz)
+		if not map then
+			continue
+		end
+
+		local cd = codeFromOrder(pz, map)
+		if cd and cd ~= "" and cd ~= lastCode then
+			setBossCode(cd)
+		end
+	end
+end)
 local function isBossPending()
 	local n = curRoomVal.Value;
 	if typeof(n) ~= "number" then
@@ -3588,34 +3646,16 @@ local function isBossPending()
 		return false;
 	end;
 	local r = Rooms:FindFirstChild("Room" .. n);
-	if not isBossRoom(r) then
+	if not ED_tbl.isBossRoom(r) then
 		return false;
 	end;
 	return true;
 end;
 checkRoom = function()
-	local n = curRoomVal.Value;
-	if typeof(n) ~= "number" then
-		return;
-	end;
-	if bossStarted[n] or bossCompleted[n] then
-		return;
-	end;
-	local r = Rooms:FindFirstChild("Room" .. n);
-	if not isBossRoom(r) then
-		return;
-	end;
-	local pz = r:FindFirstChild("Puzzel") or r:FindFirstChild("Puzzle");
-	if not pz then
-		pz = r:FindFirstChild("Puzzle") or r:FindFirstChild("Puzzel") or r;
-	end;
 	if not (getgenv()).autoFarm then
 		return;
 	end;
-	bossStarted[n] = true;
-	task.spawn(function()
-		doBoss(r, pz, n);
-	end);
+	ED_tbl.runBossIfPossible(false);
 end;
 (curRoomVal:GetPropertyChangedSignal("Value")):Connect(checkRoom);
 checkRoom();
