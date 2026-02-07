@@ -266,11 +266,6 @@ local RoomTracker = (function()
 		for _, room in ipairs(Rooms:GetChildren()) do
 			indexRoom(room);
 		end;
-		ED_tbl.trackConnection(Rooms.ChildAdded:Connect(function(room)
-			if room and room:IsA("Model") and room.Name:match("^Room") then
-				indexRoom(room);
-			end;
-		end));
 		ED_tbl.trackConnection(Rooms.DescendantAdded:Connect(processAdded));
 		ED_tbl.trackConnection(Rooms.DescendantRemoving:Connect(processRemoved));
 	end;
@@ -2217,19 +2212,25 @@ modeLabel = interactGroup:AddLabel("Mode: Default (all prompts)");
 updateModeLabelText();
 interactGroup:AddLabel("Select one or more holder names to target only those prompts.");
 interactGroup:AddLabel("The list updates automatically.");
+local promptListDirty = true;
+
 task.spawn(function()
 	while task.wait(0.35) do
-		pcall(rebuildPromptList);
+		if promptListDirty then
+			promptListDirty = false;
+			pcall(rebuildPromptList);
+		end;
 	end;
 end);
+
 ED_tbl.trackConnection(workspace.DescendantAdded:Connect(function(o)
 	if o:IsA("ProximityPrompt") then
-		task.defer(rebuildPromptList);
+		promptListDirty = true;
 	end;
 end));
 ED_tbl.trackConnection(workspace.DescendantRemoving:Connect(function(o)
 	if o:IsA("ProximityPrompt") then
-		task.defer(rebuildPromptList);
+		promptListDirty = true;
 	end;
 end));
 local espGroup = tabMain:AddGroupbox("ESP & Tracking", "eye", "left");
@@ -3070,7 +3071,7 @@ if settingsTabRaw then
 	end;
 end;
 task.spawn(function()
-	while task.wait() do
+	while task.wait(0.5) do
 		pcall(function()
 			L_rooms:Set("Rooms: " .. ED_tbl.playerRoom());
 			L_bits:Set("Bits: " .. ED_tbl.playerBits());
@@ -3662,7 +3663,6 @@ checkRoom();
 task.spawn(function()
 	while true do
 		if (getgenv()).autoFarm and (not busyBoss) and (not isBossPending()) then
-			ensureAutoFarmSafety();
 			pcall(ED_tbl.tpToDoor, true);
 			task.wait(0.1);
 			pcall(ED_tbl.tpToKey, true);
@@ -3692,7 +3692,7 @@ cameraConn = ED_tbl.trackConnection((workspace:GetPropertyChangedSignal("Current
 	end;
 end));
 task.spawn(function()
-	while task.wait() do
+	while task.wait(0.15) do
 		local ch = LocalPlayer.Character;
 		local h = ch and ch:FindFirstChildOfClass("Humanoid");
 		if h then
