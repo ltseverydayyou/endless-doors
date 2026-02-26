@@ -243,7 +243,7 @@ local RoomTracker = (function()
 		if not (room and room:IsA("Model")) then
 			return;
 		end;
-		for _, desc in ipairs(room:GetDescendants()) do
+		for _, desc in ipairs(room:QueryDescendants("Instance")) do
 			processAdded(desc, room);
 		end;
 	end;
@@ -290,7 +290,7 @@ ED_tbl.hasVoidWindOnDoor = function(doorModel)
 	end;
 	local voidCount = 0;
 	local hasVoidSound = false;
-	for _, c in ipairs(doorModel:GetDescendants()) do
+	for _, c in ipairs(doorModel:QueryDescendants("Instance")) do
 		local n = (c.Name or ""):lower();
 		if n:find("void") then
 			voidCount += 1;
@@ -321,7 +321,7 @@ ED_tbl.getVoidDoorForCurrentRoom = function()
 	if not r then
 		return nil;
 	end;
-	for _, d in ipairs(r:GetDescendants()) do
+	for _, d in ipairs(r:QueryDescendants("Instance")) do
 		if d:IsA("Model") then
 			local n = d.Name:lower();
 			if n:find("door") or n:find("void") then
@@ -769,7 +769,7 @@ task.spawn(function()
 		task.wait();
 	until LocalPlayer.Character;
 	task.wait(2);
-	for _, d in ipairs(game:GetDescendants()) do
+	for _, d in ipairs(game:QueryDescendants("Instance")) do
 		if junk[d.Name:lower()] then
 			task.defer(function()
 				if d and d.Parent then
@@ -882,7 +882,7 @@ local function onPPRemoved(o)
 		end;
 	end;
 end;
-for _, o in ipairs(workspace:GetDescendants()) do
+for _, o in ipairs(workspace:QueryDescendants("Instance")) do
 	if o:IsA("ProximityPrompt") then
 		onPPAdded(o);
 	end;
@@ -1236,10 +1236,10 @@ function ObsidianUI:Cleanup()
 	(getgenv()).teletolever = false;
 	RoomTracker.clear();
 	pcall(function()
-		for _, obj in ipairs(Entities:GetDescendants()) do
+		for _, obj in ipairs(Entities:QueryDescendants("Instance")) do
 			RemoveESP(obj);
 		end;
-		for _, obj in ipairs(Rooms:GetDescendants()) do
+		for _, obj in ipairs(Rooms:QueryDescendants("Instance")) do
 			RemoveESP(obj);
 		end;
 	end);
@@ -2242,7 +2242,7 @@ espGroup:AddToggle({
 		task.defer(function()
 			(getgenv()).entityEsp = v;
 			if not v then
-				for _, e in ipairs(Entities:GetDescendants()) do
+				for _, e in ipairs(Entities:QueryDescendants("Instance")) do
 					task.defer(RemoveESP, e);
 				end;
 			else
@@ -2338,7 +2338,7 @@ espGroup:AddToggle({
 	Callback = function(v)
 		(getgenv()).entityNotif = v;
 		if v then
-			for _, e in ipairs(Entities:GetDescendants()) do
+			for _, e in ipairs(Entities:QueryDescendants("Instance")) do
 				handleEntitySpawn(e);
 			end;
 		end;
@@ -2391,7 +2391,7 @@ local function setBypassLurker(v)
 					end);
 				end;
 			end);
-			for _, o in ipairs(workspace:GetDescendants()) do
+			for _, o in ipairs(workspace:QueryDescendants("Instance")) do
 				if o.Name:lower() == "lurker" then
 					task.defer(function()
 						if o and o.Parent then
@@ -2421,7 +2421,7 @@ local function setBypassWatch(v)
 					end);
 				end;
 			end);
-			for _, o in ipairs(workspace:GetDescendants()) do
+			for _, o in ipairs(workspace:QueryDescendants("Instance")) do
 				if o.Name:lower() == "watchbane" then
 					task.defer(function()
 						if o and o.Parent then
@@ -2451,7 +2451,7 @@ local function setBypassFlower(v)
 					end);
 				end;
 			end);
-			for _, o in ipairs(workspace:GetDescendants()) do
+			for _, o in ipairs(workspace:QueryDescendants("Instance")) do
 				if o.Name:lower() == "flowergrowth" then
 					task.defer(function()
 						if o and o.Parent then
@@ -2481,7 +2481,7 @@ local function setBypassAbyss(v)
 					end);
 				end;
 			end);
-			for _, o in ipairs(workspace:GetDescendants()) do
+			for _, o in ipairs(workspace:QueryDescendants("Instance")) do
 				if o.Name:lower() == "abysskill" then
 					task.defer(function()
 						if o and o.Parent then
@@ -2511,7 +2511,7 @@ local function setBypassTaker(v)
 					end);
 				end;
 			end);
-			for _, o in ipairs(workspace:GetDescendants()) do
+			for _, o in ipairs(workspace:QueryDescendants("Instance")) do
 				if o.Name:lower() == "taker" then
 					task.defer(function()
 						if o and o.Parent then
@@ -2541,7 +2541,7 @@ local function setBypassChase(v)
 					end);
 				end;
 			end);
-			for _, o in ipairs(workspace:GetDescendants()) do
+			for _, o in ipairs(workspace:QueryDescendants("Instance")) do
 				if o.Name:lower() == "chasetrigger" then
 					task.defer(function()
 						if o and o.Parent then
@@ -3509,7 +3509,7 @@ local function getLeverGates(room, maxWait)
 	local gates = {};
 	repeat
 		gates = {};
-		for _, d in ipairs(room:GetDescendants()) do
+		for _, d in ipairs(room:QueryDescendants("Instance")) do
 			if d:IsA("Model") and d.Name == "LeverGates" then
 				gates[(#gates) + 1] = d;
 			end;
