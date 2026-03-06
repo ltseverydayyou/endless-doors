@@ -1,6 +1,8 @@
 local S = function(n)
-	local s = game:GetService(n);
-	return cloneref and cloneref(s) or s;
+	if n == "Stats" or n == "VirtualInputManager" or n == "LogService" or n == "VoiceChatService" then
+		return game:GetService(n);
+	end;
+	return cloneref and cloneref(game:GetService(n)) or game:GetService(n);
 end;
 local GAME_IDS = {
 	3927488489,

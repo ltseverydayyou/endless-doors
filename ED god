@@ -19,24 +19,30 @@ end;
 local f = function(i)
 	N.Notify(i);
 end;
+local G = function(n)
+	if n == "Stats" or n == "VirtualInputManager" or n == "LogService" or n == "VoiceChatService" then
+		return g:GetService(n);
+	end;
+	return cloneref and cloneref(g:GetService(n)) or g:GetService(n);
+end;
 local y = function(n, r)
 	for i = r, 2, -1 do
 		local t = n - i;
-		if (((g:GetService("Workspace")):FindFirstChild("Game")):FindFirstChild("Rooms")):FindFirstChild("Room" .. t) then
+		if (((G("Workspace")):FindFirstChild("Game")):FindFirstChild("Rooms")):FindFirstChild("Room" .. t) then
 			return t;
 		end;
 	end;
 end;
 local z = function(n)
-	local r = (((g:GetService("Workspace")):FindFirstChild("Game")):FindFirstChild("Rooms")):FindFirstChild("Room" .. n);
+	local r = (((G("Workspace")):FindFirstChild("Game")):FindFirstChild("Rooms")):FindFirstChild("Room" .. n);
 	return r and (r:FindFirstChild("Models")):FindFirstChild("Wardrobe") or nil;
 end;
 local j = function(n)
-	local r = (((g:GetService("Workspace")):FindFirstChild("Game")):FindFirstChild("Rooms")):FindFirstChild("Room" .. n);
+	local r = (((G("Workspace")):FindFirstChild("Game")):FindFirstChild("Rooms")):FindFirstChild("Room" .. n);
 	if r then
 		local d = r:FindFirstChild("Door");
 		if d then
-			(g:GetService("Players")).LocalPlayer.Character:PivotTo(d:GetPivot());
+			(G("Players")).LocalPlayer.Character:PivotTo(d:GetPivot());
 			return true;
 		end;
 	end;
@@ -53,14 +59,14 @@ local k = function(d)
 	end);
 end;
 local m = function(w)
-	local r = ((g:GetService("ReplicatedStorage")):FindFirstChild("Remotes")):FindFirstChild("HIDE");
+	local r = ((G("ReplicatedStorage")):FindFirstChild("Remotes")):FindFirstChild("HIDE");
 	if r then
 		r:FireServer(w, false, false);
 	end;
 end;
 local x = function()
-	local p = (g:GetService("Players")).LocalPlayer;
-	local v = ((((g:GetService("Workspace")):FindFirstChild("Game")):FindFirstChild("Values")):FindFirstChild("RoomsNumber")).Value;
+	local p = (G("Players")).LocalPlayer;
+	local v = ((((G("Workspace")):FindFirstChild("Game")):FindFirstChild("Values")):FindFirstChild("RoomsNumber")).Value;
 	local b = y(v, D);
 	if not b then
 		f({
@@ -87,7 +93,7 @@ local x = function()
 		});
 		return false;
 	end;
-	local d = ((((g:GetService("Workspace")):FindFirstChild("Game")):FindFirstChild("Rooms")):FindFirstChild("Room" .. v)):FindFirstChild("Door");
+	local d = ((((G("Workspace")):FindFirstChild("Game")):FindFirstChild("Rooms")):FindFirstChild("Room" .. v)):FindFirstChild("Door");
 	k(d);
 	task.wait(0.5);
 	m(w);
