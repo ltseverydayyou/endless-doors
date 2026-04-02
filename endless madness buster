@@ -68,6 +68,7 @@ local Values = GameFolder:WaitForChild("Values");
 local Rooms = GameFolder:WaitForChild("Rooms");
 local Entities = GameFolder:WaitForChild("Entities");
 local curRoomVal = Values:WaitForChild("RoomsNumber");
+local lStatss = LocalPlayer:WaitForChild("leaderstats",10)
 local currentCamera = workspace.CurrentCamera;
 local brightLoop, antiAFKConn, fovLockConn, cameraConn, infJumpConn, mobHoldConn, mobDownConn, mobUpConn;
 local overCon, lurkCon, watchCon, flowCon, abyssCon, takerCon, chaseCon, vacCon;
@@ -465,10 +466,10 @@ local TITLE = "Endless Doors";
 local MODE_LABEL = PLACE_NAME:match("(%[[^%]]+%])") or PLACE_NAME;
 local FOOTER = MODE_LABEL .. " | " .. SUBTITLE;
 ED_tbl.playerRoom = function()
-	return tostring(LocalPlayer.leaderstats.Room.Value);
+	return tostring(lStatss.Room.Value);
 end;
 ED_tbl.playerBits = function()
-	return tostring(LocalPlayer.leaderstats.Bits.Value);
+	return tostring(lStatss.Bits.Value);
 end;
 ED_tbl.doubleBits = function()
 	local ch = LocalPlayer.Character;
@@ -1057,7 +1058,7 @@ local function firePrompts()
 	if not (root and root.Parent) then
 		return;
 	end;
-	local bitsStat = LocalPlayer.leaderstats and LocalPlayer.leaderstats:FindFirstChild("Bits");
+	local bitsStat = lStatss and lStatss:FindFirstChild("Bits");
 	for i = #proximityPrompts, 1, -1 do
 		local pp = proximityPrompts[i];
 		if not (pp and pp.Parent) then
