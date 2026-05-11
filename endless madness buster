@@ -1,4 +1,4 @@
-local __lt = (function()
+﻿local __lt = (function()
 	local globalEnv = (getgenv and getgenv()) or _G or {};
 	local sharedEnv = rawget(_G, "shared");
 	local cacheHost = type(sharedEnv) == "table" and sharedEnv or (type(globalEnv) == "table" and globalEnv or nil);
@@ -134,7 +134,16 @@ local greedActive = false;
 local greedToken = 0;
 local ObsidianUI;
 local scriptRunning = true;
-local activeConnections = {};
+local ED_runtime_env = (getgenv and getgenv()) or _G;
+if type(ED_runtime_env.__EDMB_Runtime) == "table" and type(ED_runtime_env.__EDMB_Runtime.cleanup) == "function" then
+	pcall(ED_runtime_env.__EDMB_Runtime.cleanup);
+end;
+local ED_runtime = {
+	alive = true,
+	connections = {}
+};
+ED_runtime_env.__EDMB_Runtime = ED_runtime;
+local activeConnections = ED_runtime.connections;
 local notifiedEntities = {};
 local L_fuz, L_zav, L_jake, L_blue, L_alan;
 local ED_tbl = {};
@@ -1260,12 +1269,33 @@ local function disconnectConn(conn)
 		end);
 	end;
 end;
+ED_runtime.cleanup = function()
+	if not ED_runtime.alive then
+		return;
+	end;
+	ED_runtime.alive = false;
+	scriptRunning = false;
+	if ObsidianUI and type(ObsidianUI.Cleanup) == "function" then
+		pcall(function()
+			ObsidianUI:Cleanup();
+		end);
+		return;
+	end;
+	for _, conn in ipairs(activeConnections) do
+		disconnectConn(conn);
+	end;
+	activeConnections = {};
+	ED_runtime.connections = activeConnections;
+end;
 function ObsidianUI:Cleanup()
 	if self._cleaned then
 		return;
 	end;
 	self._cleaned = true;
 	scriptRunning = false;
+	if ED_runtime_env.__EDMB_Runtime == ED_runtime then
+		ED_runtime_env.__EDMB_Runtime = nil;
+	end;
 	local tracked = {
 		brightLoop,
 		antiAFKConn,
@@ -1307,6 +1337,7 @@ function ObsidianUI:Cleanup()
 		disconnectConn(conn);
 	end;
 	activeConnections = {};
+	ED_runtime.connections = activeConnections;
 	notifiedEntities = {};
 	(getgenv()).chaos = false;
 	(getgenv()).entityEsp = false;
@@ -3794,5 +3825,13 @@ task.spawn(function()
 		end;
 	end;
 end);
-loadstring(game:HttpGet("https://raw.githubusercontent.com/ltseverydayyou/uuuuuuu/refs/heads/main/functionFixer.lua"))();
+if not ED_runtime_env.__EDMB_FunctionFixerLoaded then
+	ED_runtime_env.__EDMB_FunctionFixerLoaded = true;
+	local okFixer = pcall(function()
+		loadstring(game:HttpGet("https://raw.githubusercontent.com/ltseverydayyou/uuuuuuu/refs/heads/main/functionFixer.lua"))();
+	end);
+	if not okFixer then
+		ED_runtime_env.__EDMB_FunctionFixerLoaded = false;
+	end;
+end;
 	end)();
