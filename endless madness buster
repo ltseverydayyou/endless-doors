@@ -1,4 +1,4 @@
-﻿local __lt = (function()
+local __lt = (function()
 	local globalEnv = (getgenv and getgenv()) or _G or {}
 	local sharedEnv = rawget(_G, "shared")
 	local cacheHost = type(sharedEnv) == "table" and sharedEnv or (type(globalEnv) == "table" and globalEnv or nil)
