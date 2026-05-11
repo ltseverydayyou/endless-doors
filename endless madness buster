@@ -1,856 +1,880 @@
 ﻿local __lt = (function()
-	local globalEnv = (getgenv and getgenv()) or _G or {};
-	local sharedEnv = rawget(_G, "shared");
-	local cacheHost = type(sharedEnv) == "table" and sharedEnv or (type(globalEnv) == "table" and globalEnv or nil);
+	local globalEnv = (getgenv and getgenv()) or _G or {}
+	local sharedEnv = rawget(_G, "shared")
+	local cacheHost = type(sharedEnv) == "table" and sharedEnv or (type(globalEnv) == "table" and globalEnv or nil)
 	if cacheHost then
-		local cached = rawget(cacheHost, "__lt_service_resolver");
+		local cached = rawget(cacheHost, "__lt_service_resolver")
 		if type(cached) == "table" then
-			return cached;
-		end;
-	end;
-	local loader = loadstring or load;
+			return cached
+		end
+	end
+	local loader = loadstring or load
 	if type(loader) ~= "function" then
-		error("Service resolver loader unavailable");
-	end;
-	local resolver = loader(game:HttpGet("https://ltseverydayyou.github.io/ServiceResolver.luau"), "@ServiceResolver.luau");
+		error("Service resolver loader unavailable")
+	end
+	local resolver =
+		loader(game:HttpGet("https://ltseverydayyou.github.io/ServiceResolver.luau"), "@ServiceResolver.luau")
 	if type(resolver) ~= "function" then
-		error("Service resolver failed to compile");
-	end;
-	local loaded = resolver();
+		error("Service resolver failed to compile")
+	end
+	local loaded = resolver()
 	if type(loaded) ~= "table" then
-		error("Service resolver failed to load");
-	end;
+		error("Service resolver failed to load")
+	end
 	if cacheHost then
-		cacheHost.__lt_service_resolver = loaded;
-	end;
-	return loaded;
-end)();
+		cacheHost.__lt_service_resolver = loaded
+	end
+	return loaded
+end)()
 local __NAUIProtector = (function()
-	local globalEnv = (getgenv and getgenv()) or _G or {};
-	local sharedEnv = rawget(_G, "shared");
-	local cacheHost = type(sharedEnv) == "table" and sharedEnv or (type(globalEnv) == "table" and globalEnv or nil);
+	local globalEnv = (getgenv and getgenv()) or _G or {}
+	local sharedEnv = rawget(_G, "shared")
+	local cacheHost = type(sharedEnv) == "table" and sharedEnv or (type(globalEnv) == "table" and globalEnv or nil)
 	if cacheHost then
-		local cached = rawget(cacheHost, "__lt_ui_protector");
+		local cached = rawget(cacheHost, "__lt_ui_protector")
 		if type(cached) == "table" then
-			return cached;
-		end;
-	end;
-	local loader = loadstring or load;
+			return cached
+		end
+	end
+	local loader = loadstring or load
 	if type(loader) ~= "function" then
-		return nil;
-	end;
+		return nil
+	end
 	local okSource, source = pcall(function()
-		return game:HttpGet("https://ltseverydayyou.github.io/UIprotector.luau");
-	end);
+		return game:HttpGet("https://ltseverydayyou.github.io/UIprotector.luau")
+	end)
 	if not okSource or type(source) ~= "string" or source == "" then
-		return nil;
-	end;
-	local chunk = loader(source, "@UIprotector.luau");
+		return nil
+	end
+	local chunk = loader(source, "@UIprotector.luau")
 	if type(chunk) ~= "function" then
-		return nil;
-	end;
-	local okLoaded, loaded = pcall(chunk);
+		return nil
+	end
+	local okLoaded, loaded = pcall(chunk)
 	if okLoaded and type(loaded) == "table" then
 		if cacheHost then
-			cacheHost.__lt_ui_protector = loaded;
-		end;
-		return loaded;
-	end;
-	return nil;
-end)();
-local __NAOriginalGetHui = gethui;
+			cacheHost.__lt_ui_protector = loaded
+		end
+		return loaded
+	end
+	return nil
+end)()
+local __NAOriginalGetHui = gethui
 local gethui = function()
 	if __NAUIProtector and type(__NAUIProtector.huiGrabber) == "function" then
-		local ok, ui = pcall(__NAUIProtector.huiGrabber);
+		local ok, ui = pcall(__NAUIProtector.huiGrabber)
 		if ok and typeof(ui) == "Instance" then
-			return ui;
-		end;
-	end;
+			return ui
+		end
+	end
 	if type(__NAOriginalGetHui) == "function" then
-		local ok, ui = pcall(__NAOriginalGetHui);
+		local ok, ui = pcall(__NAOriginalGetHui)
 		if ok then
-			return ui;
-		end;
-	end;
-	return nil;
-end;
+			return ui
+		end
+	end
+	return nil
+end
 local function __NAProtectUI(gui, options)
 	if __NAUIProtector and type(__NAUIProtector.protectUI) == "function" then
-		local ok, protected = pcall(__NAUIProtector.protectUI, gui, options);
+		local ok, protected = pcall(__NAUIProtector.protectUI, gui, options)
 		if ok and protected then
-			return protected;
-		end;
-	end;
-	return nil;
-end;
+			return protected
+		end
+	end
+	return nil
+end
 
 local S = function(n)
-
-	return __lt.cs(n, cloneref);
-end;
+	return __lt.cs(n, cloneref)
+end
 local GAME_IDS = {
 	3927488489,
 	5927366432,
-	6023940812
-};
+	6023940812,
+}
 local PLACE_IDS = {
 	10891480658,
 	16810788519,
 	17324650150,
 	17639491565,
-	17594182379
-};
+	17594182379,
+}
 if not (table.find(GAME_IDS, game.GameId) and table.find(PLACE_IDS, game.PlaceId)) then
-	return;
-end;
-local pOLD, pEPIC, pREN, pEMARC, pCLASS = 10891480658, 16810788519, 17324650150, 17639491565, 17594182379;
-local Players = S("Players");
-local TweenService = S("TweenService");
-local RunService = S("RunService");
-local UIS = S("UserInputService");
-local PPromptService = S("ProximityPromptService");
-local SoundService = S("SoundService");
-local LocalPlayer = Players.LocalPlayer;
+	return
+end
+local pOLD, pEPIC, pREN, pEMARC, pCLASS = 10891480658, 16810788519, 17324650150, 17639491565, 17594182379
+local Players = S("Players")
+local TweenService = S("TweenService")
+local RunService = S("RunService")
+local UIS = S("UserInputService")
+local PPromptService = S("ProximityPromptService")
+local SoundService = S("SoundService")
+local LocalPlayer = Players.LocalPlayer
 local IsOnMobile = (function()
-	local platform = __lt.cm("UserInputService", "GetPlatform");
-	if platform == Enum.Platform.IOS or platform == Enum.Platform.Android or platform == Enum.Platform.AndroidTV or platform == Enum.Platform.Chromecast or platform == Enum.Platform.MetaOS then
-		return true;
-	end;
+	local platform = __lt.cm("UserInputService", "GetPlatform")
+	if
+		platform == Enum.Platform.IOS
+		or platform == Enum.Platform.Android
+		or platform == Enum.Platform.AndroidTV
+		or platform == Enum.Platform.Chromecast
+		or platform == Enum.Platform.MetaOS
+	then
+		return true
+	end
 	if platform == Enum.Platform.None then
-		return UIS.TouchEnabled and (not (UIS.KeyboardEnabled or UIS.MouseEnabled));
-	end;
-	return false;
-end)();
-local GameFolder = workspace:WaitForChild("Game");
-local Values = GameFolder:WaitForChild("Values");
-local Rooms = GameFolder:WaitForChild("Rooms");
-local Entities = GameFolder:WaitForChild("Entities");
-local curRoomVal = Values:WaitForChild("RoomsNumber");
-local lStatss = LocalPlayer:WaitForChild("leaderstats",10)
-local currentCamera = workspace.CurrentCamera;
-local brightLoop, antiAFKConn, fovLockConn, cameraConn, infJumpConn, mobHoldConn, mobDownConn, mobUpConn;
-local overCon, lurkCon, watchCon, flowCon, abyssCon, takerCon, chaseCon, vacCon;
-local greedActive = false;
-local greedToken = 0;
-local ObsidianUI;
-local scriptRunning = true;
-local ED_runtime_env = (getgenv and getgenv()) or _G;
+		return UIS.TouchEnabled and not (UIS.KeyboardEnabled or UIS.MouseEnabled)
+	end
+	return false
+end)()
+local GameFolder = workspace:WaitForChild("Game")
+local Values = GameFolder:WaitForChild("Values")
+local Rooms = GameFolder:WaitForChild("Rooms")
+local Entities = GameFolder:WaitForChild("Entities")
+local curRoomVal = Values:WaitForChild("RoomsNumber")
+local lStatss = LocalPlayer:WaitForChild("leaderstats", 10)
+local currentCamera = workspace.CurrentCamera
+local brightLoop, antiAFKConn, fovLockConn, cameraConn, infJumpConn, mobHoldConn, mobDownConn, mobUpConn
+local overCon, lurkCon, watchCon, flowCon, abyssCon, takerCon, chaseCon, vacCon
+local greedActive = false
+local greedToken = 0
+local ObsidianUI
+local scriptRunning = true
+local ED_runtime_env = (getgenv and getgenv()) or _G
 if type(ED_runtime_env.__EDMB_Runtime) == "table" and type(ED_runtime_env.__EDMB_Runtime.cleanup) == "function" then
-	pcall(ED_runtime_env.__EDMB_Runtime.cleanup);
-end;
+	pcall(ED_runtime_env.__EDMB_Runtime.cleanup)
+end
 local ED_runtime = {
 	alive = true,
-	connections = {}
-};
-ED_runtime_env.__EDMB_Runtime = ED_runtime;
-local activeConnections = ED_runtime.connections;
-local notifiedEntities = {};
-local L_fuz, L_zav, L_jake, L_blue, L_alan;
-local ED_tbl = {};
+	connections = {},
+}
+ED_runtime_env.__EDMB_Runtime = ED_runtime
+local activeConnections = ED_runtime.connections
+local notifiedEntities = {}
+local L_fuz, L_zav, L_jake, L_blue, L_alan
+local ED_tbl = {}
 ED_tbl.trackConnection = function(conn)
 	if conn then
-		activeConnections[(#activeConnections) + 1] = conn;
-	end;
-	return conn;
-end;
+		activeConnections[#activeConnections + 1] = conn
+	end
+	return conn
+end
 ED_tbl.findEntityRoot = function(inst)
-	local current = inst;
+	local current = inst
 	while current and current.Parent do
 		if current.Parent == Entities then
-			return current;
-		end;
-		current = current.Parent;
-	end;
-	return nil;
-end;
-(getgenv()).speed = tonumber((getgenv()).speed) or 16;
-(getgenv()).jump = tonumber((getgenv()).jump) or 30;
-(getgenv()).fov = tonumber((getgenv()).fov) or 70;
-(getgenv()).promptDelay = tonumber((getgenv()).promptDelay) or 0;
-(getgenv()).promptRange = tonumber((getgenv()).promptRange) or 6;
-(getgenv()).autoFarm = (getgenv()).autoFarm or false;
-(getgenv()).autoHeal = (getgenv()).autoHeal or false;
-local decalID = 95434351872718;
+			return current
+		end
+		current = current.Parent
+	end
+	return nil
+end
+(getgenv()).speed = tonumber((getgenv()).speed) or 16
+(getgenv()).jump = tonumber((getgenv()).jump) or 30
+(getgenv()).fov = tonumber((getgenv()).fov) or 70
+(getgenv()).promptDelay = tonumber((getgenv()).promptDelay) or 0
+(getgenv()).promptRange = tonumber((getgenv()).promptRange) or 6
+(getgenv()).autoFarm = (getgenv()).autoFarm or false
+(getgenv()).autoHeal = (getgenv()).autoHeal or false
+local decalID = 95434351872718
 ED_tbl.GuiRoot = function()
-	return gethui and gethui() or (S("CoreGui")):FindFirstChild("RobloxGui") or S("CoreGui") or LocalPlayer:WaitForChild("PlayerGui");
-end;
+	return gethui and gethui()
+		or (S("CoreGui")):FindFirstChild("RobloxGui")
+		or S("CoreGui")
+		or LocalPlayer:WaitForChild("PlayerGui")
+end
 if not game:IsLoaded() then
-	local m = Instance.new("Message", ED_tbl.GuiRoot());
-	m.Text = "waiting for the game to load";
-	game.Loaded:Wait();
-	m:Destroy();
-end;
+	local m = Instance.new("Message", ED_tbl.GuiRoot())
+	m.Text = "waiting for the game to load"
+	game.Loaded:Wait()
+	m:Destroy()
+end
 ED_tbl.rootOf = function(c)
 	if not c then
-		return nil;
-	end;
+		return nil
+	end
 	if typeof(c) == "Instance" and c:IsA("Player") then
-		c = c.Character;
-	end;
+		c = c.Character
+	end
 	if not c then
-		return nil;
-	end;
-	return c:FindFirstChild("HumanoidRootPart") or c:FindFirstChild("UpperTorso") or c:FindFirstChild("Torso") or c:FindFirstChild("LowerTorso") or c:FindFirstChildWhichIsA("BasePart");
-end;
+		return nil
+	end
+	return c:FindFirstChild("HumanoidRootPart")
+		or c:FindFirstChild("UpperTorso")
+		or c:FindFirstChild("Torso")
+		or c:FindFirstChild("LowerTorso")
+		or c:FindFirstChildWhichIsA("BasePart")
+end
 ED_tbl.charValStr = function(ctn, nm)
-	local ch = LocalPlayer.Character;
+	local ch = LocalPlayer.Character
 	if not ch then
-		return "false";
-	end;
-	local folder = ch:FindFirstChild(ctn);
+		return "false"
+	end
+	local folder = ch:FindFirstChild(ctn)
 	if not folder then
-		return "false";
-	end;
-	local o = folder:FindFirstChild(nm);
+		return "false"
+	end
+	local o = folder:FindFirstChild(nm)
 	if not o then
-		return "false";
-	end;
-	return tostring(o.Value);
-end;
+		return "false"
+	end
+	return tostring(o.Value)
+end
 local RoomTracker = (function()
-	local roomItemCache = {};
+	local roomItemCache = {}
 	local trackedParts = {
 		roomkey = {},
 		bit = {},
 		lever = {},
-		battery = {}
-	};
-	local itemRoomIndex = {};
+		battery = {},
+	}
+	local itemRoomIndex = {}
 	local function roomKey(room)
-		return room and room.Name;
-	end;
+		return room and room.Name
+	end
 	local function registerPart(kind, inst)
-		local set = trackedParts[kind];
+		local set = trackedParts[kind]
 		if set and inst then
-			set[inst] = true;
-		end;
-	end;
+			set[inst] = true
+		end
+	end
 	local function unregisterPart(inst)
 		for _, set in pairs(trackedParts) do
-			set[inst] = nil;
-		end;
-	end;
+			set[inst] = nil
+		end
+	end
 	local function cleanedList(kind)
-		local set = trackedParts[kind];
+		local set = trackedParts[kind]
 		if not set then
-			return {};
-		end;
-		local list = {};
+			return {}
+		end
+		local list = {}
 		for inst in pairs(set) do
 			if inst and inst.Parent then
-				list[(#list) + 1] = inst;
+				list[#list + 1] = inst
 			else
-				set[inst] = nil;
-			end;
-		end;
-		return list;
-	end;
+				set[inst] = nil
+			end
+		end
+		return list
+	end
 	local function findRoom(inst)
-		local current = inst;
+		local current = inst
 		while current and current ~= Rooms do
 			if current.Parent == Rooms and current:IsA("Model") and current.Name:match("^Room") then
-				return current;
-			end;
-			current = current.Parent;
-		end;
-		return nil;
-	end;
+				return current
+			end
+			current = current.Parent
+		end
+		return nil
+	end
 	local function setRoomValue(room, field, inst)
-		local key = roomKey(room);
+		local key = roomKey(room)
 		if not key then
-			return;
-		end;
-		local cache = roomItemCache[key];
+			return
+		end
+		local cache = roomItemCache[key]
 		if not cache then
 			cache = {
-				room = room
-			};
-			roomItemCache[key] = cache;
+				room = room,
+			}
+			roomItemCache[key] = cache
 		else
-			cache.room = room;
-		end;
+			cache.room = room
+		end
 		if field == "gateLever" then
-			local current = cache.gateLever;
+			local current = cache.gateLever
 			if current and current.Parent and current:IsA("Model") and (not inst:IsA("Model")) then
-				return;
-			end;
-		end;
-		cache[field] = inst;
-	end;
+				return
+			end
+		end
+		cache[field] = inst
+	end
 	local function clearRoomValue(roomName, inst)
-		local cache = roomName and roomItemCache[roomName];
+		local cache = roomName and roomItemCache[roomName]
 		if not cache then
-			return;
-		end;
+			return
+		end
 		if cache.roomKey == inst then
-			cache.roomKey = nil;
-		end;
+			cache.roomKey = nil
+		end
 		if cache.gateLever == inst then
-			cache.gateLever = nil;
-		end;
-	end;
+			cache.gateLever = nil
+		end
+	end
 	local function processAdded(inst, room)
-		room = room or findRoom(inst);
+		room = room or findRoom(inst)
 		if not room then
-			return;
-		end;
-		local lower = inst.Name:lower();
+			return
+		end
+		local lower = inst.Name:lower()
 		if inst:IsA("Model") then
 			if lower == "roomkey" then
-				itemRoomIndex[inst] = room.Name;
-				registerPart("roomkey", inst);
-				setRoomValue(room, "roomKey", inst);
+				itemRoomIndex[inst] = room.Name
+				registerPart("roomkey", inst)
+				setRoomValue(room, "roomKey", inst)
 			elseif lower == "gatelever" or inst.Name == "GateLever" then
-				itemRoomIndex[inst] = room.Name;
-				setRoomValue(room, "gateLever", inst);
-			end;
+				itemRoomIndex[inst] = room.Name
+				setRoomValue(room, "gateLever", inst)
+			end
 		elseif inst:IsA("BasePart") then
 			if lower == "bit" then
-				itemRoomIndex[inst] = room.Name;
-				registerPart("bit", inst);
+				itemRoomIndex[inst] = room.Name
+				registerPart("bit", inst)
 			elseif lower == "lever" or lower == "battery" then
-				itemRoomIndex[inst] = room.Name;
-				registerPart(lower, inst);
+				itemRoomIndex[inst] = room.Name
+				registerPart(lower, inst)
 			elseif lower == "gatelever" then
-				itemRoomIndex[inst] = room.Name;
-				setRoomValue(room, "gateLever", inst);
+				itemRoomIndex[inst] = room.Name
+				setRoomValue(room, "gateLever", inst)
 			elseif inst.Parent and inst.Parent:IsA("Model") and inst.Parent.Name:lower() == "roomkey" then
-				local holder = inst.Parent;
-				itemRoomIndex[holder] = room.Name;
-				registerPart("roomkey", holder);
-				setRoomValue(room, "roomKey", holder);
-			end;
-		end;
-	end;
+				local holder = inst.Parent
+				itemRoomIndex[holder] = room.Name
+				registerPart("roomkey", holder)
+				setRoomValue(room, "roomKey", holder)
+			end
+		end
+	end
 	local function processRemoved(inst)
-		unregisterPart(inst);
-		local roomName = itemRoomIndex[inst];
-		itemRoomIndex[inst] = nil;
+		unregisterPart(inst)
+		local roomName = itemRoomIndex[inst]
+		itemRoomIndex[inst] = nil
 		if roomName then
-			clearRoomValue(roomName, inst);
+			clearRoomValue(roomName, inst)
 		else
-			local room = findRoom(inst);
+			local room = findRoom(inst)
 			if room then
-				clearRoomValue(room.Name, inst);
-			end;
-		end;
-	end;
+				clearRoomValue(room.Name, inst)
+			end
+		end
+	end
 	local function indexRoom(room)
 		if not (room and room:IsA("Model")) then
-			return;
-		end;
+			return
+		end
 		for _, desc in ipairs(room:QueryDescendants("Instance")) do
-			processAdded(desc, room);
-		end;
-	end;
+			processAdded(desc, room)
+		end
+	end
 	local function getRoomTarget(room, field)
 		if not room then
-			return nil;
-		end;
-		local cache = roomItemCache[room.Name];
+			return nil
+		end
+		local cache = roomItemCache[room.Name]
 		if not cache then
-			return nil;
-		end;
-		local inst = cache[field];
+			return nil
+		end
+		local inst = cache[field]
 		if inst and inst.Parent then
-			return inst;
-		end;
-		cache[field] = nil;
-		return nil;
-	end;
+			return inst
+		end
+		cache[field] = nil
+		return nil
+	end
 	local function init()
 		for _, room in ipairs(Rooms:GetChildren()) do
-			indexRoom(room);
-		end;
-		ED_tbl.trackConnection(Rooms.DescendantAdded:Connect(processAdded));
-		ED_tbl.trackConnection(Rooms.DescendantRemoving:Connect(processRemoved));
-	end;
-	init();
+			indexRoom(room)
+		end
+		ED_tbl.trackConnection(Rooms.DescendantAdded:Connect(processAdded))
+		ED_tbl.trackConnection(Rooms.DescendantRemoving:Connect(processRemoved))
+	end
+	init()
 	return {
 		getRoomTarget = getRoomTarget,
 		getTracked = function(kind)
-			return cleanedList(kind);
+			return cleanedList(kind)
 		end,
 		clear = function()
-			roomItemCache = {};
-			itemRoomIndex = {};
+			roomItemCache = {}
+			itemRoomIndex = {}
 			for name in pairs(trackedParts) do
-				trackedParts[name] = {};
-			end;
-		end
-	};
-end)();
+				trackedParts[name] = {}
+			end
+		end,
+	}
+end)()
 ED_tbl.hasVoidWindOnDoor = function(doorModel)
 	if not (doorModel and doorModel:IsA("Model")) then
-		return false;
-	end;
-	local voidCount = 0;
-	local hasVoidSound = false;
+		return false
+	end
+	local voidCount = 0
+	local hasVoidSound = false
 	for _, c in ipairs(doorModel:QueryDescendants("Instance")) do
-		local n = (c.Name or ""):lower();
+		local n = (c.Name or ""):lower()
 		if n:find("void") then
-			voidCount += 1;
+			voidCount += 1
 			if c:IsA("Sound") then
-				hasVoidSound = true;
-			end;
-		end;
+				hasVoidSound = true
+			end
+		end
 		if c:IsA("Sound") then
-			local sid = "";
+			local sid = ""
 			local ok, v = pcall(function()
-				return c.SoundId;
-			end);
+				return c.SoundId
+			end)
 			if ok and type(v) == "string" then
-				sid = v:lower();
+				sid = v:lower()
 				if sid:find("void") then
-					hasVoidSound = true;
-				end;
-			end;
-		end;
-	end;
+					hasVoidSound = true
+				end
+			end
+		end
+	end
 	if hasVoidSound then
-		return true;
-	end;
-	return voidCount >= 2;
-end;
+		return true
+	end
+	return voidCount >= 2
+end
 ED_tbl.getVoidDoorForCurrentRoom = function()
-	local r = Rooms:FindFirstChild("Room" .. tostring(Values.RoomsNumber.Value));
+	local r = Rooms:FindFirstChild("Room" .. tostring(Values.RoomsNumber.Value))
 	if not r then
-		return nil;
-	end;
+		return nil
+	end
 	for _, d in ipairs(r:QueryDescendants("Instance")) do
 		if d:IsA("Model") then
-			local n = d.Name:lower();
+			local n = d.Name:lower()
 			if n:find("door") or n:find("void") then
 				if ED_tbl.hasVoidWindOnDoor(d) then
-					return d;
-				end;
-			end;
-		end;
-	end;
-	return nil;
-end;
+					return d
+				end
+			end
+		end
+	end
+	return nil
+end
 ED_tbl.getSafeDoorForCurrentRoom = function()
-	local r = Rooms:FindFirstChild("Room" .. tostring(Values.RoomsNumber.Value));
+	local r = Rooms:FindFirstChild("Room" .. tostring(Values.RoomsNumber.Value))
 	if not r then
-		return nil;
-	end;
-	local baseDoor = r:FindFirstChild("Door") or r:FindFirstChild("Door", true);
+		return nil
+	end
+	local baseDoor = r:FindFirstChild("Door") or r:FindFirstChild("Door", true)
 	if baseDoor and baseDoor:IsA("Model") and (not ED_tbl.hasVoidWindOnDoor(baseDoor)) then
-		return baseDoor;
-	end;
-	return nil;
-end;
+		return baseDoor
+	end
+	return nil
+end
 ED_tbl.tpToDoor = function(ignoreGreed)
-	local doorModel;
+	local doorModel
 	if not doorModel then
-		doorModel = ED_tbl.getSafeDoorForCurrentRoom();
-	end;
+		doorModel = ED_tbl.getSafeDoorForCurrentRoom()
+	end
 	if not doorModel then
-		return;
-	end;
-	if greedActive and (not ignoreGreed) then
-		local dist, tendRoot = nearestTendrilsDistance();
+		return
+	end
+	if greedActive and not ignoreGreed then
+		local dist, tendRoot = nearestTendrilsDistance()
 		if dist < SAFE_TENDRILS_DIST then
-			local ch = LocalPlayer.Character;
-			local myRoot = ED_tbl.rootOf(ch);
+			local ch = LocalPlayer.Character
+			local myRoot = ED_tbl.rootOf(ch)
 			if myRoot and tendRoot then
-				local dir = myRoot.Position - tendRoot.Position;
+				local dir = myRoot.Position - tendRoot.Position
 				if dir.Magnitude > 0 then
-					dir = dir.Unit;
-					local offset = dir * (SAFE_TENDRILS_DIST + 5);
-					ch:PivotTo(CFrame.new(tendRoot.Position + offset));
-				end;
-			end;
-		end;
-	end;
-	LocalPlayer.Character:PivotTo(doorModel:GetPivot());
-end;
+					dir = dir.Unit
+					local offset = dir * (SAFE_TENDRILS_DIST + 5)
+					ch:PivotTo(CFrame.new(tendRoot.Position + offset))
+				end
+			end
+		end
+	end
+	LocalPlayer.Character:PivotTo(doorModel:GetPivot())
+end
 ED_tbl.tpToKey = function(_ignoreGreed)
-	local ch = LocalPlayer.Character;
-	local hk = ch and ch:FindFirstChild("Values") and ch.Values:FindFirstChild("HasKey");
+	local ch = LocalPlayer.Character
+	local hk = ch and ch:FindFirstChild("Values") and ch.Values:FindFirstChild("HasKey")
 	if hk and hk.Value then
-		return;
-	end;
-	local r = Rooms:FindFirstChild("Room" .. Values.RoomsNumber.Value);
+		return
+	end
+	local r = Rooms:FindFirstChild("Room" .. Values.RoomsNumber.Value)
 	if not r then
-		return;
-	end;
-	local keyPart = RoomTracker.getRoomTarget(r, "roomKey");
+		return
+	end
+	local keyPart = RoomTracker.getRoomTarget(r, "roomKey")
 	if keyPart then
-		LocalPlayer.Character:PivotTo(keyPart:GetPivot());
-	end;
-end;
+		LocalPlayer.Character:PivotTo(keyPart:GetPivot())
+	end
+end
 ED_tbl.tpToLever = function(_ignoreGreed)
-	local r = Rooms:FindFirstChild("Room" .. Values.RoomsNumber.Value);
+	local r = Rooms:FindFirstChild("Room" .. Values.RoomsNumber.Value)
 	if not r then
-		return;
-	end;
-	local gateLever = RoomTracker.getRoomTarget(r, "gateLever");
+		return
+	end
+	local gateLever = RoomTracker.getRoomTarget(r, "gateLever")
 	if not gateLever then
-		return;
-	end;
-	local target = gateLever;
+		return
+	end
+	local target = gateLever
 	if gateLever:IsA("Model") then
-		target = gateLever:FindFirstChild("LeverGoal") or gateLever:FindFirstChild("Lever") or gateLever;
-	end;
+		target = gateLever:FindFirstChild("LeverGoal") or gateLever:FindFirstChild("Lever") or gateLever
+	end
 	if target:IsA("Model") then
-		LocalPlayer.Character:PivotTo(target:GetPivot());
+		LocalPlayer.Character:PivotTo(target:GetPivot())
 	else
-		LocalPlayer.Character:PivotTo(target.CFrame);
-	end;
-end;
+		LocalPlayer.Character:PivotTo(target.CFrame)
+	end
+end
 ED_tbl.disableRagdoll = function()
-	local ch = LocalPlayer.Character;
+	local ch = LocalPlayer.Character
 	if not ch then
-		return;
-	end;
-	local t = ch:FindFirstChild("RagdollTrigger");
+		return
+	end
+	local t = ch:FindFirstChild("RagdollTrigger")
 	if t then
-		t.Value = false;
-	end;
-end;
+		t.Value = false
+	end
+end
 ED_tbl.bindFOV = function(cam)
 	if fovLockConn then
-		fovLockConn:Disconnect();
-		fovLockConn = nil;
-	end;
-	cam.FieldOfView = tonumber((getgenv()).fov) or 70;
+		fovLockConn:Disconnect()
+		fovLockConn = nil
+	end
+	cam.FieldOfView = tonumber((getgenv()).fov) or 70
 	fovLockConn = (cam:GetPropertyChangedSignal("FieldOfView")):Connect(function()
 		if (getgenv()).wide and cam.FieldOfView ~= (tonumber((getgenv()).fov) or 70) then
-			cam.FieldOfView = tonumber((getgenv()).fov) or 70;
-		end;
-	end);
-end;
+			cam.FieldOfView = tonumber((getgenv()).fov) or 70
+		end
+	end)
+end
 local PLACE_NAME = ({
 	[pOLD] = "Endless Doors [OLD]",
 	[pEPIC] = "Endless Doors [OLD Epic Mode]",
 	[pREN] = "Endless Doors",
 	[pEMARC] = "Endless Doors [Epic Mode]",
-	[pCLASS] = "Endless Doors [Retro #classic]"
-})[game.PlaceId] or "unknown";
-local SUBTITLE = "zavaled loves KitaFuzzi";
-local TITLE = "Endless Doors";
-local MODE_LABEL = PLACE_NAME:match("(%[[^%]]+%])") or PLACE_NAME;
-local FOOTER = MODE_LABEL .. " | " .. SUBTITLE;
+	[pCLASS] = "Endless Doors [Retro #classic]",
+})[game.PlaceId] or "unknown"
+local SUBTITLE = "zavaled loves KitaFuzzi"
+local TITLE = "Endless Doors"
+local MODE_LABEL = PLACE_NAME:match("(%[[^%]]+%])") or PLACE_NAME
+local FOOTER = MODE_LABEL .. " | " .. SUBTITLE
 ED_tbl.playerRoom = function()
-	return tostring(lStatss.Room.Value);
-end;
+	return tostring(lStatss.Room.Value)
+end
 ED_tbl.playerBits = function()
-	return tostring(lStatss.Bits.Value);
-end;
+	return tostring(lStatss.Bits.Value)
+end
 ED_tbl.doubleBits = function()
-	local ch = LocalPlayer.Character;
+	local ch = LocalPlayer.Character
 	if not ch then
-		return "0";
-	end;
-	local vals = ch:FindFirstChild("Values");
+		return "0"
+	end
+	local vals = ch:FindFirstChild("Values")
 	if not vals then
-		return "0";
-	end;
-	local db = vals:FindFirstChild("DoubleBits");
+		return "0"
+	end
+	local db = vals:FindFirstChild("DoubleBits")
 	if not db then
-		return "0";
-	end;
-	return tostring(db.Value);
-end;
+		return "0"
+	end
+	return tostring(db.Value)
+end
 ED_tbl.fame = function()
-	return tostring(LocalPlayer.Fame.Value);
-end;
+	return tostring(LocalPlayer.Fame.Value)
+end
 ED_tbl.deaths = function()
-	return tostring(LocalPlayer.Deaths.Value);
-end;
+	return tostring(LocalPlayer.Deaths.Value)
+end
 ED_tbl.rift = function()
-	return tostring(LocalPlayer.Rift.Value);
-end;
+	return tostring(LocalPlayer.Rift.Value)
+end
 ED_tbl.inGroup = function()
-	return tostring(LocalPlayer.JoinedGroup.Value);
-end;
+	return tostring(LocalPlayer.JoinedGroup.Value)
+end
 ED_tbl.curRoom = function()
-	return tostring(Values.RoomsNumber.Value);
-end;
+	return tostring(Values.RoomsNumber.Value)
+end
 ED_tbl.phil = function()
-	return tostring(Values.PhilMeter.Value);
-end;
+	return tostring(Values.PhilMeter.Value)
+end
 ED_tbl.spider = function()
-	return tostring(Values.SpiderChance.Value);
-end;
+	return tostring(Values.SpiderChance.Value)
+end
 ED_tbl.revivePrice = function()
-	return tostring(Values.RevivePrice.Value);
-end;
+	return tostring(Values.RevivePrice.Value)
+end
 ED_tbl.alive = function()
-	return tostring(Values.PlayersAlive.Value);
-end;
+	return tostring(Values.PlayersAlive.Value)
+end
 ED_tbl.inGame = function()
-	return tostring(Values.PlayersInGame.Value);
-end;
+	return tostring(Values.PlayersInGame.Value)
+end
 ED_tbl.fuz = function()
-	return ED_tbl.charValStr("Collectibles", "Fuzzi");
-end;
+	return ED_tbl.charValStr("Collectibles", "Fuzzi")
+end
 ED_tbl.zav = function()
-	return ED_tbl.charValStr("Collectibles", "Zav");
-end;
+	return ED_tbl.charValStr("Collectibles", "Zav")
+end
 ED_tbl.jake = function()
-	return ED_tbl.charValStr("Collectibles", "Jake");
-end;
+	return ED_tbl.charValStr("Collectibles", "Jake")
+end
 ED_tbl.blue = function()
-	return ED_tbl.charValStr("Collectibles", "Blue");
-end;
+	return ED_tbl.charValStr("Collectibles", "Blue")
+end
 ED_tbl.alan = function()
-	return ED_tbl.charValStr("Collectibles", "Alan");
-end;
+	return ED_tbl.charValStr("Collectibles", "Alan")
+end
 ED_tbl.getBasePart = function(o)
 	if o:IsA("BasePart") then
-		return o;
-	end;
+		return o
+	end
 	if o:IsA("Model") then
 		if o.PrimaryPart then
-			return o.PrimaryPart;
-		end;
-		return o:FindFirstChildWhichIsA("BasePart", true);
-	end;
-end;
-local SAFE_TENDRILS_DIST = 30;
-local tendrilsRoots = {};
+			return o.PrimaryPart
+		end
+		return o:FindFirstChildWhichIsA("BasePart", true)
+	end
+end
+local SAFE_TENDRILS_DIST = 30
+local tendrilsRoots = {}
 ED_tbl.addTendrils = function(m)
 	if not (m and m:IsA("Model") and m.Name:lower() == "tendrils") then
-		return;
-	end;
-	local root = m:FindFirstChild("Root") or m:FindFirstChildWhichIsA("BasePart", true);
+		return
+	end
+	local root = m:FindFirstChild("Root") or m:FindFirstChildWhichIsA("BasePart", true)
 	if root and root:IsA("BasePart") then
-		tendrilsRoots[(#tendrilsRoots) + 1] = root;
-	end;
-end;
+		tendrilsRoots[#tendrilsRoots + 1] = root
+	end
+end
 ED_tbl.cleanTendrils = function(inst)
 	for i = #tendrilsRoots, 1, -1 do
-		local r = tendrilsRoots[i];
-		if r == inst or (not (r and r.Parent and r:IsDescendantOf(Entities))) then
-			table.remove(tendrilsRoots, i);
-		end;
-	end;
-end;
+		local r = tendrilsRoots[i]
+		if r == inst or not (r and r.Parent and r:IsDescendantOf(Entities)) then
+			table.remove(tendrilsRoots, i)
+		end
+	end
+end
 for _, m in ipairs(Entities:GetChildren()) do
-	ED_tbl.addTendrils(m);
-end;
-ED_tbl.trackConnection(Entities.ChildAdded:Connect(ED_tbl.addTendrils));
-ED_tbl.trackConnection(Entities.DescendantRemoving:Connect(ED_tbl.cleanTendrils));
+	ED_tbl.addTendrils(m)
+end
+ED_tbl.trackConnection(Entities.ChildAdded:Connect(ED_tbl.addTendrils))
+ED_tbl.trackConnection(Entities.DescendantRemoving:Connect(ED_tbl.cleanTendrils))
 nearestTendrilsDistance = function()
-	local root = ED_tbl.rootOf(LocalPlayer.Character);
+	local root = ED_tbl.rootOf(LocalPlayer.Character)
 	if not (root and root.Parent) then
-		return math.huge, nil;
-	end;
-	local closest = math.huge;
-	local closestRoot = nil;
+		return math.huge, nil
+	end
+	local closest = math.huge
+	local closestRoot = nil
 	for i = #tendrilsRoots, 1, -1 do
-		local r = tendrilsRoots[i];
+		local r = tendrilsRoots[i]
 		if not (r and r.Parent and r:IsDescendantOf(Entities)) then
-			table.remove(tendrilsRoots, i);
+			table.remove(tendrilsRoots, i)
 		else
-			local d = (root.Position - r.Position).Magnitude;
+			local d = (root.Position - r.Position).Magnitude
 			if d < closest then
-				closest = d;
-				closestRoot = r;
-			end;
-		end;
-	end;
-	return closest, closestRoot;
-end;
+				closest = d
+				closestRoot = r
+			end
+		end
+	end
+	return closest, closestRoot
+end
 local healNames = {
 	vitamins = true,
 	bandage = true,
-	["health tonic"] = true
-};
-local lastHealTick = 0;
-local HEAL_COOLDOWN = 3;
-local healing = false;
+	["health tonic"] = true,
+}
+local lastHealTick = 0
+local HEAL_COOLDOWN = 3
+local healing = false
 local function tryAutoHeal(h)
 	if not (getgenv()).autoHeal then
-		return;
-	end;
+		return
+	end
 	if not h or h.Health <= 0 then
-		return;
-	end;
+		return
+	end
 	if healing then
-		return;
-	end;
-	local max = h.MaxHealth > 0 and h.MaxHealth or 100;
+		return
+	end
+	local max = h.MaxHealth > 0 and h.MaxHealth or 100
 	if h.Health > max * 0.5 then
-		return;
-	end;
-	local now = tick();
+		return
+	end
+	local now = tick()
 	if now - lastHealTick < HEAL_COOLDOWN then
-		return;
-	end;
-	local bp = LocalPlayer:FindFirstChildOfClass("Backpack");
+		return
+	end
+	local bp = LocalPlayer:FindFirstChildOfClass("Backpack")
 	if not bp then
-		return;
-	end;
+		return
+	end
 	for _, tool in ipairs(bp:GetChildren()) do
 		if tool:IsA("Tool") then
-			local n = tool.Name:lower();
+			local n = tool.Name:lower()
 			if healNames[n] then
-				lastHealTick = now;
-				healing = true;
-				tool.Parent = LocalPlayer.Character;
+				lastHealTick = now
+				healing = true
+				tool.Parent = LocalPlayer.Character
 				task.spawn(function()
 					pcall(function()
-						tool:Activate();
-					end);
-					task.wait(1.3);
-					healing = false;
-				end);
-				break;
-			end;
-		end;
-	end;
-end;
-local espItems = {};
-local espConn;
+						tool:Activate()
+					end)
+					task.wait(1.3)
+					healing = false
+				end)
+				break
+			end
+		end
+	end
+end
+local espItems = {}
+local espConn
 local function ensureEspLoop()
 	if espConn then
-		return;
-	end;
+		return
+	end
 	espConn = RunService.RenderStepped:Connect(function()
-		local root = ED_tbl.rootOf(LocalPlayer.Character);
+		local root = ED_tbl.rootOf(LocalPlayer.Character)
 		for inst, data in pairs(espItems) do
-			if not (inst and inst.Parent and data.base and data.base.Parent and data.box and data.box.Parent and data.label and data.label.Parent) then
+			if
+				not (
+					inst
+					and inst.Parent
+					and data.base
+					and data.base.Parent
+					and data.box
+					and data.box.Parent
+					and data.label
+					and data.label.Parent
+				)
+			then
 				if data.box then
-					data.box:Destroy();
-				end;
+					data.box:Destroy()
+				end
 				if data.billboard then
-					data.billboard:Destroy();
-				end;
-				espItems[inst] = nil;
+					data.billboard:Destroy()
+				end
+				espItems[inst] = nil
 			elseif root then
-				local d = (root.Position - data.base.Position).Magnitude;
-				data.label.Text = string.format("%s | %.1f", data.text, d);
-			end;
-		end;
+				local d = (root.Position - data.base.Position).Magnitude
+				data.label.Text = string.format("%s | %.1f", data.text, d)
+			end
+		end
 		if not next(espItems) then
-			espConn:Disconnect();
-			espConn = nil;
-		end;
-	end);
-end;
+			espConn:Disconnect()
+			espConn = nil
+		end
+	end)
+end
 local function CreateESP(target, color, label)
-	local base = ED_tbl.getBasePart(target);
+	local base = ED_tbl.getBasePart(target)
 	if not base then
-		return;
-	end;
-	local existing = espItems[target];
+		return
+	end
+	local existing = espItems[target]
 	if existing then
-		existing.text = label or target.Name;
-		existing.base = base;
+		existing.text = label or target.Name
+		existing.base = base
 		if color then
-			existing.box.Color3 = color;
-			existing.label.TextColor3 = color;
-		end;
-		return existing.box;
-	end;
-	local bc = color or Color3.new(1, 0, 0);
-	local box = Instance.new("BoxHandleAdornment");
-	box.Name = target.Name:lower() .. "_ESP";
-	box.Adornee = base;
-	box.Parent = target;
-	box.AlwaysOnTop = true;
-	box.ZIndex = 0;
-	box.Transparency = 0.45;
-	box.Color3 = bc;
+			existing.box.Color3 = color
+			existing.label.TextColor3 = color
+		end
+		return existing.box
+	end
+	local bc = color or Color3.new(1, 0, 0)
+	local box = Instance.new("BoxHandleAdornment")
+	box.Name = target.Name:lower() .. "_ESP"
+	box.Adornee = base
+	box.Parent = target
+	box.AlwaysOnTop = true
+	box.ZIndex = 0
+	box.Transparency = 0.45
+	box.Color3 = bc
 	if target:IsA("Model") then
-		local _, sz = target:GetBoundingBox();
-		box.Size = sz + Vector3.new(0.1, 0.1, 0.1);
+		local _, sz = target:GetBoundingBox()
+		box.Size = sz + Vector3.new(0.1, 0.1, 0.1)
 	else
-		box.Size = base.Size + Vector3.new(0.1, 0.1, 0.1);
-	end;
-	local bb = Instance.new("BillboardGui");
-	bb.Name = target.Name:lower() .. "_LABEL";
-	bb.Parent = target;
-	bb.Adornee = base;
-	bb.Size = UDim2.new(0, 100, 0, 30);
-	bb.StudsOffset = Vector3.new(0, box.Size.Y / 2 + 0.2, 0);
-	bb.AlwaysOnTop = true;
-	bb.ZIndexBehavior = Enum.ZIndexBehavior.Sibling;
-	local tl = Instance.new("TextLabel");
-	tl.Parent = bb;
-	tl.Size = UDim2.new(1, 0, 1, 0);
-	tl.BackgroundTransparency = 1;
-	tl.Font = Enum.Font.SourceSansBold;
-	tl.Text = label or target.Name;
-	tl.TextSize = 14;
-	tl.TextColor3 = bc;
-	tl.TextStrokeTransparency = 0.5;
+		box.Size = base.Size + Vector3.new(0.1, 0.1, 0.1)
+	end
+	local bb = Instance.new("BillboardGui")
+	bb.Name = target.Name:lower() .. "_LABEL"
+	bb.Parent = target
+	bb.Adornee = base
+	bb.Size = UDim2.new(0, 100, 0, 30)
+	bb.StudsOffset = Vector3.new(0, box.Size.Y / 2 + 0.2, 0)
+	bb.AlwaysOnTop = true
+	bb.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+	local tl = Instance.new("TextLabel")
+	tl.Parent = bb
+	tl.Size = UDim2.new(1, 0, 1, 0)
+	tl.BackgroundTransparency = 1
+	tl.Font = Enum.Font.SourceSansBold
+	tl.Text = label or target.Name
+	tl.TextSize = 14
+	tl.TextColor3 = bc
+	tl.TextStrokeTransparency = 0.5
 	espItems[target] = {
 		base = base,
 		box = box,
 		billboard = bb,
 		label = tl,
-		text = label or target.Name
-	};
-	ensureEspLoop();
-	return box;
-end;
+		text = label or target.Name,
+	}
+	ensureEspLoop()
+	return box
+end
 local function RemoveESP(p)
 	if espItems[p] then
-		local data = espItems[p];
+		local data = espItems[p]
 		if data.box then
-			data.box:Destroy();
-		end;
+			data.box:Destroy()
+		end
 		if data.billboard then
-			data.billboard:Destroy();
-		end;
-		espItems[p] = nil;
-	end;
+			data.billboard:Destroy()
+		end
+		espItems[p] = nil
+	end
 	pcall(function()
 		for _, c in ipairs(p:GetChildren()) do
 			if espItems[c] then
-				local data = espItems[c];
+				local data = espItems[c]
 				if data.box then
-					data.box:Destroy();
-				end;
+					data.box:Destroy()
+				end
 				if data.billboard then
-					data.billboard:Destroy();
-				end;
-				espItems[c] = nil;
-			end;
+					data.billboard:Destroy()
+				end
+				espItems[c] = nil
+			end
 			if c:IsA("BoxHandleAdornment") or c:IsA("BillboardGui") or c:IsA("Highlight") then
-				c:Destroy();
-			end;
-		end;
-	end);
-end;
+				c:Destroy()
+			end
+		end
+	end)
+end
 local function handleEntitySpawn(ent, opts)
 	if not ent then
-		return;
-	end;
-	local notify = opts and opts.notify ~= false;
-	local root = ED_tbl.findEntityRoot(ent) or ent;
+		return
+	end
+	local notify = opts and opts.notify ~= false
+	local root = ED_tbl.findEntityRoot(ent) or ent
 	if notifiedEntities[root] then
-		return;
-	end;
-	notifiedEntities[root] = true;
-	local wantESP = (getgenv()).entityEsp;
-	local wantNotif = notify and (getgenv()).entityNotif;
+		return
+	end
+	notifiedEntities[root] = true
+	local wantESP = (getgenv()).entityEsp
+	local wantNotif = notify and (getgenv()).entityNotif
 	if not (wantESP or wantNotif) then
-		return;
-	end;
+		return
+	end
 	task.defer(function()
 		if wantESP then
-			CreateESP(root);
-		end;
+			CreateESP(root)
+		end
 		if wantNotif then
 			ObsidianUI:Notify({
 				Title = "Entity",
 				Content = root.Name .. " Has Spawned",
 				Duration = 3,
-				Image = decalID
-			});
-		end;
-	end);
-end;
+				Image = decalID,
+			})
+		end
+	end)
+end
 ED_tbl.trackConnection(PPromptService.PromptButtonHoldBegan:Connect(function(p)
 	task.defer(function()
-		fireproximityprompt(p);
-	end);
-end));
+		fireproximityprompt(p)
+	end)
+end))
 local junk = {
 	fdmg = true,
 	brokenlamp = true,
@@ -858,399 +882,399 @@ local junk = {
 	crate = true,
 	chair = true,
 	sofa = true,
-	fire = true
-};
+	fire = true,
+}
 task.spawn(function()
 	repeat
-		task.wait();
-	until LocalPlayer.Character;
-	task.wait(2);
+		task.wait()
+	until LocalPlayer.Character
+	task.wait(2)
 	for _, d in ipairs(game:QueryDescendants("Instance")) do
 		if junk[d.Name:lower()] then
 			task.defer(function()
 				if d and d.Parent then
-					d:Destroy();
-				end;
-			end);
-		end;
-	end;
-end);
+					d:Destroy()
+				end
+			end)
+		end
+	end
+end)
 task.spawn(function()
 	if game.PlaceId == pREN then
 		while task.wait() do
-			ED_tbl.disableRagdoll();
-		end;
-	end;
-end);
+			ED_tbl.disableRagdoll()
+		end
+	end
+end)
 ED_tbl.trackConnection(workspace.DescendantAdded:Connect(function(o)
 	if junk[o.Name:lower()] then
 		task.defer(function()
 			if o and o.Parent then
-				o:Destroy();
-			end;
-		end);
-	end;
-end));
+				o:Destroy()
+			end
+		end)
+	end
+end))
 task.spawn(function()
 	local function setAutoJump(h)
 		if h then
-			h.AutoJumpEnabled = false;
-		end;
-	end;
-	setAutoJump(LocalPlayer.Character and LocalPlayer.Character:FindFirstChildWhichIsA("Humanoid"));
+			h.AutoJumpEnabled = false
+		end
+	end
+	setAutoJump(LocalPlayer.Character and LocalPlayer.Character:FindFirstChildWhichIsA("Humanoid"))
 	ED_tbl.trackConnection(LocalPlayer.CharacterAdded:Connect(function(ch)
-		setAutoJump(ch:WaitForChild("Humanoid", 5));
-	end));
-end);
+		setAutoJump(ch:WaitForChild("Humanoid", 5))
+	end))
+end)
 local function resolveHolder(inst)
 	if not inst then
-		return nil;
-	end;
-	local p = inst.Parent;
+		return nil
+	end
+	local p = inst.Parent
 	if p and (p:IsA("Model") or p:IsA("BasePart")) then
-		return p;
-	end;
+		return p
+	end
 	if p and p:IsA("Attachment") and p.Parent then
-		local gp = p.Parent;
+		local gp = p.Parent
 		if gp:IsA("Model") or gp:IsA("BasePart") then
-			return gp;
-		end;
-	end;
-	local mdl = inst:FindFirstAncestorOfClass("Model");
+			return gp
+		end
+	end
+	local mdl = inst:FindFirstAncestorOfClass("Model")
 	if mdl then
-		return mdl;
-	end;
-	local bp = inst:FindFirstAncestorOfClass("BasePart");
+		return mdl
+	end
+	local bp = inst:FindFirstAncestorOfClass("BasePart")
 	if bp then
-		return bp;
-	end;
-	return p;
-end;
+		return bp
+	end
+	return p
+end
 local function resolveDistancePart(inst)
-	local h = resolveHolder(inst);
+	local h = resolveHolder(inst)
 	if not h then
-		return nil;
-	end;
+		return nil
+	end
 	if h:IsA("Attachment") and h.Parent and h.Parent:IsA("BasePart") then
-		return h.Parent;
-	end;
+		return h.Parent
+	end
 	if h:IsA("BasePart") then
-		return h;
-	end;
+		return h
+	end
 	if h:IsA("Model") then
 		if h.PrimaryPart then
-			return h.PrimaryPart;
-		end;
-		return h:FindFirstChildWhichIsA("BasePart", true);
-	end;
-	local bp = inst:FindFirstAncestorOfClass("BasePart");
+			return h.PrimaryPart
+		end
+		return h:FindFirstChildWhichIsA("BasePart", true)
+	end
+	local bp = inst:FindFirstAncestorOfClass("BasePart")
 	if bp then
-		return bp;
-	end;
-	return nil;
-end;
+		return bp
+	end
+	return nil
+end
 local function holderName(inst)
-	local h = resolveHolder(inst);
-	return h and h.Name or "unknown";
-end;
+	local h = resolveHolder(inst)
+	return h and h.Name or "unknown"
+end
 local function isVoidDoorPrompt(pp)
 	if not (pp and pp.Parent) then
-		return false;
-	end;
-	local inst = pp;
+		return false
+	end
+	local inst = pp
 	while inst and inst ~= Rooms do
 		if inst:IsA("Model") and (inst.Name:lower()):find("door") then
-			return ED_tbl.hasVoidWindOnDoor(inst);
-		end;
-		inst = inst.Parent;
-	end;
-	return false;
-end;
-local proximityPrompts = {};
+			return ED_tbl.hasVoidWindOnDoor(inst)
+		end
+		inst = inst.Parent
+	end
+	return false
+end
+local proximityPrompts = {}
 local function onPPAdded(o)
-	proximityPrompts[(#proximityPrompts) + 1] = o;
-end;
+	proximityPrompts[#proximityPrompts + 1] = o
+end
 local function onPPRemoved(o)
 	for i, v in ipairs(proximityPrompts) do
 		if v == o then
-			table.remove(proximityPrompts, i);
-			break;
-		end;
-	end;
-end;
+			table.remove(proximityPrompts, i)
+			break
+		end
+	end
+end
 for _, o in ipairs(workspace:QueryDescendants("Instance")) do
 	if o:IsA("ProximityPrompt") then
-		onPPAdded(o);
-	end;
-end;
+		onPPAdded(o)
+	end
+end
 ED_tbl.trackConnection(workspace.DescendantAdded:Connect(function(o)
 	if o:IsA("ProximityPrompt") then
-		onPPAdded(o);
-	end;
-end));
+		onPPAdded(o)
+	end
+end))
 ED_tbl.trackConnection(workspace.DescendantRemoving:Connect(function(o)
 	if o:IsA("ProximityPrompt") then
-		onPPRemoved(o);
-	end;
-end));
-local lastHandle = 0;
-local selectedPromptNames = {};
-local selectedPromptDisplay = {};
-local dropdownObj;
-local modeLabel;
-local suppressDropdownCallback = false;
+		onPPRemoved(o)
+	end
+end))
+local lastHandle = 0
+local selectedPromptNames = {}
+local selectedPromptDisplay = {}
+local dropdownObj
+local modeLabel
+local suppressDropdownCallback = false
 local function addSelectionName(name)
 	if typeof(name) ~= "string" then
-		return;
-	end;
-	local trimmed = (name:gsub("^%s+", "")):gsub("%s+$", "");
+		return
+	end
+	local trimmed = (name:gsub("^%s+", "")):gsub("%s+$", "")
 	if trimmed == "" or trimmed == "None" then
-		return;
-	end;
-	local key = trimmed:lower();
-	selectedPromptNames[key] = true;
-	selectedPromptDisplay[key] = trimmed;
-end;
+		return
+	end
+	local key = trimmed:lower()
+	selectedPromptNames[key] = true
+	selectedPromptDisplay[key] = trimmed
+end
 local function WaitClass(inst, class, time)
-	local start = tick();
+	local start = tick()
 	while inst and inst.Parent do
-		local c = inst:FindFirstChildOfClass(class, true);
+		local c = inst:FindFirstChildOfClass(class, true)
 		if c then
-			return c;
-		end;
+			return c
+		end
 		if time and tick() - start >= time then
-			return nil;
-		end;
-		task.wait();
-	end;
-	return nil;
-end;
+			return nil
+		end
+		task.wait()
+	end
+	return nil
+end
 local function WaitInst(inst, name, time)
-	local start = tick();
+	local start = tick()
 	while inst and inst.Parent do
-		local c = inst:FindFirstChild(name, true);
+		local c = inst:FindFirstChild(name, true)
 		if c then
-			return c;
-		end;
+			return c
+		end
 		if time and tick() - start >= time then
-			return nil;
-		end;
-		task.wait();
-	end;
-	return nil;
-end;
+			return nil
+		end
+		task.wait()
+	end
+	return nil
+end
 local function clearSelection()
 	for k in pairs(selectedPromptNames) do
-		selectedPromptNames[k] = nil;
-	end;
+		selectedPromptNames[k] = nil
+	end
 	for k in pairs(selectedPromptDisplay) do
-		selectedPromptDisplay[k] = nil;
-	end;
-end;
+		selectedPromptDisplay[k] = nil
+	end
+end
 local function selectionEmpty()
-	return next(selectedPromptNames) == nil;
-end;
+	return next(selectedPromptNames) == nil
+end
 local function currentSelectionList()
-	local list = {};
+	local list = {}
 	for _, display in pairs(selectedPromptDisplay) do
-		list[(#list) + 1] = display;
-	end;
-	table.sort(list);
-	return list;
-end;
+		list[#list + 1] = display
+	end
+	table.sort(list)
+	return list
+end
 local function selectionDictionary()
-	local dict = {};
+	local dict = {}
 	for _, display in pairs(selectedPromptDisplay) do
-		dict[display] = true;
-	end;
-	return dict;
-end;
+		dict[display] = true
+	end
+	return dict
+end
 local function updateModeLabelText()
 	if not modeLabel then
-		return;
-	end;
+		return
+	end
 	if selectionEmpty() then
-		modeLabel:Set("Mode: Default (all prompts)");
+		modeLabel:Set("Mode: Default (all prompts)")
 	else
-		local names = currentSelectionList();
-		modeLabel:Set("Mode: Selected holders only (" .. table.concat(names, ", ") .. ")");
-	end;
-end;
+		local names = currentSelectionList()
+		modeLabel:Set("Mode: Selected holders only (" .. table.concat(names, ", ") .. ")")
+	end
+end
 local function isInteracting(inst)
 	if inst:IsA("Model") or inst:IsA("BasePart") then
-		return WaitClass(inst, "ProximityPrompt", 5) ~= nil;
-	end;
-end;
+		return WaitClass(inst, "ProximityPrompt", 5) ~= nil
+	end
+end
 local function applySelectionFromValue(value)
-	clearSelection();
+	clearSelection()
 	if typeof(value) == "table" then
 		if value[1] ~= nil then
 			for _, entry in ipairs(value) do
-				addSelectionName(entry);
-			end;
+				addSelectionName(entry)
+			end
 		else
 			for entry, state in pairs(value) do
 				if state then
-					addSelectionName(entry);
-				end;
-			end;
-		end;
+					addSelectionName(entry)
+				end
+			end
+		end
 	elseif typeof(value) == "string" then
-		addSelectionName(value);
-	end;
-	updateModeLabelText();
-end;
+		addSelectionName(value)
+	end
+	updateModeLabelText()
+end
 local function promptAllowed(pp)
 	if not (pp and pp.Parent) then
-		return false;
-	end;
+		return false
+	end
 	if selectionEmpty() then
-		return pp:IsA("ProximityPrompt") and pp.Name == "ProximityPrompt";
+		return pp:IsA("ProximityPrompt") and pp.Name == "ProximityPrompt"
 	else
 		if not pp:IsA("ProximityPrompt") then
-			return false;
-		end;
-		local n = holderName(pp);
+			return false
+		end
+		local n = holderName(pp)
 		if not n then
-			return false;
-		end;
+			return false
+		end
 		if n:lower() == "victrola" then
-			return true;
-		end;
-		return selectedPromptNames[n:lower()] or false;
-	end;
-end;
+			return true
+		end
+		return selectedPromptNames[n:lower()] or false
+	end
+end
 local function firePrompts()
-	local root = ED_tbl.rootOf(LocalPlayer.Character);
+	local root = ED_tbl.rootOf(LocalPlayer.Character)
 	if not (root and root.Parent) then
-		return;
-	end;
-	local bitsStat = lStatss and lStatss:FindFirstChild("Bits");
+		return
+	end
+	local bitsStat = lStatss and lStatss:FindFirstChild("Bits")
 	for i = #proximityPrompts, 1, -1 do
-		local pp = proximityPrompts[i];
+		local pp = proximityPrompts[i]
 		if not (pp and pp.Parent) then
-			table.remove(proximityPrompts, i);
+			table.remove(proximityPrompts, i)
 		elseif promptAllowed(pp) then
-			local hold = resolveHolder(pp);
-			local bp = resolveDistancePart(pp);
+			local hold = resolveHolder(pp)
+			local bp = resolveDistancePart(pp)
 			if bp then
-				local d = (root.Position - bp.Position).Magnitude;
-				local rad = pp.MaxActivationDistance or 12;
-				local extra = tonumber((getgenv()).promptRange) or 0;
+				local d = (root.Position - bp.Position).Magnitude
+				local rad = pp.MaxActivationDistance or 12
+				local extra = tonumber((getgenv()).promptRange) or 0
 				if d <= rad + extra then
-					local nm = hold and hold.Name:lower() or "";
-					local skip = false;
+					local nm = hold and hold.Name:lower() or ""
+					local skip = false
 					if isVoidDoorPrompt(pp) then
-						skip = true;
-					end;
-					if hold and (not skip) then
+						skip = true
+					end
+					if hold and not skip then
 						for _, c in ipairs(hold:GetChildren()) do
 							if c:IsA("BoolValue") and (c.Name:lower()):find("greed") and c.Value then
-								skip = true;
-								break;
-							end;
-						end;
-					end;
-					if not skip and (not (nm == "handle" and greedActive)) then
+								skip = true
+								break
+							end
+						end
+					end
+					if not skip and not (nm == "handle" and greedActive) then
 						if game.PlaceId == pEPIC or game.PlaceId == pEMARC then
-							local b = bitsStat and bitsStat.Value or 0;
+							local b = bitsStat and bitsStat.Value or 0
 							if b >= 2500 and nm ~= "bit" or b < 2500 then
-								fireproximityprompt(pp);
-							end;
+								fireproximityprompt(pp)
+							end
 						elseif game.PlaceId == pCLASS then
 							if nm == "handle" then
-								local now = tick();
+								local now = tick()
 								if now - lastHandle >= 0.4 then
-									fireproximityprompt(pp);
-									lastHandle = now;
-								end;
+									fireproximityprompt(pp)
+									lastHandle = now
+								end
 							else
-								fireproximityprompt(pp);
-							end;
+								fireproximityprompt(pp)
+							end
 						else
-							fireproximityprompt(pp);
-						end;
-					end;
-				end;
-			end;
-		end;
-	end;
-end;
-local ObsidianRepo = "https://raw.githubusercontent.com/deividcomsono/Obsidian/main/";
-local ObsidianLibrary = (loadstring(game:HttpGet(ObsidianRepo .. "Library.lua")))();
-local ObsidianSaveManager = (loadstring(game:HttpGet(ObsidianRepo .. "addons/SaveManager.lua")))();
-local ObsidianThemeManager = (loadstring(game:HttpGet(ObsidianRepo .. "addons/ThemeManager.lua")))();
+							fireproximityprompt(pp)
+						end
+					end
+				end
+			end
+		end
+	end
+end
+local ObsidianRepo = "https://raw.githubusercontent.com/deividcomsono/Obsidian/main/"
+local ObsidianLibrary = (loadstring(game:HttpGet(ObsidianRepo .. "Library.lua")))()
+local ObsidianSaveManager = (loadstring(game:HttpGet(ObsidianRepo .. "addons/SaveManager.lua")))()
+local ObsidianThemeManager = (loadstring(game:HttpGet(ObsidianRepo .. "addons/ThemeManager.lua")))()
 local function sanitizeIdSegment(text)
-	local str = typeof(text) == "string" and text or tostring((text or ""));
-	str = str:gsub("%W", "");
+	local str = typeof(text) == "string" and text or tostring((text or ""))
+	str = str:gsub("%W", "")
 	if str == "" then
-		str = "ctrl";
-	end;
-	return str;
-end;
+		str = "ctrl"
+	end
+	return str
+end
 local function copyArray(list)
-	local new = {};
+	local new = {}
 	if typeof(list) == "table" then
 		for i, v in ipairs(list) do
-			new[i] = v;
-		end;
-	end;
-	return new;
-end;
+			new[i] = v
+		end
+	end
+	return new
+end
 local function snapshotSelection(dict)
-	local values = {};
+	local values = {}
 	if typeof(dict) == "table" then
 		for key, enabled in pairs(dict) do
 			if enabled then
-				values[(#values) + 1] = key;
-			end;
-		end;
-	end;
+				values[#values + 1] = key
+			end
+		end
+	end
 	table.sort(values, function(a, b)
-		return tostring(a) < tostring(b);
-	end);
-	return values;
-end;
+		return tostring(a) < tostring(b)
+	end)
+	return values
+end
 local function toDictionary(list)
-	local dict = {};
+	local dict = {}
 	if typeof(list) == "table" then
 		for _, value in ipairs(list) do
 			if typeof(value) == "string" then
-				dict[value] = true;
-			end;
-		end;
-	end;
-	return dict;
-end;
+				dict[value] = true
+			end
+		end
+	end
+	return dict
+end
 local function inferRounding(step)
 	if typeof(step) ~= "number" or step <= 0 then
-		return 0;
-	end;
-	local decimals = (tostring(step)):match("%.(%d+)");
-	return decimals and (#decimals) or 0;
-end;
+		return 0
+	end
+	local decimals = (tostring(step)):match("%.(%d+)")
+	return decimals and #decimals or 0
+end
 local function normalizeSoundId(value)
 	if value == nil then
-		return nil;
-	end;
-	local valueType = typeof(value);
+		return nil
+	end
+	local valueType = typeof(value)
 	if valueType == "number" then
 		if value <= 0 then
-			return nil;
-		end;
-		return string.format("rbxassetid://%d", value);
+			return nil
+		end
+		return string.format("rbxassetid://%d", value)
 	elseif valueType == "string" then
-		local trimmed = value:match("^%s*(.-)%s*$");
+		local trimmed = value:match("^%s*(.-)%s*$")
 		if trimmed == "" then
-			return nil;
-		end;
+			return nil
+		end
 		if trimmed:match("^%d+$") then
-			return "rbxassetid://" .. trimmed;
-		end;
-		return trimmed;
-	end;
-	return nil;
-end;
+			return "rbxassetid://" .. trimmed
+		end
+		return trimmed
+	end
+	return nil
+end
 ObsidianUI = {
 	Library = ObsidianLibrary,
 	SaveManager = ObsidianSaveManager,
@@ -1260,42 +1284,42 @@ ObsidianUI = {
 	_isLoadingConfig = false,
 	NotifySoundId = "rbxassetid://8551372796",
 	NotifySoundVolume = 2,
-	NotifySoundEnabled = true
-};
+	NotifySoundEnabled = true,
+}
 local function disconnectConn(conn)
 	if conn then
 		pcall(function()
-			conn:Disconnect();
-		end);
-	end;
-end;
+			conn:Disconnect()
+		end)
+	end
+end
 ED_runtime.cleanup = function()
 	if not ED_runtime.alive then
-		return;
-	end;
-	ED_runtime.alive = false;
-	scriptRunning = false;
+		return
+	end
+	ED_runtime.alive = false
+	scriptRunning = false
 	if ObsidianUI and type(ObsidianUI.Cleanup) == "function" then
 		pcall(function()
-			ObsidianUI:Cleanup();
-		end);
-		return;
-	end;
+			ObsidianUI:Cleanup()
+		end)
+		return
+	end
 	for _, conn in ipairs(activeConnections) do
-		disconnectConn(conn);
-	end;
-	activeConnections = {};
-	ED_runtime.connections = activeConnections;
-end;
+		disconnectConn(conn)
+	end
+	activeConnections = {}
+	ED_runtime.connections = activeConnections
+end
 function ObsidianUI:Cleanup()
 	if self._cleaned then
-		return;
-	end;
-	self._cleaned = true;
-	scriptRunning = false;
+		return
+	end
+	self._cleaned = true
+	scriptRunning = false
 	if ED_runtime_env.__EDMB_Runtime == ED_runtime then
-		ED_runtime_env.__EDMB_Runtime = nil;
-	end;
+		ED_runtime_env.__EDMB_Runtime = nil
+	end
 	local tracked = {
 		brightLoop,
 		antiAFKConn,
@@ -1312,259 +1336,259 @@ function ObsidianUI:Cleanup()
 		abyssCon,
 		takerCon,
 		chaseCon,
-		vacCon
-	};
+		vacCon,
+	}
 	for _, conn in ipairs(tracked) do
-		disconnectConn(conn);
-	end;
-	brightLoop = nil;
-	antiAFKConn = nil;
-	fovLockConn = nil;
-	cameraConn = nil;
-	infJumpConn = nil;
-	mobHoldConn = nil;
-	mobDownConn = nil;
-	mobUpConn = nil;
-	overCon = nil;
-	lurkCon = nil;
-	watchCon = nil;
-	flowCon = nil;
-	abyssCon = nil;
-	takerCon = nil;
-	chaseCon = nil;
-	vacCon = nil;
+		disconnectConn(conn)
+	end
+	brightLoop = nil
+	antiAFKConn = nil
+	fovLockConn = nil
+	cameraConn = nil
+	infJumpConn = nil
+	mobHoldConn = nil
+	mobDownConn = nil
+	mobUpConn = nil
+	overCon = nil
+	lurkCon = nil
+	watchCon = nil
+	flowCon = nil
+	abyssCon = nil
+	takerCon = nil
+	chaseCon = nil
+	vacCon = nil
 	for _, conn in ipairs(activeConnections) do
-		disconnectConn(conn);
-	end;
-	activeConnections = {};
-	ED_runtime.connections = activeConnections;
-	notifiedEntities = {};
-	(getgenv()).chaos = false;
-	(getgenv()).entityEsp = false;
-	(getgenv()).keyESP = false;
-	(getgenv()).bitESP = false;
-	(getgenv()).leverESP = false;
-	(getgenv()).batteryESP = false;
-	(getgenv()).remoteThingy = false;
-	(getgenv()).entityNotif = false;
-	(getgenv()).sped = false;
-	(getgenv()).jumpy = false;
-	(getgenv()).teletodoor = false;
-	(getgenv()).teletokey = false;
-	(getgenv()).teletolever = false;
-	RoomTracker.clear();
+		disconnectConn(conn)
+	end
+	activeConnections = {}
+	ED_runtime.connections = activeConnections
+	notifiedEntities = {}
+	(getgenv()).chaos = false
+	(getgenv()).entityEsp = false
+	(getgenv()).keyESP = false
+	(getgenv()).bitESP = false
+	(getgenv()).leverESP = false
+	(getgenv()).batteryESP = false
+	(getgenv()).remoteThingy = false
+	(getgenv()).entityNotif = false
+	(getgenv()).sped = false
+	(getgenv()).jumpy = false
+	(getgenv()).teletodoor = false
+	(getgenv()).teletokey = false
+	(getgenv()).teletolever = false
+	RoomTracker.clear()
 	pcall(function()
 		for _, obj in ipairs(Entities:QueryDescendants("Instance")) do
-			RemoveESP(obj);
-		end;
+			RemoveESP(obj)
+		end
 		for _, obj in ipairs(Rooms:QueryDescendants("Instance")) do
-			RemoveESP(obj);
-		end;
-	end);
-end;
-local WindowMeta = {};
-WindowMeta.__index = WindowMeta;
-local TabMeta = {};
-TabMeta.__index = TabMeta;
-local LabelMeta = {};
-LabelMeta.__index = LabelMeta;
-local DropdownMeta = {};
-DropdownMeta.__index = DropdownMeta;
+			RemoveESP(obj)
+		end
+	end)
+end
+local WindowMeta = {}
+WindowMeta.__index = WindowMeta
+local TabMeta = {}
+TabMeta.__index = TabMeta
+local LabelMeta = {}
+LabelMeta.__index = LabelMeta
+local DropdownMeta = {}
+DropdownMeta.__index = DropdownMeta
 function ObsidianUI:_setupConfig(config)
 	if self.SaveManager and config and config.Enabled then
-		self.SaveManager:SetLibrary(self.Library);
-		self.SaveManager:IgnoreThemeSettings();
-		self.SaveManager:SetFolder(config.FolderName or "ObsidianConfigs");
-		self.SaveManager:SetSubFolder(config.SubFolder or "");
-		self._configEnabled = true;
-		self._configName = config.FileName or "default";
+		self.SaveManager:SetLibrary(self.Library)
+		self.SaveManager:IgnoreThemeSettings()
+		self.SaveManager:SetFolder(config.FolderName or "ObsidianConfigs")
+		self.SaveManager:SetSubFolder(config.SubFolder or "")
+		self._configEnabled = true
+		self._configName = config.FileName or "default"
 	else
-		self._configEnabled = false;
-		self._configName = nil;
-	end;
+		self._configEnabled = false
+		self._configName = nil
+	end
 	if self.ThemeManager then
-		self.ThemeManager:SetLibrary(self.Library);
-		self.ThemeManager:SetFolder(config and config.FolderName or "ObsidianConfigs");
-	end;
-end;
+		self.ThemeManager:SetLibrary(self.Library)
+		self.ThemeManager:SetFolder(config and config.FolderName or "ObsidianConfigs")
+	end
+end
 function ObsidianUI:_autoSave()
 	if not (self._configEnabled and self._configName and self.SaveManager) or self._isLoadingConfig then
-		return;
-	end;
-	local ok, err = self.SaveManager:Save(self._configName);
+		return
+	end
+	local ok, err = self.SaveManager:Save(self._configName)
 	if not ok and err then
-		warn("[ObsidianCompat] Failed to save config:", err);
-	end;
-end;
+		warn("[ObsidianCompat] Failed to save config:", err)
+	end
+end
 function ObsidianUI:LoadConfiguration()
 	if not (self._configEnabled and self._configName and self.SaveManager) then
-		return;
-	end;
-	self._isLoadingConfig = true;
-	local ok = self.SaveManager:Load(self._configName);
-	self._isLoadingConfig = false;
+		return
+	end
+	self._isLoadingConfig = true
+	local ok = self.SaveManager:Load(self._configName)
+	self._isLoadingConfig = false
 	if not ok then
-		self.SaveManager:Save(self._configName);
-	end;
-end;
+		self.SaveManager:Save(self._configName)
+	end
+end
 function ObsidianUI:_playNotifySound(soundId, volume)
 	if self.NotifySoundEnabled == false then
-		return;
-	end;
-	local normalized = normalizeSoundId(soundId);
+		return
+	end
+	local normalized = normalizeSoundId(soundId)
 	if not normalized then
-		return;
-	end;
-	local vol = math.clamp(tonumber(volume) or self.NotifySoundVolume or 1, 0, 10);
-	local soundInstance = Instance.new("Sound");
-	soundInstance.SoundId = normalized;
-	soundInstance.Volume = vol;
-	soundInstance.PlayOnRemove = true;
-	soundInstance.Parent = SoundService;
-	soundInstance:Destroy();
-end;
+		return
+	end
+	local vol = math.clamp(tonumber(volume) or self.NotifySoundVolume or 1, 0, 10)
+	local soundInstance = Instance.new("Sound")
+	soundInstance.SoundId = normalized
+	soundInstance.Volume = vol
+	soundInstance.PlayOnRemove = true
+	soundInstance.Parent = SoundService
+	soundInstance:Destroy()
+end
 function ObsidianUI:Notify(payload, duration)
-	local message = payload;
-	local soundId = self.NotifySoundId;
-	local soundVolume = self.NotifySoundVolume;
+	local message = payload
+	local soundId = self.NotifySoundId
+	local soundVolume = self.NotifySoundVolume
 	if typeof(payload) == "table" then
-		local data = {};
+		local data = {}
 		for k, v in pairs(payload) do
 			if k ~= "SoundId" and k ~= "SoundVolume" and k ~= "Header" and k ~= "Content" and k ~= "Duration" then
-				data[k] = v;
-			end;
-		end;
-		data.Title = payload.Title or payload.Header or data.Title or "Notification";
-		data.Description = payload.Description or payload.Content or data.Description or "";
-		data.Time = payload.Time or payload.Duration or data.Time;
-		message = data;
-		soundId = payload.SoundId or soundId;
-		soundVolume = payload.SoundVolume or soundVolume;
-	end;
-	local result = self.Library:Notify(message, duration);
+				data[k] = v
+			end
+		end
+		data.Title = payload.Title or payload.Header or data.Title or "Notification"
+		data.Description = payload.Description or payload.Content or data.Description or ""
+		data.Time = payload.Time or payload.Duration or data.Time
+		message = data
+		soundId = payload.SoundId or soundId
+		soundVolume = payload.SoundVolume or soundVolume
+	end
+	local result = self.Library:Notify(message, duration)
 	if soundId then
-		self:_playNotifySound(soundId, soundVolume);
-	end;
-	return result;
-end;
+		self:_playNotifySound(soundId, soundVolume)
+	end
+	return result
+end
 function ObsidianUI:CreateWindow(options)
-	options = options or {};
+	options = options or {}
 	local window = self.Library:CreateWindow({
 		Title = options.Name or options.LoadingTitle or "Obsidian",
 		Footer = options.Footer or options.LoadingSubtitle or "",
 		NotifySide = options.NotifySide or "Left",
-		ShowCustomCursor = true
-	});
-	self:_setupConfig(options.ConfigurationSaving);
+		ShowCustomCursor = true,
+	})
+	self:_setupConfig(options.ConfigurationSaving)
 	local wrapper = setmetatable({
 		_window = window,
 		_ObsidianUI = self,
-		_idCounters = {}
-	}, WindowMeta);
-	return wrapper;
-end;
+		_idCounters = {},
+	}, WindowMeta)
+	return wrapper
+end
 function WindowMeta:_nextId(prefix, tabName)
-	tabName = sanitizeIdSegment(tabName or "tab");
-	self._idCounters[prefix] = (self._idCounters[prefix] or 0) + 1;
-	return string.format("%s_%s_%d", prefix, tabName, self._idCounters[prefix]);
-end;
+	tabName = sanitizeIdSegment(tabName or "tab")
+	self._idCounters[prefix] = (self._idCounters[prefix] or 0) + 1
+	return string.format("%s_%s_%d", prefix, tabName, self._idCounters[prefix])
+end
 function WindowMeta:_autoSave()
 	if self._ObsidianUI then
-		self._ObsidianUI:_autoSave();
-	end;
-end;
+		self._ObsidianUI:_autoSave()
+	end
+end
 function WindowMeta:AddTab(name, icon, description)
-	local tab = self._window:AddTab(name, icon, description);
+	local tab = self._window:AddTab(name, icon, description)
 	local wrapper = setmetatable({
 		_windowWrapper = self,
 		_tab = tab,
 		_group = nil,
-		_tabName = name
-	}, TabMeta);
-	return wrapper;
-end;
+		_tabName = name,
+	}, TabMeta)
+	return wrapper
+end
 function TabMeta:_groupbox()
 	if not self._group then
-		self._group = self._tab:AddLeftGroupbox((self._tabName or "Tab") .. " Controls", "list");
-	end;
-	return self._group;
-end;
+		self._group = self._tab:AddLeftGroupbox((self._tabName or "Tab") .. " Controls", "list")
+	end
+	return self._group
+end
 function TabMeta:_autoSave()
-	self._windowWrapper:_autoSave();
-end;
+	self._windowWrapper:_autoSave()
+end
 function TabMeta:_nextId(kind)
-	return self._windowWrapper:_nextId(kind, self._tabName);
-end;
+	return self._windowWrapper:_nextId(kind, self._tabName)
+end
 function TabMeta:AddGroupbox(title, icon, side)
-	local tab = self._tab;
+	local tab = self._tab
 	if not tab then
-		return self;
-	end;
-	local group;
+		return self
+	end
+	local group
 	if side == "right" then
-		group = tab:AddRightGroupbox(title or (self._tabName or "Tab") .. " Right", icon or "layout-panel-right");
+		group = tab:AddRightGroupbox(title or (self._tabName or "Tab") .. " Right", icon or "layout-panel-right")
 	else
-		group = tab:AddLeftGroupbox(title or (self._tabName or "Tab") .. " Left", icon or "layout-panel-left");
-	end;
+		group = tab:AddLeftGroupbox(title or (self._tabName or "Tab") .. " Left", icon or "layout-panel-left")
+	end
 	return setmetatable({
 		_windowWrapper = self._windowWrapper,
 		_tab = tab,
 		_group = group,
-		_tabName = self._tabName
-	}, TabMeta);
-end;
+		_tabName = self._tabName,
+	}, TabMeta)
+end
 function TabMeta:AddSection(text)
-	local group = self:_groupbox();
-	group:AddDivider();
+	local group = self:_groupbox()
+	group:AddDivider()
 	if text and text ~= "" then
-		group:AddLabel(text, true);
-	end;
-end;
+		group:AddLabel(text, true)
+	end
+end
 function TabMeta:AddLabel(text)
-	local label = (self:_groupbox()):AddLabel(text or "", true);
+	local label = (self:_groupbox()):AddLabel(text or "", true)
 	return setmetatable({
-		_label = label
-	}, LabelMeta);
-end;
+		_label = label,
+	}, LabelMeta)
+end
 function LabelMeta:Set(value)
 	if self._label and self._label.SetText then
-		self._label:SetText(value or "");
-	end;
-end;
+		self._label:SetText(value or "")
+	end
+end
 function TabMeta:AddButton(info)
-	info = info or {};
+	info = info or {}
 	return (self:_groupbox()):AddButton({
 		Text = info.Name or "Button",
 		Func = function()
 			if info.Callback then
-				info.Callback();
-			end;
-		end
-	});
-end;
+				info.Callback()
+			end
+		end,
+	})
+end
 function TabMeta:AddToggle(info)
-	info = info or {};
-	local id = info.Flag or self:_nextId("toggle");
+	info = info or {}
+	local id = info.Flag or self:_nextId("toggle")
 	return (self:_groupbox()):AddToggle(id, {
 		Text = info.Name or id,
 		Default = info.CurrentValue or false,
 		Callback = function(state)
 			if info.Callback then
-				info.Callback(state);
-			end;
-			self:_autoSave();
-		end
-	});
-end;
+				info.Callback(state)
+			end
+			self:_autoSave()
+		end,
+	})
+end
 function TabMeta:AddSlider(info)
-	info = info or {};
-	local id = info.Flag or self:_nextId("slider");
+	info = info or {}
+	local id = info.Flag or self:_nextId("slider")
 	local range = info.Range or {
 		0,
-		100
-	};
-	local min = tonumber(range[1]) or 0;
-	local max = tonumber(range[2]) or min + 100;
+		100,
+	}
+	local min = tonumber(range[1]) or 0
+	local max = tonumber(range[2]) or min + 100
 	return (self:_groupbox()):AddSlider(id, {
 		Text = info.Name or id,
 		Default = info.CurrentValue or min,
@@ -1573,15 +1597,15 @@ function TabMeta:AddSlider(info)
 		Rounding = inferRounding(info.Increment),
 		Callback = function(value)
 			if info.Callback then
-				info.Callback(value);
-			end;
-			self:_autoSave();
-		end
-	});
-end;
+				info.Callback(value)
+			end
+			self:_autoSave()
+		end,
+	})
+end
 function TabMeta:AddInput(info)
-	info = info or {};
-	local id = info.Flag or self:_nextId("input");
+	info = info or {}
+	local id = info.Flag or self:_nextId("input")
 	return (self:_groupbox()):AddInput(id, {
 		Text = info.Name or id,
 		Default = info.CurrentValue or "",
@@ -1589,91 +1613,91 @@ function TabMeta:AddInput(info)
 		ClearTextOnFocus = info.RemoveTextAfterFocusLost or false,
 		Callback = function(value)
 			if info.Callback then
-				info.Callback(value);
-			end;
-			self:_autoSave();
-		end
-	});
-end;
+				info.Callback(value)
+			end
+			self:_autoSave()
+		end,
+	})
+end
 function TabMeta:AddDropdown(info)
-	info = info or {};
-	local id = info.Flag or self:_nextId("dropdown");
-	local values = copyArray(info.Options or {});
-	local multi = info.MultiSelection or info.MultipleOptions or false;
-	local default = info.CurrentOption;
+	info = info or {}
+	local id = info.Flag or self:_nextId("dropdown")
+	local values = copyArray(info.Options or {})
+	local multi = info.MultiSelection or info.MultipleOptions or false
+	local default = info.CurrentOption
 	if multi then
 		if typeof(default) == "table" and next(default) then
-			local arr = {};
+			local arr = {}
 			for _, v in ipairs(default) do
-				arr[(#arr) + 1] = v;
-			end;
-			default = arr;
+				arr[#arr + 1] = v
+			end
+			default = arr
 		elseif typeof(default) == "string" then
 			default = {
-				default
-			};
+				default,
+			}
 		else
-			default = nil;
-		end;
+			default = nil
+		end
 	elseif typeof(default) == "table" then
-		default = default[1];
-	end;
-	local dropdown;
+		default = default[1]
+	end
+	local dropdown
 	local function emitSelection()
-		local current;
+		local current
 		if dropdown then
 			if dropdown.Multi then
-				current = snapshotSelection(dropdown.Value or {});
+				current = snapshotSelection(dropdown.Value or {})
 			else
-				current = dropdown.Value;
-			end;
-		end;
+				current = dropdown.Value
+			end
+		end
 		if info.Callback then
-			info.Callback(current);
-		end;
-		self:_autoSave();
-	end;
+			info.Callback(current)
+		end
+		self:_autoSave()
+	end
 	dropdown = (self:_groupbox()):AddDropdown(id, {
 		Text = info.Name or id,
 		Values = values,
 		Default = default,
 		Multi = multi,
 		Callback = function()
-			task.defer(emitSelection);
-		end
-	});
+			task.defer(emitSelection)
+		end,
+	})
 	return setmetatable({
-		_dropdown = dropdown
-	}, DropdownMeta);
-end;
+		_dropdown = dropdown,
+	}, DropdownMeta)
+end
 function DropdownMeta:Refresh(values, keepCurrent)
 	if not self._dropdown then
-		return;
-	end;
-	local dropdown = self._dropdown;
-	local previous;
+		return
+	end
+	local dropdown = self._dropdown
+	local previous
 	if keepCurrent then
 		if dropdown.Multi then
-			previous = snapshotSelection(dropdown.Value);
+			previous = snapshotSelection(dropdown.Value)
 		else
-			previous = dropdown.Value;
-		end;
-	end;
-	dropdown:SetValues(copyArray(values or {}));
+			previous = dropdown.Value
+		end
+	end
+	dropdown:SetValues(copyArray(values or {}))
 	if keepCurrent and previous then
 		if dropdown.Multi then
-			dropdown:SetValue(toDictionary(previous));
+			dropdown:SetValue(toDictionary(previous))
 		elseif table.find(values or {}, previous) then
-			dropdown:SetValue(previous);
-		end;
-	end;
-end;
+			dropdown:SetValue(previous)
+		end
+	end
+end
 function DropdownMeta:SetValue(value)
 	if not self._dropdown then
-		return;
-	end;
-	self._dropdown:SetValue(value);
-end;
+		return
+	end
+	self._dropdown:SetValue(value)
+end
 local Win = ObsidianUI:CreateWindow({
 	Name = TITLE,
 	LoadingTitle = TITLE,
@@ -1682,429 +1706,429 @@ local Win = ObsidianUI:CreateWindow({
 	ConfigurationSaving = {
 		Enabled = true,
 		FolderName = "Endless Doors",
-		FileName = "RENOVATION"
-	}
-});
+		FileName = "RENOVATION",
+	},
+})
 if ObsidianUI.Library and ObsidianUI.Library.OnUnload then
 	ObsidianUI.Library:OnUnload(function()
-		ObsidianUI:Cleanup();
-	end);
-end;
-local tabMain = Win:AddTab("Main", "layout-dashboard", "Primary actions");
-local coreGroup = tabMain:AddGroupbox("Core Actions", "zap", "left");
-local GM_BACK = 5;
-local GM_FIRE = 15;
-local remHide;
-local gmRoomAddedConn;
-local gmRoomRemovedConn;
-local gmRoomValConn;
-local gmHasHidden = false;
+		ObsidianUI:Cleanup()
+	end)
+end
+local tabMain = Win:AddTab("Main", "layout-dashboard", "Primary actions")
+local coreGroup = tabMain:AddGroupbox("Core Actions", "zap", "left")
+local GM_BACK = 5
+local GM_FIRE = 15
+local remHide
+local gmRoomAddedConn
+local gmRoomRemovedConn
+local gmRoomValConn
+local gmHasHidden = false
 local function gmNote(txt, dur)
 	ObsidianUI:Notify({
 		Title = "God Mode",
 		Content = txt,
 		Duration = dur or 3,
-		Image = decalID
-	});
-end;
+		Image = decalID,
+	})
+end
 local function gmHasBack(v)
 	if v <= 2 then
-		return false;
-	end;
+		return false
+	end
 	for i = math.max(1, v - (GM_BACK + 2)), v - 1 do
 		if not Rooms:FindFirstChild(("Room" .. i)) then
-			return true;
-		end;
-	end;
-	return false;
-end;
+			return true
+		end
+	end
+	return false
+end
 local function gmPrevRoom(v)
 	for i = GM_BACK, 2, -1 do
-		local t = v - i;
+		local t = v - i
 		if t > 0 then
 			if Rooms:FindFirstChild("Room" .. t) then
-				return t;
-			end;
-		end;
-	end;
-end;
+				return t
+			end
+		end
+	end
+end
 local function gmWard(idx)
-	local r = Rooms:FindFirstChild("Room" .. idx);
+	local r = Rooms:FindFirstChild("Room" .. idx)
 	if not r then
-		return nil;
-	end;
-	local models = r:FindFirstChild("Models");
+		return nil
+	end
+	local models = r:FindFirstChild("Models")
 	if models then
-		local w = models:FindFirstChild("Wardrobe");
+		local w = models:FindFirstChild("Wardrobe")
 		if w then
-			return w;
-		end;
-	end;
-	return r:FindFirstChild("Wardrobe", true);
-end;
+			return w
+		end
+	end
+	return r:FindFirstChild("Wardrobe", true)
+end
 local function gmDoor(idx)
-	local r = Rooms:FindFirstChild("Room" .. idx);
+	local r = Rooms:FindFirstChild("Room" .. idx)
 	if not r then
-		return nil;
-	end;
+		return nil
+	end
 	if idx == Values.RoomsNumber.Value then
-		return ED_tbl.getSafeDoorForCurrentRoom();
-	end;
-	local d = r:FindFirstChild("Door") or r:FindFirstChild("Door", true);
+		return ED_tbl.getSafeDoorForCurrentRoom()
+	end
+	local d = r:FindFirstChild("Door") or r:FindFirstChild("Door", true)
 	if d and d:IsA("Model") and ED_tbl.hasVoidWindOnDoor(d) then
-		return nil;
-	end;
-	return d;
-end;
+		return nil
+	end
+	return d
+end
 local function gmOpenDoor(d)
 	if not d then
-		return;
-	end;
+		return
+	end
 	for i = 1, GM_FIRE do
 		if not (d and d.Parent) then
-			break;
-		end;
-		local h = d:FindFirstChild("Handle") or d:FindFirstChildWhichIsA("BasePart", true);
+			break
+		end
+		local h = d:FindFirstChild("Handle") or d:FindFirstChildWhichIsA("BasePart", true)
 		if h then
-			local p = h:FindFirstChildWhichIsA("ProximityPrompt", true);
+			local p = h:FindFirstChildWhichIsA("ProximityPrompt", true)
 			if p then
-				pcall(fireproximityprompt, p);
-			end;
-		end;
-		task.wait(0.05);
-	end;
-end;
+				pcall(fireproximityprompt, p)
+			end
+		end
+		task.wait(0.05)
+	end
+end
 local function gmHideWard(w)
 	if not (w and w.Parent) then
-		return;
-	end;
+		return
+	end
 	if not remHide then
-		local rs = S("ReplicatedStorage");
-		local rems = rs and __lt.cm("ReplicatedStorage", "FindFirstChild", "Remotes");
-		remHide = rems and rems:FindFirstChild("HIDE");
-	end;
+		local rs = S("ReplicatedStorage")
+		local rems = rs and __lt.cm("ReplicatedStorage", "FindFirstChild", "Remotes")
+		remHide = rems and rems:FindFirstChild("HIDE")
+	end
 	if not remHide then
-		return;
-	end;
-	local ch = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait();
-	local hid = ch and ch:FindFirstChild("Hiding");
-	remHide:FireServer(w, false, false);
+		return
+	end
+	local ch = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+	local hid = ch and ch:FindFirstChild("Hiding")
+	remHide:FireServer(w, false, false)
 	if hid then
 		task.spawn(function()
-			local t0 = tick();
+			local t0 = tick()
 			while tick() - t0 < 1 do
 				if hid.Value then
-					gmHasHidden = true;
-					break;
-				end;
-				task.wait(0.05);
-			end;
-		end);
-	end;
-end;
+					gmHasHidden = true
+					break
+				end
+				task.wait(0.05)
+			end
+		end)
+	end
+end
 local function gmDisconnectCloset()
 	if gmRoomAddedConn then
-		gmRoomAddedConn:Disconnect();
-		gmRoomAddedConn = nil;
-	end;
+		gmRoomAddedConn:Disconnect()
+		gmRoomAddedConn = nil
+	end
 	if gmRoomRemovedConn then
-		gmRoomRemovedConn:Disconnect();
-		gmRoomRemovedConn = nil;
-	end;
+		gmRoomRemovedConn:Disconnect()
+		gmRoomRemovedConn = nil
+	end
 	if gmRoomValConn then
-		gmRoomValConn:Disconnect();
-		gmRoomValConn = nil;
-	end;
-	gmHasHidden = false;
-end;
+		gmRoomValConn:Disconnect()
+		gmRoomValConn = nil
+	end
+	gmHasHidden = false
+end
 local function gmWatchCloset(currentIdx, backIdx, ward)
-	gmDisconnectCloset();
+	gmDisconnectCloset()
 	gmRoomRemovedConn = Rooms.ChildRemoved:Connect(function(room)
 		if not (room and room:IsA("Model")) then
-			return;
-		end;
+			return
+		end
 		if room.Name ~= "Room" .. tostring(backIdx) then
-			return;
-		end;
-		gmDisconnectCloset();
+			return
+		end
+		gmDisconnectCloset()
 		task.defer(function()
-			local c = LocalPlayer.Character;
+			local c = LocalPlayer.Character
 			if c then
-				local hid = c:FindFirstChild("Hiding");
+				local hid = c:FindFirstChild("Hiding")
 				if hid and hid.Value then
-					hid.Value = false;
+					hid.Value = false
 					if gmHasHidden then
-						gmNote("Exploit done.", 3);
-					end;
-				end;
-			end;
-		end);
-	end);
+						gmNote("Exploit done.", 3)
+					end
+				end
+			end
+		end)
+	end)
 	if ward and ward.Parent then
 		task.defer(function()
-			gmHideWard(ward);
-		end);
-	end;
-end;
+			gmHideWard(ward)
+		end)
+	end
+end
 local function gmNeedKey(idx)
-	local r = Rooms:FindFirstChild("Room" .. idx);
+	local r = Rooms:FindFirstChild("Room" .. idx)
 	if not r then
-		return false;
-	end;
-	local key = RoomTracker.getRoomTarget(r, "roomKey");
+		return false
+	end
+	local key = RoomTracker.getRoomTarget(r, "roomKey")
 	if not key then
-		return false;
-	end;
-	local ch = LocalPlayer.Character;
+		return false
+	end
+	local ch = LocalPlayer.Character
 	if not ch then
-		return true;
-	end;
-	local vals = ch:FindFirstChild("Values");
-	local hk = vals and vals:FindFirstChild("HasKey");
+		return true
+	end
+	local vals = ch:FindFirstChild("Values")
+	local hk = vals and vals:FindFirstChild("HasKey")
 	if hk and hk.Value then
-		return false;
-	end;
-	return true;
-end;
+		return false
+	end
+	return true
+end
 local function gmAcquireKey(idx)
-	local r = Rooms:FindFirstChild("Room" .. idx);
+	local r = Rooms:FindFirstChild("Room" .. idx)
 	if not r then
-		return false;
-	end;
-	local ch = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait();
+		return false
+	end
+	local ch = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
 	if not ch then
-		return false;
-	end;
-	local vals = ch:FindFirstChild("Values");
-	local hk = vals and vals:FindFirstChild("HasKey");
+		return false
+	end
+	local vals = ch:FindFirstChild("Values")
+	local hk = vals and vals:FindFirstChild("HasKey")
 	if hk and hk.Value then
-		return true;
-	end;
-	local key = RoomTracker.getRoomTarget(r, "roomKey");
-	if not key or (not key.Parent) then
-		return hk and hk.Value or false;
-	end;
-	local base = ED_tbl.getBasePart(key);
+		return true
+	end
+	local key = RoomTracker.getRoomTarget(r, "roomKey")
+	if not key or not key.Parent then
+		return hk and hk.Value or false
+	end
+	local base = ED_tbl.getBasePart(key)
 	if base then
-		ch:PivotTo(base.CFrame);
-	end;
-	local pp = WaitClass(key, "ProximityPrompt", 0.5) or key:FindFirstChildWhichIsA("ProximityPrompt", true);
+		ch:PivotTo(base.CFrame)
+	end
+	local pp = WaitClass(key, "ProximityPrompt", 0.5) or key:FindFirstChildWhichIsA("ProximityPrompt", true)
 	if not pp then
-		return hk and hk.Value or false;
-	end;
-	local got = hk and hk.Value or false;
-	local conn;
+		return hk and hk.Value or false
+	end
+	local got = hk and hk.Value or false
+	local conn
 	if hk then
 		conn = (hk:GetPropertyChangedSignal("Value")):Connect(function()
 			if hk.Value then
-				got = true;
-			end;
-		end);
-	end;
-	local t0 = tick();
+				got = true
+			end
+		end)
+	end
+	local t0 = tick()
 	while not got and tick() - t0 < 3 do
 		if not (pp and pp.Parent) then
-			key = RoomTracker.getRoomTarget(r, "roomKey");
-			if not key or (not key.Parent) then
-				break;
-			end;
-			pp = WaitClass(key, "ProximityPrompt", 1) or key:FindFirstChildWhichIsA("ProximityPrompt", true);
+			key = RoomTracker.getRoomTarget(r, "roomKey")
+			if not key or not key.Parent then
+				break
+			end
+			pp = WaitClass(key, "ProximityPrompt", 1) or key:FindFirstChildWhichIsA("ProximityPrompt", true)
 			if not pp then
-				break;
-			end;
-		end;
-		pcall(fireproximityprompt, pp);
-		task.wait(0.08);
-	end;
+				break
+			end
+		end
+		pcall(fireproximityprompt, pp)
+		task.wait(0.08)
+	end
 	if conn then
-		conn:Disconnect();
-	end;
+		conn:Disconnect()
+	end
 	if hk and hk.Value then
-		return true;
-	end;
-	return false;
-end;
+		return true
+	end
+	return false
+end
 local function gmHasLever(idx)
-	local r = Rooms:FindFirstChild("Room" .. idx);
+	local r = Rooms:FindFirstChild("Room" .. idx)
 	if not r then
-		return false;
-	end;
-	local gateLever = RoomTracker.getRoomTarget(r, "gateLever");
-	if not gateLever or (not gateLever.Parent) then
-		return false;
-	end;
-	local pp = gateLever:FindFirstChildWhichIsA("ProximityPrompt", true);
+		return false
+	end
+	local gateLever = RoomTracker.getRoomTarget(r, "gateLever")
+	if not gateLever or not gateLever.Parent then
+		return false
+	end
+	local pp = gateLever:FindFirstChildWhichIsA("ProximityPrompt", true)
 	if not pp then
-		return false;
-	end;
-	return true;
-end;
+		return false
+	end
+	return true
+end
 local function gmUseLever(idx)
-	local r = Rooms:FindFirstChild("Room" .. idx);
+	local r = Rooms:FindFirstChild("Room" .. idx)
 	if not r then
-		return false;
-	end;
-	local gateLever = RoomTracker.getRoomTarget(r, "gateLever");
-	if not gateLever or (not gateLever.Parent) then
-		return false;
-	end;
-	local target = gateLever;
+		return false
+	end
+	local gateLever = RoomTracker.getRoomTarget(r, "gateLever")
+	if not gateLever or not gateLever.Parent then
+		return false
+	end
+	local target = gateLever
 	if gateLever:IsA("Model") then
-		target = gateLever:FindFirstChild("LeverGoal") or gateLever:FindFirstChild("Lever") or gateLever;
-	end;
-	local pp = gateLever:FindFirstChildWhichIsA("ProximityPrompt", true);
+		target = gateLever:FindFirstChild("LeverGoal") or gateLever:FindFirstChild("Lever") or gateLever
+	end
+	local pp = gateLever:FindFirstChildWhichIsA("ProximityPrompt", true)
 	if not pp then
-		return false;
-	end;
-	local ch = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait();
+		return false
+	end
+	local ch = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
 	if not ch then
-		return false;
-	end;
+		return false
+	end
 	if target:IsA("Model") then
-		ch:PivotTo(target:GetPivot());
+		ch:PivotTo(target:GetPivot())
 	elseif target:IsA("BasePart") then
-		ch:PivotTo(target.CFrame);
-	end;
+		ch:PivotTo(target.CFrame)
+	end
 	for i = 1, GM_FIRE do
 		if not (pp and pp.Parent and gateLever and gateLever.Parent) then
-			break;
-		end;
-		pcall(fireproximityprompt, pp);
-		task.wait(0.05);
-	end;
-	task.wait(0.3);
-	return true;
-end;
+			break
+		end
+		pcall(fireproximityprompt, pp)
+		task.wait(0.05)
+	end
+	task.wait(0.3)
+	return true
+end
 local function gmAvail(v)
 	if v <= 2 then
-		return false;
-	end;
-	local hasRooms = false;
+		return false
+	end
+	local hasRooms = false
 	for _, r in ipairs(Rooms:GetChildren()) do
 		if r:IsA("Model") and r.Name:match("^Room%d+") then
-			hasRooms = true;
-			break;
-		end;
-	end;
+			hasRooms = true
+			break
+		end
+	end
 	if not hasRooms then
-		return false;
-	end;
-	return gmHasBack(v) or (not Rooms:FindFirstChild("Room1")) or (not Rooms:FindFirstChild("Room0"));
-end;
+		return false
+	end
+	return gmHasBack(v) or (not Rooms:FindFirstChild("Room1")) or (not Rooms:FindFirstChild("Room0"))
+end
 local function gmWaitRoomAdvance(fromIdx, timeout)
-	local t0 = tick();
-	local lim = timeout or 6;
+	local t0 = tick()
+	local lim = timeout or 6
 	while Values.RoomsNumber.Value == fromIdx and tick() - t0 < lim do
-		task.wait(0.05);
-	end;
-	return Values.RoomsNumber.Value ~= fromIdx;
-end;
+		task.wait(0.05)
+	end
+	return Values.RoomsNumber.Value ~= fromIdx
+end
 local function runGodMode()
 	if greedActive then
-		gmNote("Greed is active, try again later.", 4);
-		return;
-	end;
-	local v = Values.RoomsNumber.Value;
+		gmNote("Greed is active, try again later.", 4)
+		return
+	end
+	local v = Values.RoomsNumber.Value
 	if type(v) ~= "number" then
-		return;
-	end;
-	local needKey = gmNeedKey(v);
-	local hasLever = gmHasLever and gmHasLever(v);
+		return
+	end
+	local needKey = gmNeedKey(v)
+	local hasLever = gmHasLever and gmHasLever(v)
 	if needKey then
-		local ok = gmAcquireKey(v);
+		local ok = gmAcquireKey(v)
 		if not ok then
-			gmNote("Failed to get key for this room.", 4);
-			return;
-		end;
-	end;
+			gmNote("Failed to get key for this room.", 4)
+			return
+		end
+	end
 	if hasLever then
-		local ok = gmUseLever(v);
+		local ok = gmUseLever(v)
 		if not ok then
-			gmNote("Failed to use lever for this room.", 4);
-			return;
-		end;
-	end;
-	local availBack = gmAvail(v);
+			gmNote("Failed to use lever for this room.", 4)
+			return
+		end
+	end
+	local availBack = gmAvail(v)
 	if not availBack then
-		gmNote("Open more doors before using God Mode.", 4);
-		return;
-	end;
-	local backIdx = gmPrevRoom(v);
+		gmNote("Open more doors before using God Mode.", 4)
+		return
+	end
+	local backIdx = gmPrevRoom(v)
 	if not backIdx then
-		gmNote("Open more doors before using God Mode.", 4);
-		return;
-	end;
-	local w = gmWard(backIdx);
+		gmNote("Open more doors before using God Mode.", 4)
+		return
+	end
+	local w = gmWard(backIdx)
 	if not w then
-		gmNote("No wardrobe found in nearby rooms.", 4);
-		return;
-	end;
-	local d = gmDoor(v);
+		gmNote("No wardrobe found in nearby rooms.", 4)
+		return
+	end
+	local d = gmDoor(v)
 	if not d then
-		gmNote("No safe door found (void door?).", 4);
-		return;
-	end;
-	local ch = LocalPlayer.Character;
+		gmNote("No safe door found (void door?).", 4)
+		return
+	end
+	local ch = LocalPlayer.Character
 	if not ch then
-		ch = LocalPlayer.CharacterAdded:Wait();
-	end;
+		ch = LocalPlayer.CharacterAdded:Wait()
+	end
 	if not ch then
-		return;
-	end;
-	local hVal = ch:FindFirstChild("Hiding");
+		return
+	end
+	local hVal = ch:FindFirstChild("Hiding")
 	if hVal and hVal.Value then
-		gmNote("You are already hiding.", 3);
-		return;
-	end;
-	ch:PivotTo(d:GetPivot());
-	gmDisconnectCloset();
-	local oldVal = curRoomVal.Value;
+		gmNote("You are already hiding.", 3)
+		return
+	end
+	ch:PivotTo(d:GetPivot())
+	gmDisconnectCloset()
+	local oldVal = curRoomVal.Value
 	gmRoomValConn = (curRoomVal:GetPropertyChangedSignal("Value")):Connect(function()
 		if curRoomVal.Value ~= oldVal then
 			task.defer(function()
-				gmWatchCloset(v, backIdx, w);
-			end);
-		end;
-	end);
-	gmOpenDoor(d);
+				gmWatchCloset(v, backIdx, w)
+			end)
+		end
+	end)
+	gmOpenDoor(d)
 	task.spawn(function()
-		local p = LocalPlayer;
-		local c = p.Character or p.CharacterAdded:Wait();
-		local hid = c and c:FindFirstChild("Hiding");
+		local p = LocalPlayer
+		local c = p.Character or p.CharacterAdded:Wait()
+		local hid = c and c:FindFirstChild("Hiding")
 		repeat
-			task.wait();
-			c = p.Character or c;
-			hid = c and c:FindFirstChild("Hiding");
-		until not scriptRunning or hid and hid.Value or (not c);
+			task.wait()
+			c = p.Character or c
+			hid = c and c:FindFirstChild("Hiding")
+		until not scriptRunning or hid and hid.Value or not c
 		if not (hid and hid.Value) then
-			return;
-		end;
-		gmNote("Hidden, holding...", 3);
+			return
+		end
+		gmNote("Hidden, holding...", 3)
 		while scriptRunning and hid and hid.Value do
-			local door = gmDoor(v);
+			local door = gmDoor(v)
 			if door and door.Parent and c then
-				c:PivotTo(door:GetPivot());
-			end;
-			task.wait(0.1);
-			c = p.Character or c;
-			hid = c and c:FindFirstChild("Hiding");
-		end;
-	end);
-end;
+				c:PivotTo(door:GetPivot())
+			end
+			task.wait(0.1)
+			c = p.Character or c
+			hid = c and c:FindFirstChild("Hiding")
+		end
+	end)
+end
 coreGroup:AddButton({
 	Name = "Infinite Flashlight",
 	Callback = function()
 		task.defer(function()
-			(S("ReplicatedStorage")).Remotes.FLASHLIGHT_TOGGLE:FireServer(false, 100000000000000);
-		end);
-	end
-});
+			(S("ReplicatedStorage")).Remotes.FLASHLIGHT_TOGGLE:FireServer(false, 100000000000000)
+		end)
+	end,
+})
 coreGroup:AddButton({
 	Name = "God Mode",
 	Callback = function()
-		task.defer(runGodMode);
-	end
-});
+		task.defer(runGodMode)
+	end,
+})
 coreGroup:AddToggle({
 	Name = "Disable Look Script",
 	CurrentValue = false,
@@ -2112,11 +2136,11 @@ coreGroup:AddToggle({
 	Callback = function(v)
 		task.defer(function()
 			if game.PlaceId ~= pCLASS then
-				(LocalPlayer.PlayerScripts:FindFirstChild("Looking")).Enabled = not v;
-			end;
-		end);
-	end
-});
+				(LocalPlayer.PlayerScripts:FindFirstChild("Looking")).Enabled = not v
+			end
+		end)
+	end,
+})
 coreGroup:AddToggle({
 	Name = "Disable Camera Shaking",
 	CurrentValue = false,
@@ -2125,45 +2149,45 @@ coreGroup:AddToggle({
 		task.defer(function()
 			if game.PlaceId == pREN then
 				(LocalPlayer.PlayerScripts:FindFirstChild("LocalShaking")).Enabled = not v;
-				(LocalPlayer.PlayerScripts:FindFirstChild("CameraShake")).Enabled = not v;
-			end;
-		end);
-	end
-});
+				(LocalPlayer.PlayerScripts:FindFirstChild("CameraShake")).Enabled = not v
+			end
+		end)
+	end,
+})
 coreGroup:AddToggle({
 	Name = "Full Bright",
 	CurrentValue = false,
 	Flag = "brightLol",
 	Callback = function(v)
 		task.defer(function()
-			local L = S("Lighting");
+			local L = S("Lighting")
 			if v then
 				if brightLoop then
-					brightLoop:Disconnect();
-				end;
+					brightLoop:Disconnect()
+				end
 				brightLoop = RunService.RenderStepped:Connect(function()
-					L.ClockTime = 0;
-					L.FogEnd = 10000000000;
-					L.FogStart = 0;
-					L.GlobalShadows = false;
-					L.OutdoorAmbient = Color3.fromRGB(128, 128, 128);
-					L.Brightness = 3;
-				end);
+					L.ClockTime = 0
+					L.FogEnd = 10000000000
+					L.FogStart = 0
+					L.GlobalShadows = false
+					L.OutdoorAmbient = Color3.fromRGB(128, 128, 128)
+					L.Brightness = 3
+				end)
 			else
 				if brightLoop then
-					brightLoop:Disconnect();
-					brightLoop = nil;
-				end;
-				L.ClockTime = 0;
-				L.FogEnd = 100000;
-				L.FogStart = 0;
-				L.GlobalShadows = false;
-				L.OutdoorAmbient = Color3.fromRGB(128, 128, 128);
-				L.Brightness = 1;
-			end;
-		end);
-	end
-});
+					brightLoop:Disconnect()
+					brightLoop = nil
+				end
+				L.ClockTime = 0
+				L.FogEnd = 100000
+				L.FogStart = 0
+				L.GlobalShadows = false
+				L.OutdoorAmbient = Color3.fromRGB(128, 128, 128)
+				L.Brightness = 1
+			end
+		end)
+	end,
+})
 coreGroup:AddToggle({
 	Name = "Anti AFK",
 	CurrentValue = false,
@@ -2172,94 +2196,94 @@ coreGroup:AddToggle({
 		task.defer(function()
 			if v then
 				if antiAFKConn then
-					antiAFKConn:Disconnect();
-				end;
+					antiAFKConn:Disconnect()
+				end
 				antiAFKConn = LocalPlayer.Idled:Connect(function()
-					(S("VirtualUser")):Button2Down(Vector2.new(), workspace.CurrentCamera.CFrame);
+					(S("VirtualUser")):Button2Down(Vector2.new(), workspace.CurrentCamera.CFrame)
 					task.wait(1);
-					(S("VirtualUser")):Button2Up(Vector2.new(), workspace.CurrentCamera.CFrame);
-				end);
+					(S("VirtualUser")):Button2Up(Vector2.new(), workspace.CurrentCamera.CFrame)
+				end)
 			elseif antiAFKConn then
-				antiAFKConn:Disconnect();
-				antiAFKConn = nil;
-			end;
-		end);
-	end
-});
+				antiAFKConn:Disconnect()
+				antiAFKConn = nil
+			end
+		end)
+	end,
+})
 coreGroup:AddButton({
 	Name = "Play Again",
 	Callback = function()
 		task.defer(function()
-			(S("ReplicatedStorage")).Remotes.PLAY_AGAIN:FireServer();
-		end);
-	end
-});
+			(S("ReplicatedStorage")).Remotes.PLAY_AGAIN:FireServer()
+		end)
+	end,
+})
 coreGroup:AddButton({
 	Name = "Buy Respawn",
 	Callback = function()
 		task.defer(function()
-			(S("ReplicatedStorage")).Remotes.BUY_RESPAWN:FireServer();
-		end);
-	end
-});
+			(S("ReplicatedStorage")).Remotes.BUY_RESPAWN:FireServer()
+		end)
+	end,
+})
 coreGroup:AddButton({
 	Name = "Die",
 	Callback = function()
 		task.defer(function()
-			(S("ReplicatedStorage")).Remotes.F_DMG:FireServer(1000);
-		end);
-	end
-});
-local interactGroup = tabMain:AddGroupbox("Interactables", "list", "left");
+			(S("ReplicatedStorage")).Remotes.F_DMG:FireServer(1000)
+		end)
+	end,
+})
+local interactGroup = tabMain:AddGroupbox("Interactables", "list", "left")
 local promptList = {
-	"None"
-};
+	"None",
+}
 local function rebuildPromptList()
-	local seen = {};
+	local seen = {}
 	for _, pp in ipairs(proximityPrompts) do
 		if pp and pp.Parent then
-			local n = holderName(pp);
+			local n = holderName(pp)
 			if n and n ~= "" then
-				seen[n] = true;
-			end;
-		end;
-	end;
+				seen[n] = true
+			end
+		end
+	end
 	local new = {
-		"None"
-	};
+		"None",
+	}
 	for k in pairs(seen) do
-		new[(#new) + 1] = k;
-	end;
+		new[#new + 1] = k
+	end
 	table.sort(new, function(a, b)
-		return a < b;
-	end);
-	local changed = false;
-	if #new ~= (#promptList) then
-		changed = true;
+		return a < b
+	end)
+	local changed = false
+	if #new ~= #promptList then
+		changed = true
 	else
 		for i = 1, #new do
 			if new[i] ~= promptList[i] then
-				changed = true;
-				break;
-			end;
-		end;
-	end;
+				changed = true
+				break
+			end
+		end
+	end
 	if changed then
-		promptList = new;
+		promptList = new
 		if dropdownObj then
-			suppressDropdownCallback = true;
+			suppressDropdownCallback = true
 			local ok, err = pcall(function()
-				dropdownObj:Refresh(promptList, true);
-				dropdownObj:SetValue(selectionDictionary());
-			end);
-			suppressDropdownCallback = false;
+				dropdownObj:Refresh(promptList, true)
+				dropdownObj:SetValue(selectionDictionary())
+			end)
+			suppressDropdownCallback = false
 			if not ok then
-				warn("[Interactables] Failed to refresh prompt list:", err);
-			end;
-		end;
-	end;
-end;
-local lastPromptTick = 0;
+				warn("[Interactables] Failed to refresh prompt list:", err)
+			end
+		end
+	end
+end
+local lastPromptTick = 0
 dropdownObj = interactGroup:AddDropdown({
 	Name = "Prompt Names [BUGGY/WIP]",
 	Options = promptList,
@@ -2269,756 +2293,758 @@ dropdownObj = interactGroup:AddDropdown({
 	Flag = "PromptNamesMulti",
 	Callback = function(opt)
 		if suppressDropdownCallback then
-			return;
-		end;
-		applySelectionFromValue(opt);
-	end
-});
+			return
+		end
+		applySelectionFromValue(opt)
+	end,
+})
 interactGroup:AddButton({
 	Name = "Clear Selection",
 	Callback = function()
-		suppressDropdownCallback = true;
-		clearSelection();
-		updateModeLabelText();
+		suppressDropdownCallback = true
+		clearSelection()
+		updateModeLabelText()
 		if dropdownObj then
 			local ok, err = pcall(function()
-				dropdownObj:SetValue({});
-			end);
+				dropdownObj:SetValue({})
+			end)
 			if not ok then
-				warn("[Interactables] Failed to clear prompt selection:", err);
-			end;
-		end;
-		suppressDropdownCallback = false;
-	end
-});
+				warn("[Interactables] Failed to clear prompt selection:", err)
+			end
+		end
+		suppressDropdownCallback = false
+	end,
+})
 interactGroup:AddToggle({
 	Name = "Auto Interact",
 	CurrentValue = false,
 	Flag = "AuraAll",
 	Callback = function(v)
-		(getgenv()).chaos = v;
-	end
-});
+		(getgenv()).chaos = v
+	end,
+})
 interactGroup:AddSlider({
 	Name = "Prompt Fire Interval (s)",
 	Range = {
 		0,
-		1
+		1,
 	},
 	Increment = 0.05,
 	CurrentValue = tonumber((getgenv()).promptDelay) or 0,
 	Flag = "PromptDelay",
 	Callback = function(value)
-		(getgenv()).promptDelay = value;
-	end
-});
+		(getgenv()).promptDelay = value
+	end,
+})
 interactGroup:AddSlider({
 	Name = "Prompt Extra Range",
 	Range = {
 		0,
-		50
+		50,
 	},
 	Increment = 1,
 	CurrentValue = tonumber((getgenv()).promptRange) or 6,
 	Flag = "PromptRange",
 	Callback = function(value)
-		(getgenv()).promptRange = value;
-	end
-});
-interactGroup:AddSection("Info");
-modeLabel = interactGroup:AddLabel("Mode: Default (all prompts)");
-updateModeLabelText();
-interactGroup:AddLabel("Select one or more holder names to target only those prompts.");
-interactGroup:AddLabel("The list updates automatically.");
-local promptListDirty = true;
+		(getgenv()).promptRange = value
+	end,
+})
+interactGroup:AddSection("Info")
+modeLabel = interactGroup:AddLabel("Mode: Default (all prompts)")
+updateModeLabelText()
+interactGroup:AddLabel("Select one or more holder names to target only those prompts.")
+interactGroup:AddLabel("The list updates automatically.")
+local promptListDirty = true
 
 task.spawn(function()
 	while task.wait(0.35) do
 		if promptListDirty then
-			promptListDirty = false;
-			pcall(rebuildPromptList);
-		end;
-	end;
-end);
+			promptListDirty = false
+			pcall(rebuildPromptList)
+		end
+	end
+end)
 
 ED_tbl.trackConnection(workspace.DescendantAdded:Connect(function(o)
 	if o:IsA("ProximityPrompt") then
-		promptListDirty = true;
-	end;
-end));
+		promptListDirty = true
+	end
+end))
 ED_tbl.trackConnection(workspace.DescendantRemoving:Connect(function(o)
 	if o:IsA("ProximityPrompt") then
-		promptListDirty = true;
-	end;
-end));
-local espGroup = tabMain:AddGroupbox("ESP & Tracking", "eye", "left");
+		promptListDirty = true
+	end
+end))
+local espGroup = tabMain:AddGroupbox("ESP & Tracking", "eye", "left")
 espGroup:AddToggle({
 	Name = "Entity Esp",
 	CurrentValue = false,
 	Flag = "entityESP",
 	Callback = function(v)
 		task.defer(function()
-			(getgenv()).entityEsp = v;
+			(getgenv()).entityEsp = v
 			if not v then
 				for _, e in ipairs(Entities:QueryDescendants("Instance")) do
-					task.defer(RemoveESP, e);
-				end;
+					task.defer(RemoveESP, e)
+				end
 			else
 				for _, e in ipairs(Entities:GetChildren()) do
 					handleEntitySpawn(e, {
-						notify = false
-					});
-				end;
-			end;
-		end);
-	end
-});
+						notify = false,
+					})
+				end
+			end
+		end)
+	end,
+})
 espGroup:AddToggle({
 	Name = "Key Esp",
 	CurrentValue = false,
 	Flag = "KeyESP",
 	Callback = function(v)
 		task.defer(function()
-			(getgenv()).keyESP = v;
+			(getgenv()).keyESP = v
 			for _, p in ipairs(RoomTracker.getTracked("roomkey")) do
 				if v then
-					CreateESP(p, Color3.new(1, 1, 0), "Key");
+					CreateESP(p, Color3.new(1, 1, 0), "Key")
 				else
-					RemoveESP(p);
-				end;
-			end;
-		end);
-	end
-});
+					RemoveESP(p)
+				end
+			end
+		end)
+	end,
+})
 espGroup:AddToggle({
 	Name = "Bits Esp",
 	CurrentValue = false,
 	Flag = "BitsESP",
 	Callback = function(v)
 		task.defer(function()
-			(getgenv()).bitESP = v;
+			(getgenv()).bitESP = v
 			for _, p in ipairs(RoomTracker.getTracked("bit")) do
 				if v and isInteracting(p) then
-					CreateESP(p, Color3.new(1, 0.666667, 0));
+					CreateESP(p, Color3.new(1, 0.666667, 0))
 				else
-					RemoveESP(p);
-				end;
-			end;
-		end);
-	end
-});
+					RemoveESP(p)
+				end
+			end
+		end)
+	end,
+})
 espGroup:AddToggle({
 	Name = "Lever Esp",
 	CurrentValue = false,
 	Flag = "LeverESP",
 	Callback = function(v)
 		task.defer(function()
-			(getgenv()).leverESP = v;
+			(getgenv()).leverESP = v
 			for _, p in ipairs(RoomTracker.getTracked("lever")) do
 				if v and isInteracting(p) then
-					CreateESP(p, Color3.fromRGB(139, 145, 165));
+					CreateESP(p, Color3.fromRGB(139, 145, 165))
 				else
-					RemoveESP(p);
-				end;
-			end;
-		end);
-	end
-});
+					RemoveESP(p)
+				end
+			end
+		end)
+	end,
+})
 espGroup:AddToggle({
 	Name = "Battery Esp",
 	CurrentValue = false,
 	Flag = "BatteryESP",
 	Callback = function(v)
 		task.defer(function()
-			(getgenv()).batteryESP = v;
+			(getgenv()).batteryESP = v
 			for _, p in ipairs(RoomTracker.getTracked("battery")) do
 				if v and isInteracting(p) then
-					CreateESP(p, Color3.new(0, 0.666667, 0));
+					CreateESP(p, Color3.new(0, 0.666667, 0))
 				else
-					RemoveESP(p);
-				end;
-			end;
-		end);
-	end
-});
+					RemoveESP(p)
+				end
+			end
+		end)
+	end,
+})
 espGroup:AddToggle({
 	Name = "Entity Remote Logger",
 	CurrentValue = false,
 	Flag = "entRem",
 	Callback = function(v)
-		(getgenv()).remoteThingy = v;
-	end
-});
+		(getgenv()).remoteThingy = v
+	end,
+})
 espGroup:AddToggle({
 	Name = "Entity Notifier",
 	CurrentValue = false,
 	Flag = "entityNotifs",
 	Callback = function(v)
-		(getgenv()).entityNotif = v;
+		(getgenv()).entityNotif = v
 		if v then
 			for _, e in ipairs(Entities:QueryDescendants("Instance")) do
-				handleEntitySpawn(e);
-			end;
-		end;
-	end
-});
-local bypassGroup = tabMain:AddGroupbox("Bypasses", "shield", "right");
-bypassGroup:AddSection("General");
+				handleEntitySpawn(e)
+			end
+		end
+	end,
+})
+local bypassGroup = tabMain:AddGroupbox("Bypasses", "shield", "right")
+bypassGroup:AddSection("General")
 local function setBypassOverseer(v)
 	task.defer(function()
 		if v then
 			if overCon then
-				overCon:Disconnect();
-			end;
+				overCon:Disconnect()
+			end
 			overCon = Entities.ChildAdded:Connect(function(ent)
 				if ent.Name:lower() == "overseer" then
 					task.defer(function()
 						if ent and ent.Parent then
-							ent:Destroy();
-						end;
-					end);
-				end;
-			end);
+							ent:Destroy()
+						end
+					end)
+				end
+			end)
 			for _, ent in ipairs(Entities:GetChildren()) do
 				if ent.Name:lower() == "overseer" then
 					task.defer(function()
 						if ent and ent.Parent then
-							ent:Destroy();
-						end;
-					end);
-				end;
-			end;
+							ent:Destroy()
+						end
+					end)
+				end
+			end
 		elseif overCon then
-			overCon:Disconnect();
-			overCon = nil;
-		end;
-	end);
-end;
+			overCon:Disconnect()
+			overCon = nil
+		end
+	end)
+end
 local function setBypassLurker(v)
 	task.defer(function()
 		if v then
 			if lurkCon then
-				lurkCon:Disconnect();
-			end;
+				lurkCon:Disconnect()
+			end
 			lurkCon = workspace.DescendantAdded:Connect(function(o)
 				if o.Name:lower() == "lurker" then
 					task.defer(function()
 						if o and o.Parent then
-							o:Destroy();
-						end;
-					end);
-				end;
-			end);
+							o:Destroy()
+						end
+					end)
+				end
+			end)
 			for _, o in ipairs(workspace:QueryDescendants("Instance")) do
 				if o.Name:lower() == "lurker" then
 					task.defer(function()
 						if o and o.Parent then
-							o:Destroy();
-						end;
-					end);
-				end;
-			end;
+							o:Destroy()
+						end
+					end)
+				end
+			end
 		elseif lurkCon then
-			lurkCon:Disconnect();
-			lurkCon = nil;
-		end;
-	end);
-end;
+			lurkCon:Disconnect()
+			lurkCon = nil
+		end
+	end)
+end
 local function setBypassWatch(v)
 	task.defer(function()
 		if v then
 			if watchCon then
-				watchCon:Disconnect();
-			end;
+				watchCon:Disconnect()
+			end
 			watchCon = workspace.DescendantAdded:Connect(function(o)
 				if o.Name:lower() == "watchbane" then
 					task.defer(function()
 						if o and o.Parent then
-							o:Destroy();
-						end;
-					end);
-				end;
-			end);
+							o:Destroy()
+						end
+					end)
+				end
+			end)
 			for _, o in ipairs(workspace:QueryDescendants("Instance")) do
 				if o.Name:lower() == "watchbane" then
 					task.defer(function()
 						if o and o.Parent then
-							o:Destroy();
-						end;
-					end);
-				end;
-			end;
+							o:Destroy()
+						end
+					end)
+				end
+			end
 		elseif watchCon then
-			watchCon:Disconnect();
-			watchCon = nil;
-		end;
-	end);
-end;
+			watchCon:Disconnect()
+			watchCon = nil
+		end
+	end)
+end
 local function setBypassFlower(v)
 	task.defer(function()
 		if v then
 			if flowCon then
-				flowCon:Disconnect();
-			end;
+				flowCon:Disconnect()
+			end
 			flowCon = workspace.DescendantAdded:Connect(function(o)
 				if o.Name:lower() == "flowergrowth" then
 					task.defer(function()
 						if o and o.Parent then
-							o:Destroy();
-						end;
-					end);
-				end;
-			end);
+							o:Destroy()
+						end
+					end)
+				end
+			end)
 			for _, o in ipairs(workspace:QueryDescendants("Instance")) do
 				if o.Name:lower() == "flowergrowth" then
 					task.defer(function()
 						if o and o.Parent then
-							o:Destroy();
-						end;
-					end);
-				end;
-			end;
+							o:Destroy()
+						end
+					end)
+				end
+			end
 		elseif flowCon then
-			flowCon:Disconnect();
-			flowCon = nil;
-		end;
-	end);
-end;
+			flowCon:Disconnect()
+			flowCon = nil
+		end
+	end)
+end
 local function setBypassAbyss(v)
 	task.defer(function()
 		if v then
 			if abyssCon then
-				abyssCon:Disconnect();
-			end;
+				abyssCon:Disconnect()
+			end
 			abyssCon = workspace.DescendantAdded:Connect(function(o)
 				if o.Name:lower() == "abysskill" then
 					task.defer(function()
 						if o and o.Parent then
-							o:Destroy();
-						end;
-					end);
-				end;
-			end);
+							o:Destroy()
+						end
+					end)
+				end
+			end)
 			for _, o in ipairs(workspace:QueryDescendants("Instance")) do
 				if o.Name:lower() == "abysskill" then
 					task.defer(function()
 						if o and o.Parent then
-							o:Destroy();
-						end;
-					end);
-				end;
-			end;
+							o:Destroy()
+						end
+					end)
+				end
+			end
 		elseif abyssCon then
-			abyssCon:Disconnect();
-			abyssCon = nil;
-		end;
-	end);
-end;
+			abyssCon:Disconnect()
+			abyssCon = nil
+		end
+	end)
+end
 local function setBypassTaker(v)
 	task.defer(function()
 		if v then
 			if takerCon then
-				takerCon:Disconnect();
-			end;
+				takerCon:Disconnect()
+			end
 			takerCon = workspace.DescendantAdded:Connect(function(o)
 				if o.Name:lower() == "taker" then
 					task.defer(function()
 						if o and o.Parent then
-							o:Destroy();
-						end;
-					end);
-				end;
-			end);
+							o:Destroy()
+						end
+					end)
+				end
+			end)
 			for _, o in ipairs(workspace:QueryDescendants("Instance")) do
 				if o.Name:lower() == "taker" then
 					task.defer(function()
 						if o and o.Parent then
-							o:Destroy();
-						end;
-					end);
-				end;
-			end;
+							o:Destroy()
+						end
+					end)
+				end
+			end
 		elseif takerCon then
-			takerCon:Disconnect();
-			takerCon = nil;
-		end;
-	end);
-end;
+			takerCon:Disconnect()
+			takerCon = nil
+		end
+	end)
+end
 local function setBypassChase(v)
 	task.defer(function()
 		if v then
 			if chaseCon then
-				chaseCon:Disconnect();
-			end;
+				chaseCon:Disconnect()
+			end
 			chaseCon = workspace.DescendantAdded:Connect(function(o)
 				if o.Name:lower() == "chasetrigger" then
 					task.defer(function()
 						if o and o.Parent then
-							o:Destroy();
-						end;
-					end);
-				end;
-			end);
+							o:Destroy()
+						end
+					end)
+				end
+			end)
 			for _, o in ipairs(workspace:QueryDescendants("Instance")) do
 				if o.Name:lower() == "chasetrigger" then
 					task.defer(function()
 						if o and o.Parent then
-							o:Destroy();
-						end;
-					end);
-				end;
-			end;
+							o:Destroy()
+						end
+					end)
+				end
+			end
 		elseif chaseCon then
-			chaseCon:Disconnect();
-			chaseCon = nil;
-		end;
-	end);
-end;
+			chaseCon:Disconnect()
+			chaseCon = nil
+		end
+	end)
+end
 local function setBypassVacant(v)
 	task.defer(function()
 		if v then
 			if vacCon then
-				vacCon:Disconnect();
-			end;
+				vacCon:Disconnect()
+			end
 			vacCon = Entities.ChildAdded:Connect(function(ent)
 				if ent.Name:lower() == "vacant" then
 					task.defer(function()
 						if ent and ent.Parent then
-							ent:Destroy();
-						end;
-					end);
-				end;
-			end);
+							ent:Destroy()
+						end
+					end)
+				end
+			end)
 			for _, ent in ipairs(Entities:GetChildren()) do
 				if ent.Name:lower() == "vacant" then
 					task.defer(function()
 						if ent and ent.Parent then
-							ent:Destroy();
-						end;
-					end);
-				end;
-			end;
+							ent:Destroy()
+						end
+					end)
+				end
+			end
 		elseif vacCon then
-			vacCon:Disconnect();
-			vacCon = nil;
-		end;
-	end);
-end;
-(getgenv()).voidDoorAutoDelete = (getgenv()).voidDoorAutoDelete or false;
+			vacCon:Disconnect()
+			vacCon = nil
+		end
+	end)
+end
+(getgenv()).voidDoorAutoDelete = (getgenv()).voidDoorAutoDelete or false
 local function deleteVoidDoorOnce()
-	local d = ED_tbl.getVoidDoorForCurrentRoom();
+	local d = ED_tbl.getVoidDoorForCurrentRoom()
 	if d and d.Parent then
-		d:Destroy();
-	end;
-end;
+		d:Destroy()
+	end
+end
 task.spawn(function()
 	while scriptRunning do
 		if (getgenv()).voidDoorAutoDelete then
-			deleteVoidDoorOnce();
-		end;
-		task.wait(0.5);
-	end;
-end);
+			deleteVoidDoorOnce()
+		end
+		task.wait(0.5)
+	end
+end)
 bypassGroup:AddToggle({
 	Name = "Bypass Overseer",
 	CurrentValue = false,
 	Flag = "overSeer",
 	Callback = function(v)
-		setBypassOverseer(v);
-	end
-});
+		setBypassOverseer(v)
+	end,
+})
 bypassGroup:AddToggle({
 	Name = "Bypass Lurker",
 	CurrentValue = false,
 	Flag = "lurkER",
 	Callback = function(v)
-		setBypassLurker(v);
-	end
-});
+		setBypassLurker(v)
+	end,
+})
 bypassGroup:AddToggle({
 	Name = "Bypass Watchbane",
 	CurrentValue = false,
 	Flag = "watcherBANE",
 	Callback = function(v)
-		setBypassWatch(v);
-	end
-});
+		setBypassWatch(v)
+	end,
+})
 bypassGroup:AddToggle({
 	Name = "Bypass FlowerGrowth",
 	CurrentValue = false,
 	Flag = "flowerGrowth",
 	Callback = function(v)
-		setBypassFlower(v);
-	end
-});
+		setBypassFlower(v)
+	end,
+})
 bypassGroup:AddToggle({
 	Name = "Bypass Abyss",
 	CurrentValue = false,
 	Flag = "abyssKILL",
 	Callback = function(v)
-		setBypassAbyss(v);
-	end
-});
+		setBypassAbyss(v)
+	end,
+})
 bypassGroup:AddToggle({
 	Name = "Bypass Vacant",
 	CurrentValue = false,
 	Flag = "vacantBypass",
 	Callback = function(v)
-		setBypassVacant(v);
-	end
-});
+		setBypassVacant(v)
+	end,
+})
 bypassGroup:AddToggle({
 	Name = "Bypass Void Door",
 	CurrentValue = (getgenv()).voidDoorAutoDelete,
 	Flag = "VoidDoorDelete",
 	Callback = function(v)
-		(getgenv()).voidDoorAutoDelete = v;
-	end
-});
-bypassGroup:AddSection("Bypass [Special]");
+		(getgenv()).voidDoorAutoDelete = v
+	end,
+})
+bypassGroup:AddSection("Bypass [Special]")
 bypassGroup:AddToggle({
 	Name = "Bypass Taker [HEIST MODIFIER]",
 	CurrentValue = false,
 	Flag = "TAKERRRRR",
 	Callback = function(v)
-		setBypassTaker(v);
-	end
-});
+		setBypassTaker(v)
+	end,
+})
 bypassGroup:AddToggle({
 	Name = "Bypass ChaseTrigger [EPIC MODE]",
 	CurrentValue = false,
 	Flag = "chaseTrigger",
 	Callback = function(v)
-		setBypassChase(v);
-	end
-});
-local playerGroup = tabMain:AddGroupbox("Player Tweaks", "user", "right");
+		setBypassChase(v)
+	end,
+})
+local playerGroup = tabMain:AddGroupbox("Player Tweaks", "user", "right")
 playerGroup:AddSlider({
 	Name = "Set WalkSpeed",
 	Range = game.PlaceId == pCLASS and {
 		0,
-		35
+		35,
 	} or {
 		0,
-		100
+		100,
 	},
 	Increment = 1,
 	CurrentValue = 16,
 	Flag = "WalkSpeedValue",
 	Callback = function(v)
-		(getgenv()).speed = v;
-	end
-});
+		(getgenv()).speed = v
+	end,
+})
 playerGroup:AddToggle({
 	Name = "Toggle WalkSpeed",
 	CurrentValue = false,
 	Flag = "WSspeed",
 	Callback = function(v)
-		(getgenv()).sped = v;
-	end
-});
+		(getgenv()).sped = v
+	end,
+})
 playerGroup:AddSlider({
 	Name = "Set JumpPower",
 	Range = {
 		0,
-		100
+		100,
 	},
 	Increment = 1,
 	CurrentValue = 30,
 	Flag = "JumpPowerValue",
 	Callback = function(v)
-		(getgenv()).jump = v;
-	end
-});
+		(getgenv()).jump = v
+	end,
+})
 playerGroup:AddToggle({
 	Name = "Toggle JumpPower",
 	CurrentValue = false,
 	Flag = "JPtgl",
 	Callback = function(v)
-		(getgenv()).jumpy = v;
-	end
-});
+		(getgenv()).jumpy = v
+	end,
+})
 playerGroup:AddSlider({
 	Name = "Set FOV",
 	Range = {
 		0,
-		120
+		120,
 	},
 	Increment = 1,
 	CurrentValue = tonumber((getgenv()).fov) or 70,
 	Flag = "FieldOfViewValue",
 	Callback = function(v)
-		(getgenv()).fov = v;
+		(getgenv()).fov = v
 		if (getgenv()).wide then
-			workspace.CurrentCamera.FieldOfView = v;
-		end;
-	end
-});
+			workspace.CurrentCamera.FieldOfView = v
+		end
+	end,
+})
 playerGroup:AddToggle({
 	Name = "Toggle FOV",
 	CurrentValue = false,
 	Flag = "FovTgl",
 	Callback = function(v)
-		(getgenv()).wide = v;
+		(getgenv()).wide = v
 		if v then
-			ED_tbl.bindFOV(workspace.CurrentCamera);
+			ED_tbl.bindFOV(workspace.CurrentCamera)
 		elseif fovLockConn then
-			fovLockConn:Disconnect();
-			fovLockConn = nil;
-		end;
-	end
-});
+			fovLockConn:Disconnect()
+			fovLockConn = nil
+		end
+	end,
+})
 playerGroup:AddToggle({
 	Name = "Infinite Jump",
 	CurrentValue = false,
 	Flag = "infJP",
 	Callback = function(v)
 		if infJumpConn then
-			infJumpConn:Disconnect();
-			infJumpConn = nil;
-		end;
+			infJumpConn:Disconnect()
+			infJumpConn = nil
+		end
 		if mobHoldConn then
-			mobHoldConn:Disconnect();
-			mobHoldConn = nil;
-		end;
+			mobHoldConn:Disconnect()
+			mobHoldConn = nil
+		end
 		if mobDownConn then
-			mobDownConn:Disconnect();
-			mobDownConn = nil;
-		end;
+			mobDownConn:Disconnect()
+			mobDownConn = nil
+		end
 		if mobUpConn then
-			mobUpConn:Disconnect();
-			mobUpConn = nil;
-		end;
+			mobUpConn:Disconnect()
+			mobUpConn = nil
+		end
 		if v then
 			infJumpConn = UIS.JumpRequest:Connect(function()
-				local h = LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Humanoid");
+				local h = LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
 				if h then
-					h:ChangeState(Enum.HumanoidStateType.Jumping);
-				end;
-			end);
+					h:ChangeState(Enum.HumanoidStateType.Jumping)
+				end
+			end)
 			if IsOnMobile and game.PlaceId == pREN then
-				local h = LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Humanoid");
+				local h = LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
 				if h then
-					h:SetStateEnabled(Enum.HumanoidStateType.Jumping, true);
-				end;
-				local jb = ((LocalPlayer.PlayerGui:WaitForChild("TouchControls")):WaitForChild("MobileControls")):WaitForChild("JumpButton");
+					h:SetStateEnabled(Enum.HumanoidStateType.Jumping, true)
+				end
+				local jb = ((LocalPlayer.PlayerGui:WaitForChild("TouchControls")):WaitForChild("MobileControls")):WaitForChild(
+					"JumpButton"
+				)
 				local function startHold()
 					if mobHoldConn then
-						return;
-					end;
+						return
+					end
 					mobHoldConn = RunService.Heartbeat:Connect(function()
-						local mh = LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Humanoid");
+						local mh = LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
 						if mh then
-							mh:ChangeState(Enum.HumanoidStateType.Jumping);
-						end;
-					end);
-				end;
+							mh:ChangeState(Enum.HumanoidStateType.Jumping)
+						end
+					end)
+				end
 				local function endHold()
 					if mobHoldConn then
-						mobHoldConn:Disconnect();
-						mobHoldConn = nil;
-					end;
-				end;
+						mobHoldConn:Disconnect()
+						mobHoldConn = nil
+					end
+				end
 				mobDownConn = jb.InputBegan:Connect(function(i)
 					if i.UserInputType == Enum.UserInputType.Touch then
-						startHold();
-					end;
-				end);
+						startHold()
+					end
+				end)
 				mobUpConn = jb.InputEnded:Connect(function(i)
 					if i.UserInputType == Enum.UserInputType.Touch then
-						endHold();
-					end;
-				end);
-			end;
-		end;
-	end
-});
+						endHold()
+					end
+				end)
+			end
+		end
+	end,
+})
 playerGroup:AddToggle({
 	Name = "Auto Heal",
 	CurrentValue = (getgenv()).autoHeal,
 	Flag = "autoHeal",
 	Callback = function(v)
-		(getgenv()).autoHeal = v;
-	end
-});
-local miscGroup = tabMain:AddGroupbox("Misc & Teleports", "hammer", "right");
+		(getgenv()).autoHeal = v
+	end,
+})
+local miscGroup = tabMain:AddGroupbox("Misc & Teleports", "hammer", "right")
 local function ensureAutoFarmSafety()
-	(getgenv()).autoHeal = true;
-	(getgenv()).chaos = true;
+	(getgenv()).autoHeal = true
+	(getgenv()).chaos = true
 	if not selectionEmpty() then
-		clearSelection();
-		updateModeLabelText();
+		clearSelection()
+		updateModeLabelText()
 		if dropdownObj then
 			local ok, err = pcall(function()
-				dropdownObj:SetValue({});
-			end);
+				dropdownObj:SetValue({})
+			end)
 			if not ok then
-				warn("[AutoFarm] Failed to reset prompt selection:", err);
-			end;
-		end;
-	end;
-	setBypassOverseer(true);
-	setBypassLurker(true);
-	setBypassWatch(true);
-	setBypassFlower(true);
-	setBypassAbyss(true);
-	setBypassTaker(true);
-	setBypassChase(true);
-	setBypassVacant(true);
-end;
+				warn("[AutoFarm] Failed to reset prompt selection:", err)
+			end
+		end
+	end
+	setBypassOverseer(true)
+	setBypassLurker(true)
+	setBypassWatch(true)
+	setBypassFlower(true)
+	setBypassAbyss(true)
+	setBypassTaker(true)
+	setBypassChase(true)
+	setBypassVacant(true)
+end
 miscGroup:AddButton({
 	Name = "Hide Value",
 	Callback = function()
-		LocalPlayer.Character.Hiding.Value = not LocalPlayer.Character.Hiding.Value;
-	end
-});
+		LocalPlayer.Character.Hiding.Value = not LocalPlayer.Character.Hiding.Value
+	end,
+})
 miscGroup:AddButton({
 	Name = "Teleport to Door",
 	Callback = function()
-		ED_tbl.tpToDoor();
-	end
-});
+		ED_tbl.tpToDoor()
+	end,
+})
 miscGroup:AddButton({
 	Name = "Teleport to Key",
 	Callback = function()
-		ED_tbl.tpToKey();
-	end
-});
+		ED_tbl.tpToKey()
+	end,
+})
 miscGroup:AddButton({
 	Name = "Teleport to Lever",
 	Callback = function()
-		ED_tbl.tpToLever();
-	end
-});
+		ED_tbl.tpToLever()
+	end,
+})
 miscGroup:AddButton({
 	Name = "Run Boss Room",
 	Callback = function()
 		task.defer(function()
-			ED_tbl.runBossIfPossible(true);
-		end);
-	end
-});
+			ED_tbl.runBossIfPossible(true)
+		end)
+	end,
+})
 miscGroup:AddToggle({
 	Name = "Auto Farm",
 	CurrentValue = (getgenv()).autoFarm,
 	Flag = "AutoFarm",
 	Callback = function(v)
-		(getgenv()).autoFarm = v;
+		(getgenv()).autoFarm = v
 		if v then
-			ensureAutoFarmSafety();
-			ED_tbl.runBossIfPossible(true);
-		end;
-	end
-});
-miscGroup:AddSection("Notifications");
+			ensureAutoFarmSafety()
+			ED_tbl.runBossIfPossible(true)
+		end
+	end,
+})
+miscGroup:AddSection("Notifications")
 miscGroup:AddInput({
 	Name = "Notification Text",
 	PlaceholderText = "Text",
 	RemoveTextAfterFocusLost = false,
 	Callback = function(t)
-		(getgenv()).Notifv1 = t;
-	end
-});
+		(getgenv()).Notifv1 = t
+	end,
+})
 miscGroup:AddButton({
 	Name = "Send Notification",
 	Callback = function()
@@ -3026,75 +3052,75 @@ miscGroup:AddButton({
 			Title = "Notification",
 			Content = (getgenv()).Notifv1 or "Door",
 			Duration = 3,
-			Image = decalID
-		});
-	end
-});
-local tabInfo = Win:AddTab("Info/Stats", "info", "Live statistics");
-local runGroup = tabInfo:AddGroupbox("Run Progress", "map", "left");
-runGroup:AddSection("Rooms");
-local L_rooms = runGroup:AddLabel("Rooms: " .. ED_tbl.playerRoom());
-local L_cur = runGroup:AddLabel("Current Room: " .. ED_tbl.curRoom());
-runGroup:AddSection("Boss");
-local L_code = runGroup:AddLabel("Boss Code: N/A");
-local lastCode = nil;
+			Image = decalID,
+		})
+	end,
+})
+local tabInfo = Win:AddTab("Info/Stats", "info", "Live statistics")
+local runGroup = tabInfo:AddGroupbox("Run Progress", "map", "left")
+runGroup:AddSection("Rooms")
+local L_rooms = runGroup:AddLabel("Rooms: " .. ED_tbl.playerRoom())
+local L_cur = runGroup:AddLabel("Current Room: " .. ED_tbl.curRoom())
+runGroup:AddSection("Boss")
+local L_code = runGroup:AddLabel("Boss Code: N/A")
+local lastCode = nil
 local function setBossCode(c)
-	lastCode = c;
+	lastCode = c
 	if L_code then
-		L_code:Set("Boss Code: " .. (c or "N/A"));
-	end;
-end;
-runGroup:AddSection("Currency");
-local L_bits = runGroup:AddLabel("Bits: " .. ED_tbl.playerBits());
-local L_dbl = runGroup:AddLabel("Double Bits: " .. ED_tbl.doubleBits());
-local L_rev;
+		L_code:Set("Boss Code: " .. (c or "N/A"))
+	end
+end
+runGroup:AddSection("Currency")
+local L_bits = runGroup:AddLabel("Bits: " .. ED_tbl.playerBits())
+local L_dbl = runGroup:AddLabel("Double Bits: " .. ED_tbl.doubleBits())
+local L_rev
 if game.PlaceId ~= pCLASS then
-	runGroup:AddSection("Revives");
-	L_rev = runGroup:AddLabel("Revive Price: " .. ED_tbl.revivePrice());
-end;
-local chanceGroup = tabInfo:AddGroupbox("Odds & Events", "activity", "left");
-local L_phil = chanceGroup:AddLabel("Phil Chance: " .. ED_tbl.phil());
-local L_spider = chanceGroup:AddLabel("Spider Chance: " .. ED_tbl.spider());
+	runGroup:AddSection("Revives")
+	L_rev = runGroup:AddLabel("Revive Price: " .. ED_tbl.revivePrice())
+end
+local chanceGroup = tabInfo:AddGroupbox("Odds & Events", "activity", "left")
+local L_phil = chanceGroup:AddLabel("Phil Chance: " .. ED_tbl.phil())
+local L_spider = chanceGroup:AddLabel("Spider Chance: " .. ED_tbl.spider())
 if game.PlaceId == pREN then
-	chanceGroup:AddSection("Collectibles");
-	L_fuz = chanceGroup:AddLabel("Fuzzi: " .. ED_tbl.fuz());
-	L_zav = chanceGroup:AddLabel("Zav: " .. ED_tbl.zav());
-	L_jake = chanceGroup:AddLabel("Jake: " .. ED_tbl.jake());
-	L_blue = chanceGroup:AddLabel("Blue: " .. ED_tbl.blue());
-	L_alan = chanceGroup:AddLabel("Alan: " .. ED_tbl.alan());
-end;
-local playerGroup = tabInfo:AddGroupbox("Player Stats", "user", "right");
-local L_fame, L_deaths, L_rift, L_group;
+	chanceGroup:AddSection("Collectibles")
+	L_fuz = chanceGroup:AddLabel("Fuzzi: " .. ED_tbl.fuz())
+	L_zav = chanceGroup:AddLabel("Zav: " .. ED_tbl.zav())
+	L_jake = chanceGroup:AddLabel("Jake: " .. ED_tbl.jake())
+	L_blue = chanceGroup:AddLabel("Blue: " .. ED_tbl.blue())
+	L_alan = chanceGroup:AddLabel("Alan: " .. ED_tbl.alan())
+end
+local playerGroup = tabInfo:AddGroupbox("Player Stats", "user", "right")
+local L_fame, L_deaths, L_rift, L_group
 if game.PlaceId == pREN then
-	L_fame = playerGroup:AddLabel("Fame: " .. ED_tbl.fame());
-	L_deaths = playerGroup:AddLabel("Deaths: " .. ED_tbl.deaths());
-	L_rift = playerGroup:AddLabel("Rift: " .. ED_tbl.rift());
-	L_group = playerGroup:AddLabel("Joined Group: " .. ED_tbl.inGroup());
-end;
-local sessionGroup = tabInfo:AddGroupbox("Session", "users", "right");
-local L_alive = sessionGroup:AddLabel("Players Alive: " .. ED_tbl.alive());
-local L_ingame = sessionGroup:AddLabel("Players In Game: " .. ED_tbl.inGame());
-local tabSettings = Win:AddTab("Settings", "cog", "UI customization");
-local settingsTabRaw = tabSettings and tabSettings._tab;
+	L_fame = playerGroup:AddLabel("Fame: " .. ED_tbl.fame())
+	L_deaths = playerGroup:AddLabel("Deaths: " .. ED_tbl.deaths())
+	L_rift = playerGroup:AddLabel("Rift: " .. ED_tbl.rift())
+	L_group = playerGroup:AddLabel("Joined Group: " .. ED_tbl.inGroup())
+end
+local sessionGroup = tabInfo:AddGroupbox("Session", "users", "right")
+local L_alive = sessionGroup:AddLabel("Players Alive: " .. ED_tbl.alive())
+local L_ingame = sessionGroup:AddLabel("Players In Game: " .. ED_tbl.inGame())
+local tabSettings = Win:AddTab("Settings", "cog", "UI customization")
+local settingsTabRaw = tabSettings and tabSettings._tab
 if settingsTabRaw then
-	local settingsMenu = settingsTabRaw:AddLeftGroupbox("Menu", "wrench");
+	local settingsMenu = settingsTabRaw:AddLeftGroupbox("Menu", "wrench")
 	if settingsMenu then
 		settingsMenu:AddToggle("Settings_CustomCursor", {
 			Text = "Use Custom Cursor",
 			Default = not (ObsidianUI.Library and ObsidianUI.Library.ShowCustomCursor == false),
 			Callback = function(value)
 				if ObsidianUI.Library then
-					ObsidianUI.Library.ShowCustomCursor = value;
-				end;
-			end
-		});
+					ObsidianUI.Library.ShowCustomCursor = value
+				end
+			end,
+		})
 		settingsMenu:AddToggle("Settings_NotifySound", {
 			Text = "Notification Sound",
 			Default = ObsidianUI.NotifySoundEnabled ~= false,
 			Callback = function(value)
-				ObsidianUI.NotifySoundEnabled = value and true or false;
-			end
-		});
+				ObsidianUI.NotifySoundEnabled = value and true or false
+			end,
+		})
 		settingsMenu:AddSlider("Settings_NotifyVolume", {
 			Text = "Notification Volume",
 			Default = tonumber(ObsidianUI.NotifySoundVolume) or 2,
@@ -3102,29 +3128,29 @@ if settingsTabRaw then
 			Max = 10,
 			Rounding = 1,
 			Callback = function(value)
-				local num = tonumber(value);
+				local num = tonumber(value)
 				if num then
-					ObsidianUI.NotifySoundVolume = math.clamp(num, 0, 10);
-				end;
-			end
-		});
+					ObsidianUI.NotifySoundVolume = math.clamp(num, 0, 10)
+				end
+			end,
+		})
 		settingsMenu:AddDropdown("Settings_NotifySide", {
 			Text = "Notification Side",
 			Values = {
 				"Left",
-				"Right"
+				"Right",
 			},
 			Default = ObsidianUI.Library and ObsidianUI.Library.NotifySide or "Left",
 			Callback = function(value)
 				if ObsidianUI.Library and value then
-					ObsidianUI.Library:SetNotifySide(value);
-				end;
-			end
-		});
+					ObsidianUI.Library:SetNotifySide(value)
+				end
+			end,
+		})
 		local function currentDpiPercent()
-			local scale = ObsidianUI.Library and ObsidianUI.Library.DPIScale or 1;
-			return math.floor(scale * 100 + 0.5);
-		end;
+			local scale = ObsidianUI.Library and ObsidianUI.Library.DPIScale or 1
+			return math.floor(scale * 100 + 0.5)
+		end
 		settingsMenu:AddDropdown("Settings_DPI", {
 			Text = "DPI Scale",
 			Values = {
@@ -3134,704 +3160,714 @@ if settingsTabRaw then
 				"125%",
 				"150%",
 				"175%",
-				"200%"
+				"200%",
 			},
 			Default = tostring(currentDpiPercent()) .. "%",
 			Callback = function(value)
 				if not (ObsidianUI.Library and value) then
-					return;
-				end;
-				local cleaned = (tostring(value)):gsub("[^%d%.]", "");
-				local pct = tonumber(cleaned);
+					return
+				end
+				local cleaned = (tostring(value)):gsub("[^%d%.]", "")
+				local pct = tonumber(cleaned)
 				if pct then
-					ObsidianUI.Library:SetDPIScale(pct);
-				end;
-			end
-		});
-		settingsMenu:AddDivider();
+					ObsidianUI.Library:SetDPIScale(pct)
+				end
+			end,
+		})
+		settingsMenu:AddDivider()
 		local function resolveMenuKeyDefault()
-			local key = ObsidianUI.Library and ObsidianUI.Library.ToggleKeybind and ObsidianUI.Library.ToggleKeybind.Value;
+			local key = ObsidianUI.Library
+				and ObsidianUI.Library.ToggleKeybind
+				and ObsidianUI.Library.ToggleKeybind.Value
 			if typeof(key) == "EnumItem" and key.EnumType == Enum.KeyCode then
-				return key.Name;
+				return key.Name
 			elseif typeof(key) == "string" and key ~= "" then
-				return key;
-			end;
-			return "RightControl";
-		end;
-		local defaultMenuKey = resolveMenuKeyDefault();
-		local menuLabel = settingsMenu:AddLabel("Menu Bind");
+				return key
+			end
+			return "RightControl"
+		end
+		local defaultMenuKey = resolveMenuKeyDefault()
+		local menuLabel = settingsMenu:AddLabel("Menu Bind")
 		if menuLabel and menuLabel.AddKeyPicker then
 			menuLabel:AddKeyPicker("MenuKeybind", {
 				Default = defaultMenuKey,
 				NoUI = true,
-				Text = "Menu keybind"
-			});
-		end;
+				Text = "Menu keybind",
+			})
+		end
 		settingsMenu:AddButton("Unload Script", function()
-			ObsidianUI:Cleanup();
+			ObsidianUI:Cleanup()
 			if ObsidianUI.Library then
-				ObsidianUI.Library:Unload();
-			end;
-		end);
-	end;
-	local optionsRef = ObsidianUI.Library and ObsidianUI.Library.Options;
+				ObsidianUI.Library:Unload()
+			end
+		end)
+	end
+	local optionsRef = ObsidianUI.Library and ObsidianUI.Library.Options
 	if optionsRef and optionsRef.MenuKeybind then
-		ObsidianUI.Library.ToggleKeybind = optionsRef.MenuKeybind;
-	end;
+		ObsidianUI.Library.ToggleKeybind = optionsRef.MenuKeybind
+	end
 	if ObsidianUI.ThemeManager then
-		ObsidianUI.ThemeManager:ApplyToTab(settingsTabRaw);
-	end;
+		ObsidianUI.ThemeManager:ApplyToTab(settingsTabRaw)
+	end
 	if ObsidianUI.SaveManager then
 		ObsidianUI.SaveManager:SetIgnoreIndexes({
-			"MenuKeybind"
-		});
-		ObsidianUI.SaveManager:BuildConfigSection(settingsTabRaw);
-	end;
-end;
+			"MenuKeybind",
+		})
+		ObsidianUI.SaveManager:BuildConfigSection(settingsTabRaw)
+	end
+end
 task.spawn(function()
 	while task.wait(0.5) do
 		pcall(function()
-			L_rooms:Set("Rooms: " .. ED_tbl.playerRoom());
-			L_bits:Set("Bits: " .. ED_tbl.playerBits());
-			L_dbl:Set("Double Bits: " .. ED_tbl.doubleBits());
-			L_cur:Set("Current Room: " .. ED_tbl.curRoom());
-			L_phil:Set("Phil Chance: " .. ED_tbl.phil());
-			L_spider:Set("Spider Chance: " .. ED_tbl.spider());
+			L_rooms:Set("Rooms: " .. ED_tbl.playerRoom())
+			L_bits:Set("Bits: " .. ED_tbl.playerBits())
+			L_dbl:Set("Double Bits: " .. ED_tbl.doubleBits())
+			L_cur:Set("Current Room: " .. ED_tbl.curRoom())
+			L_phil:Set("Phil Chance: " .. ED_tbl.phil())
+			L_spider:Set("Spider Chance: " .. ED_tbl.spider())
 			if L_rev then
-				L_rev:Set("Revive Price: " .. ED_tbl.revivePrice());
-			end;
-			L_alive:Set("Players Alive: " .. ED_tbl.alive());
-			L_ingame:Set("Players In Game: " .. ED_tbl.inGame());
+				L_rev:Set("Revive Price: " .. ED_tbl.revivePrice())
+			end
+			L_alive:Set("Players Alive: " .. ED_tbl.alive())
+			L_ingame:Set("Players In Game: " .. ED_tbl.inGame())
 			if game.PlaceId == pREN then
-				L_fame:Set("Fame: " .. ED_tbl.fame());
-				L_deaths:Set("Deaths: " .. ED_tbl.deaths());
-				L_rift:Set("Rift: " .. ED_tbl.rift());
-				L_group:Set("Joined Group: " .. ED_tbl.inGroup());
+				L_fame:Set("Fame: " .. ED_tbl.fame())
+				L_deaths:Set("Deaths: " .. ED_tbl.deaths())
+				L_rift:Set("Rift: " .. ED_tbl.rift())
+				L_group:Set("Joined Group: " .. ED_tbl.inGroup())
 				if L_fuz then
-					L_fuz:Set("Fuzzi: " .. ED_tbl.fuz());
-					L_zav:Set("Zav: " .. ED_tbl.zav());
-					L_jake:Set("Jake: " .. ED_tbl.jake());
-					L_blue:Set("Blue: " .. ED_tbl.blue());
-					L_alan:Set("Alan: " .. ED_tbl.alan());
-				end;
-			end;
-		end);
-	end;
-end);
+					L_fuz:Set("Fuzzi: " .. ED_tbl.fuz())
+					L_zav:Set("Zav: " .. ED_tbl.zav())
+					L_jake:Set("Jake: " .. ED_tbl.jake())
+					L_blue:Set("Blue: " .. ED_tbl.blue())
+					L_alan:Set("Alan: " .. ED_tbl.alan())
+				end
+			end
+		end)
+	end
+end)
 ED_tbl.trackConnection(Players.PlayerAdded:Connect(function(pl)
 	task.defer(function()
-		local n = pl.Name;
-		local d = pl.DisplayName;
-		local f = n:lower() == d:lower() and "@" .. n or d .. " (@" .. n .. ")";
+		local n = pl.Name
+		local d = pl.DisplayName
+		local f = n:lower() == d:lower() and "@" .. n or d .. " (@" .. n .. ")"
 		ObsidianUI:Notify({
 			Title = "Player Join Log",
 			Content = f .. " Joined",
 			Duration = 3,
-			Image = decalID
-		});
-	end);
-end));
+			Image = decalID,
+		})
+	end)
+end))
 task.spawn(function()
-	local pg = LocalPlayer:WaitForChild("PlayerGui", 5);
+	local pg = LocalPlayer:WaitForChild("PlayerGui", 5)
 	if not pg then
-		return;
-	end;
+		return
+	end
 	ED_tbl.trackConnection(pg.DescendantAdded:Connect(function(txt)
 		if not txt:IsA("TextLabel") then
-			return;
-		end;
-		local parent = txt.Parent;
+			return
+		end
+		local parent = txt.Parent
 		if not parent or parent.Name:lower() ~= "hintframe" then
-			return;
-		end;
-		local t = txt.Text:lower();
+			return
+		end
+		local t = txt.Text:lower()
 		if t:find("cannot pick that up") or t:find("you already have this") then
 			task.defer(function()
 				if txt and txt.Parent then
-					txt:Destroy();
-				end;
-			end);
-		end;
-	end));
-end);
+					txt:Destroy()
+				end
+			end)
+		end
+	end))
+end)
 ED_tbl.trackConnection(Entities.ChildAdded:Connect(function(ent)
-	handleEntitySpawn(ent);
-end));
+	handleEntitySpawn(ent)
+end))
 ED_tbl.trackConnection(Entities.DescendantAdded:Connect(function(inst)
 	handleEntitySpawn(inst, {
-		notify = true
-	});
-end));
+		notify = true,
+	})
+end))
 ED_tbl.trackConnection(Entities.DescendantRemoving:Connect(function(inst)
-	local root = ED_tbl.findEntityRoot(inst) or inst;
+	local root = ED_tbl.findEntityRoot(inst) or inst
 	if notifiedEntities[root] then
-		notifiedEntities[root] = nil;
-	end;
-end));
+		notifiedEntities[root] = nil
+	end
+end))
 ED_tbl.trackConnection((Values.MimicActivated:GetPropertyChangedSignal("Value")):Connect(function()
 	if (getgenv()).entityNotif then
 		task.defer(function()
-			local txt = Values.MimicActivated.Value and "Mimic Is Enabled" or "Mimic Is Disabled";
+			local txt = Values.MimicActivated.Value and "Mimic Is Enabled" or "Mimic Is Disabled"
 			ObsidianUI:Notify({
 				Title = "Entity",
 				Content = txt,
 				Duration = 3,
-				Image = decalID
-			});
-		end);
-	end;
-end));
-ED_tbl.trackConnection(((S("ReplicatedStorage")).Remotes:FindFirstChild("E_A", true)).OnClientEvent:Connect(function(ent)
-	if (tostring(ent)):lower() == "greed" then
-		task.defer(function()
-			greedToken += 1;
-			local token = greedToken;
-			greedActive = true;
-			task.delay(9, function()
-				if greedToken == token then
-					greedActive = false;
-				end;
-			end);
-		end);
-		if (getgenv()).entityNotif then
-			ObsidianUI:Notify({
-				Title = "Entity",
-				Content = "Greed Spawned",
-				Duration = 3,
-				Image = decalID
-			});
-		end;
-	end;
-	if (getgenv()).remoteThingy then
-		task.defer(function()
-			ObsidianUI:Notify({
-				Title = "Remote Call",
-				Content = "Returned: " .. tostring(ent),
-				Duration = 3,
-				Image = decalID
-			});
-		end);
-	end;
-end));
+				Image = decalID,
+			})
+		end)
+	end
+end))
+ED_tbl.trackConnection(
+	((S("ReplicatedStorage")).Remotes:FindFirstChild("E_A", true)).OnClientEvent:Connect(function(ent)
+		if (tostring(ent)):lower() == "greed" then
+			task.defer(function()
+				greedToken += 1
+				local token = greedToken
+				greedActive = true
+				task.delay(9, function()
+					if greedToken == token then
+						greedActive = false
+					end
+				end)
+			end)
+			if (getgenv()).entityNotif then
+				ObsidianUI:Notify({
+					Title = "Entity",
+					Content = "Greed Spawned",
+					Duration = 3,
+					Image = decalID,
+				})
+			end
+		end
+		if (getgenv()).remoteThingy then
+			task.defer(function()
+				ObsidianUI:Notify({
+					Title = "Remote Call",
+					Content = "Returned: " .. tostring(ent),
+					Duration = 3,
+					Image = decalID,
+				})
+			end)
+		end
+	end)
+)
 ED_tbl.trackConnection(Rooms.DescendantAdded:Connect(function(o)
 	if not o:IsA("BasePart") then
-		return;
-	end;
-	local n = o.Name:lower();
+		return
+	end
+	local n = o.Name:lower()
 	if (getgenv()).keyESP and n == "roomkey" and o.Parent and o.Parent.Name:lower() ~= "door" then
 		task.defer(function()
-			CreateESP(o, Color3.new(1, 1, 0), "Key");
-		end);
+			CreateESP(o, Color3.new(1, 1, 0), "Key")
+		end)
 	elseif (getgenv()).bitESP and n == "bit" and isInteracting(o) then
 		task.defer(function()
-			CreateESP(o, Color3.new(1, 0.666667, 0));
-		end);
+			CreateESP(o, Color3.new(1, 0.666667, 0))
+		end)
 	elseif (getgenv()).leverESP and n == "lever" and isInteracting(o) then
 		task.defer(function()
-			CreateESP(o, Color3.fromRGB(139, 145, 165));
-		end);
+			CreateESP(o, Color3.fromRGB(139, 145, 165))
+		end)
 	elseif (getgenv()).batteryESP and n == "battery" and isInteracting(o) then
 		task.defer(function()
-			CreateESP(o, Color3.new(0, 0.666667, 0));
-		end);
-	end;
+			CreateESP(o, Color3.new(0, 0.666667, 0))
+		end)
+	end
 end));
-	(function()
-local remNP = nil;
-task.spawn(function()
-	pcall(function()
-		remNP = WaitInst(S("ReplicatedStorage"), "NP_E", 10);
-	end);
-end);
-local godModeAvailable = false;
-local function updateGodModeAvailable()
-	local v = curRoomVal.Value;
-	if type(v) ~= "number" then
-		return;
-	end;
-	local avail = gmAvail(v);
-	if avail and (not godModeAvailable) then
-		godModeAvailable = true;
-		gmNote("God Mode is now available to use.", 4);
-	elseif not avail then
-		godModeAvailable = false;
-	end;
-end;
-updateGodModeAvailable();
-ED_tbl.trackConnection((curRoomVal:GetPropertyChangedSignal("Value")):Connect(function()
-	updateGodModeAvailable();
-end));
-ED_tbl.trackConnection(Rooms.ChildRemoved:Connect(function(c)
-	if c and c:IsA("Model") and c.Name:match("^Room%d+") then
-		updateGodModeAvailable();
-	end;
-end));
-local function getChar()
-	local ch = LocalPlayer.Character;
-	if ch then
-		return ch;
-	end;
-	return LocalPlayer.CharacterAdded:Wait();
-end;
-local function tpTo(o)
-	if not o then
-		return;
-	end;
-	local cf;
-	if o:IsA("Model") then
-		cf = o:GetPivot();
-	elseif o:IsA("BasePart") then
-		cf = o.CFrame;
-	else
-		local m = o:FindFirstAncestorOfClass("Model");
-		if m then
-			cf = m:GetPivot();
-		end;
-	end;
-	if cf then
-		(getChar()):PivotTo(cf);
-	end;
-end;
-local function waitPlay(snd, tm)
-	if not snd then
-		if tm and tm > 0 then
-			task.wait(tm);
-		end;
-		return;
-	end;
-	local done = false;
-	local c;
-	c = snd.Played:Connect(function()
-		done = true;
-		c:Disconnect();
-	end);
-	if snd.IsPlaying then
-		done = true;
-		c:Disconnect();
-	end;
-	local t0 = tick();
-	local lim = tm or 10;
-	while not done and tick() - t0 < lim do
-		task.wait();
-	end;
-end;
-local function imgKey(img)
-	if not img or (not (img:IsA("ImageLabel") or img:IsA("ImageButton"))) then
-		return nil;
-	end;
-	local im = img.Image or "";
-	local off = img.ImageRectOffset;
-	local sz = img.ImageRectSize;
-	local rot = img.Rotation;
-	return im .. "|" .. off.X .. "," .. off.Y .. "|" .. sz.X .. "," .. sz.Y .. "|" .. rot;
-end;
-local function romanNum(s)
-	s = (tostring(s or "")):upper();
-	if s == "" then
-		return nil;
-	end;
-	local map = {
-		I = 1,
-		V = 5,
-		X = 10
-	};
-	local t = 0;
-	local prev = 0;
-	for i = #s, 1, -1 do
-		local ch = s:sub(i, i);
-		local v = map[ch] or 0;
-		if v < prev then
-			t -= v;
-		else
-			t += v;
-		end;
-		prev = v;
-	end;
-	if t <= 0 then
-		return nil;
-	end;
-	return t;
-end;
-local function findFrame(root)
-	if not root then
-		return nil;
-	end;
-	local sg = root:FindFirstChildWhichIsA("SurfaceGui", true);
-	if sg then
-		local fr = sg:FindFirstChild("Frame", true);
-		if fr then
-			return fr;
-		end;
-	end;
-	return root:FindFirstChild("Frame", true);
-end;
-local function numMap(pz)
-	if not pz then
-		return nil;
-	end;
-	local nr = pz:FindFirstChild("SolutionNumberReveal");
-	if not nr then
-		return nil;
-	end;
-	local fr = findFrame(nr);
-	if not fr then
-		return nil;
-	end;
-	local map = {};
-	for _, ex in ipairs(fr:GetChildren()) do
-		if ex.Name == "NumberExample" or ex:IsA("Frame") then
-			local img = ex:FindFirstChild("ImageShape", true);
-			local lbl = ex:FindFirstChild("OrderLabel", true);
-			if img and lbl and lbl:IsA("TextLabel") then
-				local k = imgKey(img);
-				local t = tostring(lbl.Text or "");
-				local d = t:match("(%d+)");
-				if k and d then
-					map[k] = d;
-				end;
-			end;
-		end;
-	end;
-	return map;
-end;
-local function codeFromOrder(pz, map)
-	if not map then
-		return nil;
-	end;
-	local orv = pz:FindFirstChild("SolutionOrderReveal");
-	if not orv then
-		return nil;
-	end;
-	local fr = findFrame(orv);
-	if not fr then
-		return nil;
-	end;
-	local pos = {};
-	local maxPos = 0;
-	for _, ex in ipairs(fr:GetChildren()) do
-		if ex.Name == "OrderExample" or ex:IsA("Frame") then
-			local img = ex:FindFirstChild("ImageShape", true);
-			local lbl = ex:FindFirstChild("OrderLabel", true);
-			if img and lbl and lbl:IsA("TextLabel") then
-				local k = imgKey(img);
-				local r = tostring(lbl.Text or "");
-				local p = romanNum(r);
-				local d = map[k];
-				if p and d then
-					pos[p] = d;
-					if p > maxPos then
-						maxPos = p;
-					end;
-				end;
-			end;
-		end;
-	end;
-	if maxPos == 0 then
-		return nil;
-	end;
-	local out = {};
-	for i = 1, maxPos do
-		out[i] = pos[i] or "?";
-	end;
-	return table.concat(out);
-end;
-local busyBoss = false;
-local bossStarted = {};
-local bossCompleted = {};
-local checkRoom;
-ED_tbl.runBossIfPossible = function(force)
-	local n = curRoomVal.Value;
-	if typeof(n) ~= "number" then
-		return;
-	end;
-	if bossCompleted[n] then
-		return;
-	end;
-	if (not force) and bossStarted[n] then
-		return;
-	end;
-
-	local r = Rooms:FindFirstChild("Room" .. n);
-	if not ED_tbl.isBossRoom(r) then
-		return;
-	end;
-
-	local pz = r:FindFirstChild("Puzzel") or r:FindFirstChild("Puzzle");
-	if not pz then
-		pz = r:FindFirstChild("Puzzle") or r:FindFirstChild("Puzzel") or r;
-	end;
-
-	if busyBoss then
-		return;
-	end;
-
-	bossStarted[n] = true;
+(function()
+	local remNP = nil
 	task.spawn(function()
-		ED_tbl.doBoss(r, pz, n);
-	end);
-end;
-local function bruteCode(room, pz)
-	local gate = room:FindFirstChild("GateFinal") or room:FindFirstChild("GateFinal", true);
-	local openS = gate and (gate:FindFirstChild("Opening") or gate:FindFirstChildWhichIsA("Sound", true));
-	local found = false;
-	local last = nil;
-	local tries = 0;
-	if openS then
-		openS.Played:Connect(function()
-			if not found then
-				found = true;
-				print("FOUND CODE:", last, "after", tries, "tries");
-				if last then
-					setBossCode(tostring(last));
-				end;
-			end;
-		end);
-	end;
-	local map = numMap(pz);
-	local code = codeFromOrder(pz, map);
-	if code and code ~= "" and (not code:find("%?")) then
-		last = code;
-		tries = 1;
-		setBossCode(tostring(code));
-		if remNP then
-			remNP:FireServer(code);
-		end;
-		local t0 = tick();
-		while not found and tick() - t0 < 5 do
-			task.wait();
-		end;
-		if found then
-			task.wait(1);
-			return;
-		end;
-	end;
-	for i = 0, 9999 do
-		if found then
-			break;
-		end;
-		local c = string.format("%04d", i);
-		last = c;
-		tries += 1;
-		if remNP then
-			remNP:FireServer(c);
-		end;
-		if tries % 50 == 0 and last then
-			setBossCode(tostring(last));
-		end;
-	end;
-	if found then
-		task.wait(1);
-	end;
-end;
-local function getLeverGates(room, maxWait)
-	local t0 = tick();
-	local gates = {};
-	repeat
-		gates = {};
-		for _, d in ipairs(room:QueryDescendants("Instance")) do
-			if d:IsA("Model") and d.Name == "LeverGates" then
-				gates[(#gates) + 1] = d;
-			end;
-		end;
-		if #gates > 0 or (not maxWait) then
-			break;
-		end;
-		task.wait(0.25);
-	until tick() - t0 >= maxWait;
-	return gates;
-end;
-ED_tbl.doBoss = function(room, pz, roomIndex)
-	if busyBoss then
-		return;
-	end;
-	busyBoss = true;
-	local function anchorTo(target, interval)
-		local alive = true;
-		local delay = interval or 0.3;
-		task.spawn(function()
-			while alive and busyBoss do
-				if target and target.Parent then
-					pcall(tpTo, target);
-				else
-					break;
-				end;
-				task.wait(delay);
-			end;
-		end);
-		return function()
-			alive = false;
-		end;
-	end;
-	local ls = room:FindFirstChild("LeverStart");
-	if not ls then
-		busyBoss = false;
-		if roomIndex ~= nil then
-			bossCompleted[roomIndex] = true;
-		end;
-		return;
-	end;
-	tpTo(ls);
-	local stopAnchor = anchorTo(ls, 0.35);
-	local pp = ls:FindFirstChildWhichIsA("ProximityPrompt", true);
-	local lever = ls:FindFirstChild("Lever", true);
-	local pullS = lever and (lever:FindFirstChild("Pull") or lever:FindFirstChildWhichIsA("Sound", true));
-	if pp then
-		task.wait(0.5);
-		pcall(fireproximityprompt, pp);
-	end;
-	stopAnchor();
-	waitPlay(pullS, 10);
-	task.wait(7);
-	local gates = getLeverGates(room, 15);
-	for _, gModel in ipairs(gates) do
-		local lv = gModel:FindFirstChild("Lever", true) or gModel;
-		local gpp = gModel:FindFirstChildWhichIsA("ProximityPrompt", true);
-		local gsnd = lv:FindFirstChild("Pull") or gModel:FindFirstChild("Pull", true) or gModel:FindFirstChildWhichIsA("Sound", true);
-		tpTo(lv);
-		stopAnchor = anchorTo(lv, 0.35);
-		task.wait(0.7);
-		if gpp then
-			pcall(fireproximityprompt, gpp);
-		end;
-		stopAnchor();
-		waitPlay(gsnd, 6);
-	end;
-	local numPad = pz:FindFirstChild("NumPad") or room:FindFirstChild("NumPad", true);
-	if numPad then
-		tpTo(numPad);
-		stopAnchor = anchorTo(numPad, 0.35);
-		task.wait(3);
-		bruteCode(room, pz);
-		stopAnchor();
-	end;
-	busyBoss = false;
-	if roomIndex ~= nil then
-		bossCompleted[roomIndex] = true;
-	end;
-end;
-local seenBossRooms = {};
-ED_tbl.isBossRoom = function(r)
-	if not r then
-		return false;
-	end;
-	local rn = r:GetAttribute("RoomName");
-	if typeof(rn) == "string" and rn == "ClockRoom" then
-		return true;
-	end;
-	if r:FindFirstChild("LeverStart", true) then
-		return true;
-	end;
-	if r:FindFirstChild("GateLever", true) then
-		return true;
-	end;
-	if r:FindFirstChild("LeverGates", true) then
-		return true;
-	end;
-	local pz = r:FindFirstChild("Puzzel") or r:FindFirstChild("Puzzle");
-	if pz then
-		return true;
-	end;
-	return false;
-end;
-task.spawn(function()
-	while task.wait(0.35) do
+		pcall(function()
+			remNP = WaitInst(S("ReplicatedStorage"), "NP_E", 10)
+		end)
+	end)
+	local godModeAvailable = false
+	local function updateGodModeAvailable()
 		local v = curRoomVal.Value
-		if typeof(v) ~= "number" then
-			continue
+		if type(v) ~= "number" then
+			return
 		end
-
-		local r = Rooms:FindFirstChild("Room" .. v)
-		if not r or not ED_tbl.isBossRoom(r) then
-			continue
-		end
-
-		local pz = r:FindFirstChild("Puzzel") or r:FindFirstChild("Puzzle") or r
-		local map = numMap(pz)
-		if not map then
-			continue
-		end
-
-		local cd = codeFromOrder(pz, map)
-		if cd and cd ~= "" and cd ~= lastCode then
-			setBossCode(cd)
+		local avail = gmAvail(v)
+		if avail and not godModeAvailable then
+			godModeAvailable = true
+			gmNote("God Mode is now available to use.", 4)
+		elseif not avail then
+			godModeAvailable = false
 		end
 	end
-end)
-local function isBossPending()
-	local n = curRoomVal.Value;
-	if typeof(n) ~= "number" then
-		return false;
-	end;
-	if bossCompleted[n] then
-		return false;
-	end;
-	local r = Rooms:FindFirstChild("Room" .. n);
-	if not ED_tbl.isBossRoom(r) then
-		return false;
-	end;
-	return true;
-end;
-checkRoom = function()
-	if not (getgenv()).autoFarm then
-		return;
-	end;
-	ED_tbl.runBossIfPossible(false);
-end;
-(curRoomVal:GetPropertyChangedSignal("Value")):Connect(checkRoom);
-checkRoom();
-task.spawn(function()
-	while true do
-		if (getgenv()).autoFarm and (not busyBoss) and (not isBossPending()) then
-			pcall(ED_tbl.tpToDoor, true);
-			task.wait(0.1);
-			pcall(ED_tbl.tpToKey, true);
-			task.wait(0.1);
-			pcall(ED_tbl.tpToLever, true);
-			task.wait(0.1);
+	updateGodModeAvailable()
+	ED_tbl.trackConnection((curRoomVal:GetPropertyChangedSignal("Value")):Connect(function()
+		updateGodModeAvailable()
+	end))
+	ED_tbl.trackConnection(Rooms.ChildRemoved:Connect(function(c)
+		if c and c:IsA("Model") and c.Name:match("^Room%d+") then
+			updateGodModeAvailable()
+		end
+	end))
+	local function getChar()
+		local ch = LocalPlayer.Character
+		if ch then
+			return ch
+		end
+		return LocalPlayer.CharacterAdded:Wait()
+	end
+	local function tpTo(o)
+		if not o then
+			return
+		end
+		local cf
+		if o:IsA("Model") then
+			cf = o:GetPivot()
+		elseif o:IsA("BasePart") then
+			cf = o.CFrame
 		else
-			task.wait(0.1);
-		end;
-	end;
-end);
-ObsidianUI:LoadConfiguration();
-ED_tbl.trackConnection(RunService.RenderStepped:Connect(function()
-	if (getgenv()).chaos then
-		local delay = tonumber((getgenv()).promptDelay) or 0;
-		local now = tick();
-		if delay <= 0 or now - lastPromptTick >= delay then
-			lastPromptTick = now;
-			firePrompts();
-		end;
-	end;
-end));
-cameraConn = ED_tbl.trackConnection((workspace:GetPropertyChangedSignal("CurrentCamera")):Connect(function()
-	currentCamera = workspace.CurrentCamera;
-	if (getgenv()).wide then
-		ED_tbl.bindFOV(currentCamera);
-	end;
-end));
-task.spawn(function()
-	while task.wait(0.15) do
-		local ch = LocalPlayer.Character;
-		local h = ch and ch:FindFirstChildOfClass("Humanoid");
-		if h then
-			if (getgenv()).sped then
-				h.WalkSpeed = (getgenv()).speed;
-			end;
-			if (getgenv()).jumpy then
-				h.JumpPower = (getgenv()).jump;
-			end;
-			tryAutoHeal(h);
-		end;
-	end;
-end);
-if not ED_runtime_env.__EDMB_FunctionFixerLoaded then
-	ED_runtime_env.__EDMB_FunctionFixerLoaded = true;
-	local okFixer = pcall(function()
-		loadstring(game:HttpGet("https://raw.githubusercontent.com/ltseverydayyou/uuuuuuu/refs/heads/main/functionFixer.lua"))();
-	end);
-	if not okFixer then
-		ED_runtime_env.__EDMB_FunctionFixerLoaded = false;
-	end;
-end;
-	end)();
+			local m = o:FindFirstAncestorOfClass("Model")
+			if m then
+				cf = m:GetPivot()
+			end
+		end
+		if cf then
+			(getChar()):PivotTo(cf)
+		end
+	end
+	local function waitPlay(snd, tm)
+		if not snd then
+			if tm and tm > 0 then
+				task.wait(tm)
+			end
+			return
+		end
+		local done = false
+		local c
+		c = snd.Played:Connect(function()
+			done = true
+			c:Disconnect()
+		end)
+		if snd.IsPlaying then
+			done = true
+			c:Disconnect()
+		end
+		local t0 = tick()
+		local lim = tm or 10
+		while not done and tick() - t0 < lim do
+			task.wait()
+		end
+	end
+	local function imgKey(img)
+		if not img or not (img:IsA("ImageLabel") or img:IsA("ImageButton")) then
+			return nil
+		end
+		local im = img.Image or ""
+		local off = img.ImageRectOffset
+		local sz = img.ImageRectSize
+		local rot = img.Rotation
+		return im .. "|" .. off.X .. "," .. off.Y .. "|" .. sz.X .. "," .. sz.Y .. "|" .. rot
+	end
+	local function romanNum(s)
+		s = (tostring(s or "")):upper()
+		if s == "" then
+			return nil
+		end
+		local map = {
+			I = 1,
+			V = 5,
+			X = 10,
+		}
+		local t = 0
+		local prev = 0
+		for i = #s, 1, -1 do
+			local ch = s:sub(i, i)
+			local v = map[ch] or 0
+			if v < prev then
+				t -= v
+			else
+				t += v
+			end
+			prev = v
+		end
+		if t <= 0 then
+			return nil
+		end
+		return t
+	end
+	local function findFrame(root)
+		if not root then
+			return nil
+		end
+		local sg = root:FindFirstChildWhichIsA("SurfaceGui", true)
+		if sg then
+			local fr = sg:FindFirstChild("Frame", true)
+			if fr then
+				return fr
+			end
+		end
+		return root:FindFirstChild("Frame", true)
+	end
+	local function numMap(pz)
+		if not pz then
+			return nil
+		end
+		local nr = pz:FindFirstChild("SolutionNumberReveal")
+		if not nr then
+			return nil
+		end
+		local fr = findFrame(nr)
+		if not fr then
+			return nil
+		end
+		local map = {}
+		for _, ex in ipairs(fr:GetChildren()) do
+			if ex.Name == "NumberExample" or ex:IsA("Frame") then
+				local img = ex:FindFirstChild("ImageShape", true)
+				local lbl = ex:FindFirstChild("OrderLabel", true)
+				if img and lbl and lbl:IsA("TextLabel") then
+					local k = imgKey(img)
+					local t = tostring(lbl.Text or "")
+					local d = t:match("(%d+)")
+					if k and d then
+						map[k] = d
+					end
+				end
+			end
+		end
+		return map
+	end
+	local function codeFromOrder(pz, map)
+		if not map then
+			return nil
+		end
+		local orv = pz:FindFirstChild("SolutionOrderReveal")
+		if not orv then
+			return nil
+		end
+		local fr = findFrame(orv)
+		if not fr then
+			return nil
+		end
+		local pos = {}
+		local maxPos = 0
+		for _, ex in ipairs(fr:GetChildren()) do
+			if ex.Name == "OrderExample" or ex:IsA("Frame") then
+				local img = ex:FindFirstChild("ImageShape", true)
+				local lbl = ex:FindFirstChild("OrderLabel", true)
+				if img and lbl and lbl:IsA("TextLabel") then
+					local k = imgKey(img)
+					local r = tostring(lbl.Text or "")
+					local p = romanNum(r)
+					local d = map[k]
+					if p and d then
+						pos[p] = d
+						if p > maxPos then
+							maxPos = p
+						end
+					end
+				end
+			end
+		end
+		if maxPos == 0 then
+			return nil
+		end
+		local out = {}
+		for i = 1, maxPos do
+			out[i] = pos[i] or "?"
+		end
+		return table.concat(out)
+	end
+	local busyBoss = false
+	local bossStarted = {}
+	local bossCompleted = {}
+	local checkRoom
+	ED_tbl.runBossIfPossible = function(force)
+		local n = curRoomVal.Value
+		if typeof(n) ~= "number" then
+			return
+		end
+		if bossCompleted[n] then
+			return
+		end
+		if (not force) and bossStarted[n] then
+			return
+		end
+
+		local r = Rooms:FindFirstChild("Room" .. n)
+		if not ED_tbl.isBossRoom(r) then
+			return
+		end
+
+		local pz = r:FindFirstChild("Puzzel") or r:FindFirstChild("Puzzle")
+		if not pz then
+			pz = r:FindFirstChild("Puzzle") or r:FindFirstChild("Puzzel") or r
+		end
+
+		if busyBoss then
+			return
+		end
+
+		bossStarted[n] = true
+		task.spawn(function()
+			ED_tbl.doBoss(r, pz, n)
+		end)
+	end
+	local function bruteCode(room, pz)
+		local gate = room:FindFirstChild("GateFinal") or room:FindFirstChild("GateFinal", true)
+		local openS = gate and (gate:FindFirstChild("Opening") or gate:FindFirstChildWhichIsA("Sound", true))
+		local found = false
+		local last = nil
+		local tries = 0
+		if openS then
+			openS.Played:Connect(function()
+				if not found then
+					found = true
+					print("FOUND CODE:", last, "after", tries, "tries")
+					if last then
+						setBossCode(tostring(last))
+					end
+				end
+			end)
+		end
+		local map = numMap(pz)
+		local code = codeFromOrder(pz, map)
+		if code and code ~= "" and (not code:find("%?")) then
+			last = code
+			tries = 1
+			setBossCode(tostring(code))
+			if remNP then
+				remNP:FireServer(code)
+			end
+			local t0 = tick()
+			while not found and tick() - t0 < 5 do
+				task.wait()
+			end
+			if found then
+				task.wait(1)
+				return
+			end
+		end
+		for i = 0, 9999 do
+			if found then
+				break
+			end
+			local c = string.format("%04d", i)
+			last = c
+			tries += 1
+			if remNP then
+				remNP:FireServer(c)
+			end
+			if tries % 50 == 0 and last then
+				setBossCode(tostring(last))
+			end
+		end
+		if found then
+			task.wait(1)
+		end
+	end
+	local function getLeverGates(room, maxWait)
+		local t0 = tick()
+		local gates = {}
+		repeat
+			gates = {}
+			for _, d in ipairs(room:QueryDescendants("Instance")) do
+				if d:IsA("Model") and d.Name == "LeverGates" then
+					gates[#gates + 1] = d
+				end
+			end
+			if #gates > 0 or not maxWait then
+				break
+			end
+			task.wait(0.25)
+		until tick() - t0 >= maxWait
+		return gates
+	end
+	ED_tbl.doBoss = function(room, pz, roomIndex)
+		if busyBoss then
+			return
+		end
+		busyBoss = true
+		local function anchorTo(target, interval)
+			local alive = true
+			local delay = interval or 0.3
+			task.spawn(function()
+				while alive and busyBoss do
+					if target and target.Parent then
+						pcall(tpTo, target)
+					else
+						break
+					end
+					task.wait(delay)
+				end
+			end)
+			return function()
+				alive = false
+			end
+		end
+		local ls = room:FindFirstChild("LeverStart")
+		if not ls then
+			busyBoss = false
+			if roomIndex ~= nil then
+				bossCompleted[roomIndex] = true
+			end
+			return
+		end
+		tpTo(ls)
+		local stopAnchor = anchorTo(ls, 0.35)
+		local pp = ls:FindFirstChildWhichIsA("ProximityPrompt", true)
+		local lever = ls:FindFirstChild("Lever", true)
+		local pullS = lever and (lever:FindFirstChild("Pull") or lever:FindFirstChildWhichIsA("Sound", true))
+		if pp then
+			task.wait(0.5)
+			pcall(fireproximityprompt, pp)
+		end
+		stopAnchor()
+		waitPlay(pullS, 10)
+		task.wait(7)
+		local gates = getLeverGates(room, 15)
+		for _, gModel in ipairs(gates) do
+			local lv = gModel:FindFirstChild("Lever", true) or gModel
+			local gpp = gModel:FindFirstChildWhichIsA("ProximityPrompt", true)
+			local gsnd = lv:FindFirstChild("Pull")
+				or gModel:FindFirstChild("Pull", true)
+				or gModel:FindFirstChildWhichIsA("Sound", true)
+			tpTo(lv)
+			stopAnchor = anchorTo(lv, 0.35)
+			task.wait(0.7)
+			if gpp then
+				pcall(fireproximityprompt, gpp)
+			end
+			stopAnchor()
+			waitPlay(gsnd, 6)
+		end
+		local numPad = pz:FindFirstChild("NumPad") or room:FindFirstChild("NumPad", true)
+		if numPad then
+			tpTo(numPad)
+			stopAnchor = anchorTo(numPad, 0.35)
+			task.wait(3)
+			bruteCode(room, pz)
+			stopAnchor()
+		end
+		busyBoss = false
+		if roomIndex ~= nil then
+			bossCompleted[roomIndex] = true
+		end
+	end
+	local seenBossRooms = {}
+	ED_tbl.isBossRoom = function(r)
+		if not r then
+			return false
+		end
+		local rn = r:GetAttribute("RoomName")
+		if typeof(rn) == "string" and rn == "ClockRoom" then
+			return true
+		end
+		if r:FindFirstChild("LeverStart", true) then
+			return true
+		end
+		if r:FindFirstChild("GateLever", true) then
+			return true
+		end
+		if r:FindFirstChild("LeverGates", true) then
+			return true
+		end
+		local pz = r:FindFirstChild("Puzzel") or r:FindFirstChild("Puzzle")
+		if pz then
+			return true
+		end
+		return false
+	end
+	task.spawn(function()
+		while task.wait(0.35) do
+			local v = curRoomVal.Value
+			if typeof(v) ~= "number" then
+				continue
+			end
+
+			local r = Rooms:FindFirstChild("Room" .. v)
+			if not r or not ED_tbl.isBossRoom(r) then
+				continue
+			end
+
+			local pz = r:FindFirstChild("Puzzel") or r:FindFirstChild("Puzzle") or r
+			local map = numMap(pz)
+			if not map then
+				continue
+			end
+
+			local cd = codeFromOrder(pz, map)
+			if cd and cd ~= "" and cd ~= lastCode then
+				setBossCode(cd)
+			end
+		end
+	end)
+	local function isBossPending()
+		local n = curRoomVal.Value
+		if typeof(n) ~= "number" then
+			return false
+		end
+		if bossCompleted[n] then
+			return false
+		end
+		local r = Rooms:FindFirstChild("Room" .. n)
+		if not ED_tbl.isBossRoom(r) then
+			return false
+		end
+		return true
+	end
+	checkRoom = function()
+		if not (getgenv()).autoFarm then
+			return
+		end
+		ED_tbl.runBossIfPossible(false)
+	end
+	(curRoomVal:GetPropertyChangedSignal("Value")):Connect(checkRoom)
+	checkRoom()
+	task.spawn(function()
+		while true do
+			if (getgenv()).autoFarm and not busyBoss and (not isBossPending()) then
+				pcall(ED_tbl.tpToDoor, true)
+				task.wait(0.1)
+				pcall(ED_tbl.tpToKey, true)
+				task.wait(0.1)
+				pcall(ED_tbl.tpToLever, true)
+				task.wait(0.1)
+			else
+				task.wait(0.1)
+			end
+		end
+	end)
+	ObsidianUI:LoadConfiguration()
+	ED_tbl.trackConnection(RunService.RenderStepped:Connect(function()
+		if (getgenv()).chaos then
+			local delay = tonumber((getgenv()).promptDelay) or 0
+			local now = tick()
+			if delay <= 0 or now - lastPromptTick >= delay then
+				lastPromptTick = now
+				firePrompts()
+			end
+		end
+	end))
+	cameraConn = ED_tbl.trackConnection((workspace:GetPropertyChangedSignal("CurrentCamera")):Connect(function()
+		currentCamera = workspace.CurrentCamera
+		if (getgenv()).wide then
+			ED_tbl.bindFOV(currentCamera)
+		end
+	end))
+	task.spawn(function()
+		while task.wait(0.15) do
+			local ch = LocalPlayer.Character
+			local h = ch and ch:FindFirstChildOfClass("Humanoid")
+			if h then
+				if (getgenv()).sped then
+					h.WalkSpeed = (getgenv()).speed
+				end
+				if (getgenv()).jumpy then
+					h.JumpPower = (getgenv()).jump
+				end
+				tryAutoHeal(h)
+			end
+		end
+	end)
+	if not ED_runtime_env.__EDMB_FunctionFixerLoaded then
+		ED_runtime_env.__EDMB_FunctionFixerLoaded = true
+		local okFixer = pcall(function()
+			loadstring(
+				game:HttpGet(
+					"https://raw.githubusercontent.com/ltseverydayyou/uuuuuuu/refs/heads/main/functionFixer.lua"
+				)
+			)()
+		end)
+		if not okFixer then
+			ED_runtime_env.__EDMB_FunctionFixerLoaded = false
+		end
+	end
+end)()
